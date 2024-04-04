@@ -1,20 +1,28 @@
 pluginManagement {
     repositories {
+        google() {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
         gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
         google()
         mavenCentral()
-        maven("https://maven.aliyun.com/repository/central")
-        maven("https://maven.aliyun.com/repository/jcenter")
-        maven("https://maven.aliyun.com/repository/google")
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        maven("https://maven.aliyun.com/repository/public")
         maven("https://jitpack.io")
     }
 }
 plugins {
-    id("com.highcapable.sweetdependency") version "1.0.4"
     id("com.highcapable.sweetproperty") version "1.0.5"
 }
+
 sweetProperty {
     isEnable = true
     global {

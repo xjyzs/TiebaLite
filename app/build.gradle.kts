@@ -1,14 +1,14 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 plugins {
-    autowire(libs.plugins.com.android.application)
-    autowire(libs.plugins.kotlin.android)
-    autowire(libs.plugins.kotlin.kapt)
-    autowire(libs.plugins.kotlin.serialization)
-    autowire(libs.plugins.kotlin.parcelize)
-    autowire(libs.plugins.hilt.android)
-    autowire(libs.plugins.kotlin.ksp)
-    autowire(libs.plugins.com.squareup.wire)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.wire)
 }
 
 val sha: String? = System.getenv("GITHUB_SHA")
@@ -35,12 +35,13 @@ wire {
 }
 
 android {
+    val packageName = "com.huanchengfly.tieba.post"
     buildToolsVersion = "34.0.0"
     compileSdk = 34
+    namespace = packageName
     defaultConfig {
-        applicationId = "com.huanchengfly.tieba.post"
+        applicationId = packageName
         minSdk = 21
-        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = applicationVersionCode
         versionName = applicationVersionName
@@ -69,39 +70,39 @@ android {
     }
     buildTypes {
         all {
-            signingConfig =
-                if (signingConfigs.any { it.name == "config" })
-                    signingConfigs.getByName("config")
-                else signingConfigs.getByName("debug")
+            val configName = if (signingConfigs.any { it.name == "config" }) {
+                "config"
+            } else {
+                "debug"
+            }
+            signingConfig = signingConfigs.getByName(configName)
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             isDebuggable = false
             isJniDebuggable = false
             multiDexEnabled = true
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_11
-        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
+        jvmTarget = "17"
         freeCompilerArgs += listOf(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + project.buildDir.absolutePath + "/compose_metrics"
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$buildDir/compose_metrics"
         )
         freeCompilerArgs += listOf(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + project.buildDir.absolutePath + "/compose_metrics"
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$buildDir/compose_metrics"
         )
         freeCompilerArgs += listOf(
             "-P", "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=" +
@@ -114,149 +115,141 @@ android {
             excludes += "DebugProbesKt.bin"
         }
     }
-    namespace = "com.huanchengfly.tieba.post"
+
     applicationVariants.configureEach {
         val variant = this
         outputs.configureEach {
-            val fileName =
-                "${variant.buildType.name}-${applicationVersionName}(${applicationVersionCode}).apk"
-
+            val fileName = "${variant.buildType.name}-${applicationVersionName}(${applicationVersionCode}).apk"
             (this as BaseVariantOutputImpl).outputFileName = fileName
-        }
-        kotlin.sourceSets {
-            getByName(variant.name) {
-                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
-            }
         }
     }
 }
 
 dependencies {
-    //Local Files
+    // Local Files
 //    implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation(net.swiftzer.semver.semver)
-    implementation(godaddy.color.picker)
+    implementation(libs.swiftzer.semver)
+    implementation(libs.godaddy.color.picker)
 
-    implementation(airbnb.lottie)
-    implementation(airbnb.lottie.compose)
+    implementation(libs.airbnb.lottie)
+    implementation(libs.airbnb.lottie.compose)
 
-    implementation(kotlinx.serialization.json)
-    implementation(kotlinx.collections.immutable)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.collections.immutable)
 
-    implementation(androidx.media3.exoplayer)
-    implementation(androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 
-    implementation(compose.destinations.core)
-    ksp(compose.destinations.ksp)
+    implementation(libs.compose.destinations.core)
+    ksp(libs.compose.destinations.ksp)
 
-    implementation(androidx.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 
-    api(wire.runtime)
+    api(libs.wire.runtime)
 
-    implementation(hilt.android)
-    kapt(hilt.compiler)
-    implementation(androidx.hilt.navigation.compose)
-    kapt(androidx.hilt.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.androidx.hilt.compiler)
 
-    implementation(accompanist.drawablepainter)
-    implementation(accompanist.insets.ui)
-    implementation(accompanist.systemuicontroller)
-    implementation(accompanist.placeholder.material)
+    implementation(libs.accompanist.drawablepainter)
+    implementation(libs.accompanist.insets.ui)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.placeholder.material)
 
-    implementation(sketch.core)
-    implementation(sketch.compose)
-    implementation(sketch.ext.compose)
-    implementation(sketch.gif)
-    implementation(sketch.okhttp)
+    implementation(libs.sketch.core)
+    implementation(libs.sketch.compose)
+    implementation(libs.sketch.extensions.compose)
+    implementation(libs.sketch.gif)
+    implementation(libs.sketch.okhttp)
 
-    implementation(zoomimage.compose.sketch)
+    implementation(libs.zoomimage.compose.sketch)
 
-    implementation(compose.bom)
-    androidTestImplementation(compose.bom)
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
 
-    runtimeOnly(compose.runtime.tracing)
-    implementation(compose.animation)
-    implementation(compose.animation.graphics)
-    implementation(compose.material)
-    implementation(compose.material.icons.core)
+    runtimeOnly(libs.compose.runtime.tracing)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.animation.graphics)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.core)
     // Optional - Add full set of material icons
-    implementation(compose.material.icons.extended)
-    implementation(compose.ui.util)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.ui.util)
 //    implementation "androidx.compose.material3:material3"
 
     // Android Studio Preview support
-    implementation(compose.ui.tooling.preview)
-    debugImplementation(compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
 
     // UI Tests
-    androidTestImplementation(compose.ui.test.junit4)
-    debugRuntimeOnly(compose.ui.test.manifest)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugRuntimeOnly(libs.compose.ui.test.manifest)
 
-    implementation(androidx.constraintlayout.compose)
+    implementation(libs.androidx.constraintlayout.compose)
 
-    implementation(github.oaid)
+    implementation(libs.github.oaid)
 
-    implementation(org.jetbrains.annotations)
+    implementation(libs.jetbrains.annotations)
 
-    implementation(kotlin.stdlib)
-    implementation(kotlin.reflect)
+    // implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
 
-    implementation(kotlinx.coroutines.core)
-    implementation(kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.android)
 
-    implementation(androidx.lifecycle.runtime)
-    implementation(androidx.lifecycle.viewmodel)
-    implementation(androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    //AndroidX
-    implementation(androidx.activity)
-    implementation(androidx.activity.compose)
-    implementation(androidx.appcompat)
-    implementation(androidx.annotation)
-    implementation(androidx.browser)
-    implementation(androidx.constraintlayout)
-    implementation(androidx.core)
-    implementation(androidx.core.splashscreen)
-    implementation(androidx.datastore.preferences)
-    implementation(androidx.gridlayout)
-    implementation(androidx.palette)
-    implementation(androidx.window)
-    implementation(androidx.startup.runtime)
+    // AndroidX
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.browser)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.gridlayout)
+    implementation(libs.androidx.palette)
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.startup.runtime)
 
-    //Test
-    testImplementation(junit.junit)
-    androidTestImplementation(androidx.test.core)
-    androidTestImplementation(androidx.test.ext.junit)
-    androidTestImplementation(androidx.test.rules)
-    androidTestImplementation(androidx.test.espresso.core)
-    androidTestRuntimeOnly(androidx.test.runner)
+    // Test
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestRuntimeOnly(libs.androidx.test.runner)
 
-    //Glide
-    implementation(glide.core)
-    ksp(glide.ksp)
-    implementation(glide.okhttp3.integration)
+    // Glide
+    implementation(libs.glide.core)
+    // ksp(libs.glide.ksp)
+    implementation(libs.glide.okhttp3.integration)
 
-    implementation(google.material)
+    implementation(libs.google.material)
 
-    implementation(okhttp3.core)
-    implementation(retrofit2.core)
-    implementation(retrofit2.converter.wire)
+    implementation(libs.okhttp3.core)
+    implementation(libs.retrofit2.core)
+    implementation(libs.retrofit2.converter.wire)
 
-    implementation(google.gson)
-    implementation(org.litepal.android.kotlin)
-    implementation(com.jaredrummler.colorpicker)
+    implementation(libs.google.gson)
+    implementation(libs.litepal)
+    implementation(libs.jaredrummler.colorpicker)
 
-    implementation(github.matisse)
-    implementation(xx.permissions)
-    implementation(com.gyf.immersionbar.immersionbar)
+    implementation(libs.matisse)
+    implementation(libs.xxpermissions)
+    implementation(libs.immersionbar)
 
-    implementation(com.github.yalantis.ucrop)
+    implementation(libs.ucrop)
 
-    implementation(com.jakewharton.butterknife)
-    kapt(com.jakewharton.butterknife.compiler)
+    implementation(libs.butterknife)
+    kapt(libs.butterknife.compiler)
 
-    implementation(appcenter.analytics)
-    implementation(appcenter.crashes)
-    implementation(appcenter.distribute)
+    implementation(libs.appcenter.analytics)
+    implementation(libs.appcenter.crashes)
+    implementation(libs.appcenter.distribute)
 }

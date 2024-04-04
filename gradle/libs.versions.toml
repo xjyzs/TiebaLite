@@ -3,14 +3,16 @@ agp = "8.3.1"
 kotlin = "1.9.23"
 ksp = "1.9.23-1.0.19"
 compose-compiler = "1.5.11"
-compose-bom = "2024.03.00"
+compose-bom = "2024.04.00"
 
 accompanist = "0.34.0"
 appcenter = "5.0.4"
-hilt = "2.46.1"
-sketch = "3.3.0"
-wire = "4.9.9"
-lottie = "6.3.0"
+hilt = "2.51.1"
+androidx-hilt = "1.2.0"
+sketch = "3.3.1"
+# TODO: > 4.9.3 Error
+wire = "4.9.3"
+lottie = "6.4.0"
 media3 = "1.3.0"
 
 compose-destinations = "1.10.2"
@@ -20,10 +22,10 @@ androidx-activity = "1.8.2"
 lifecycle = "2.7.0"
 
 glide = "4.16.0"
-retrofit = "2.9.0"
+retrofit = "2.11.0"
 
 [plugins]
-dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.29.0" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.30.0" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
@@ -56,30 +58,31 @@ androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espres
 
 wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref = "wire" }
 
-swiftzer-semver = { group = "net.swiftzer.semver", name = "semver", version = "1.3.0" }
+swiftzer-semver = { group = "net.swiftzer.semver", name = "semver", version = "2.0.0" }
 
 godaddy-color-picker = { group = "com.godaddy.android.colorpicker", name = "compose-color-picker", version = "0.7.0" }
 
 airbnb-lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 airbnb-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.2" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.3" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.3.7" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.8.0" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 
-compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
+compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.7.6" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.7.7" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 
-androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.1.0" }
-androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-android", version = "1.1.0" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt" }
 
 accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist" }
 # Remove 3
@@ -87,17 +90,16 @@ accompanist-insets-ui = { group = "com.google.accompanist", name = "accompanist-
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-placeholder-material = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanist" }
 
-
 sketch-core = { group = "io.github.panpf.sketch3", name = "sketch-core", version.ref = "sketch" }
 sketch-compose = { group = "io.github.panpf.sketch3", name = "sketch-compose", version.ref = "sketch" }
 sketch-extensions-compose = { group = "io.github.panpf.sketch3", name = "sketch-extensions-compose", version.ref = "sketch" }
 sketch-gif = { group = "io.github.panpf.sketch3", name = "sketch-gif", version.ref = "sketch" }
 sketch-okhttp = { group = "io.github.panpf.sketch3", name = "sketch-okhttp", version.ref = "sketch" }
 
-zoomimage-compose-sketch = { group = "io.github.panpf.zoomimage", name = "zoomimage-compose-sketch", version = "1.0.1" }
+zoomimage-compose-sketch = { group = "io.github.panpf.zoomimage", name = "zoomimage-compose-sketch", version = "1.0.2" }
 
-compose-animation = { group = "androidx.compose.animation", name = "compose-animation" }
-animation-graphics = { group = "androidx.compose.animation", name = "animation-graphics" }
+compose-animation = { group = "androidx.compose.animation", name = "animation" }
+compose-animation-graphics = { group = "androidx.compose.animation", name = "animation-graphics" }
 
 compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
@@ -106,13 +108,13 @@ compose-material-icons-extended = { group = "androidx.compose.material", name = 
 google-material = { group = "com.google.android.material", name = "material", version = "1.11.0" }
 
 
-androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.0.1" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.0-alpha11" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.1.4" }
 
 androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 
-github-oaid = { group = "com.github.gzu-liyujiang", name = "Android_CN_OAID", version = "4.2.4" }
+github-oaid = { group = "com.github.gzu-liyujiang", name = "Android_CN_OAID", version = "4.2.5.1" }
 
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version = "24.1.0" }
 
@@ -130,7 +132,7 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 
 androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version = "1.0.0" }
 
-androidx-browser = { group = "androidx.browser", name = "browser", version = "1.7.0" }
+androidx-browser = { group = "androidx.browser", name = "browser", version = "1.8.0" }
 
 androidx-palette = { group = "androidx.palette", name = "palette-ktx", version = "1.0.0" }
 androidx-window = { group = "androidx.window", name = "window", version = "1.2.0" }
@@ -142,16 +144,17 @@ glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref 
 glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide" }
 
-okhttp3-core = { group = "com.squareup.okhttp3", name = "okhttp3-core", version = "4.12.0" }
+okhttp3-core = { group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0" }
 retrofit2-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit2-converter-wire = { group = "com.squareup.retrofit2", name = "converter-wire", version.ref = "retrofit" }
 
 google-gson = { group = "com.google.code.gson", name = "gson", version = "2.10.1" }
+# Remove
 litepal = { group = "org.litepal.android", name = "kotlin", version = "3.0.0" }
 jaredrummler-colorpicker = { group = "com.jaredrummler", name = "colorpicker", version = "1.1.0" }
 matisse = { group = "com.github.lwj1994", name = "Matisse", version = "0.5.3-20220115" }
-xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version = "18.6" }
-immersionbar = { group = "com.gyf.immersionbar", name = "immersionbar", version = "3.0.0" }
+xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version = "18.62" }
+immersionbar = { group = "com.geyifeng.immersionbar", name = "immersionbar-ktx", version = "3.2.2" }
 ucrop = { group = "com.github.yalantis", name = "ucrop", version = "2.2.8" }
 
 butterknife = { group = "com.jakewharton", name = "butterknife", version = "10.2.3" }
