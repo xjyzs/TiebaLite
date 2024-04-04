@@ -7,7 +7,7 @@ compose-bom = "2024.04.00"
 
 accompanist = "0.34.0"
 appcenter = "5.0.4"
-hilt = "2.51.1"
+hilt = "2.46.1"
 androidx-hilt = "1.2.0"
 sketch = "3.3.1"
 # TODO: > 4.9.3 Error
@@ -23,6 +23,8 @@ lifecycle = "2.7.0"
 
 glide = "4.16.0"
 retrofit = "2.11.0"
+
+immersionbar = "3.2.2"
 
 [plugins]
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.30.0" }
@@ -73,7 +75,7 @@ kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", vers
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 
-compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
+compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.7.7" }
@@ -101,14 +103,13 @@ zoomimage-compose-sketch = { group = "io.github.panpf.zoomimage", name = "zoomim
 compose-animation = { group = "androidx.compose.animation", name = "animation" }
 compose-animation-graphics = { group = "androidx.compose.animation", name = "animation-graphics" }
 
-compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 google-material = { group = "com.google.android.material", name = "material", version = "1.11.0" }
+compose-material = { group = "androidx.compose.material3", name = "material3" }
 
-
-androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.0-alpha11" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.0-alpha13" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.1.4" }
 
 androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
@@ -154,7 +155,8 @@ litepal = { group = "org.litepal.android", name = "kotlin", version = "3.0.0" }
 jaredrummler-colorpicker = { group = "com.jaredrummler", name = "colorpicker", version = "1.1.0" }
 matisse = { group = "com.github.lwj1994", name = "Matisse", version = "0.5.3-20220115" }
 xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version = "18.62" }
-immersionbar = { group = "com.geyifeng.immersionbar", name = "immersionbar-ktx", version = "3.2.2" }
+immersionbar = { group = "com.geyifeng.immersionbar", name = "immersionbar", version.ref = "immersionbar" }
+immersionbar-ktx = { group = "com.geyifeng.immersionbar", name = "immersionbar-ktx", version.ref = "immersionbar" }
 ucrop = { group = "com.github.yalantis", name = "ucrop", version = "2.2.8" }
 
 butterknife = { group = "com.jakewharton", name = "butterknife", version = "10.2.3" }

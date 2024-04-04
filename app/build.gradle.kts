@@ -151,7 +151,7 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.accompanist.insets.ui)
@@ -177,7 +177,6 @@ dependencies {
     // Optional - Add full set of material icons
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.ui.util)
-//    implementation "androidx.compose.material3:material3"
 
     // Android Studio Preview support
     implementation(libs.compose.ui.tooling.preview)
@@ -243,6 +242,7 @@ dependencies {
     implementation(libs.matisse)
     implementation(libs.xxpermissions)
     implementation(libs.immersionbar)
+    implementation(libs.immersionbar.ktx)
 
     implementation(libs.ucrop)
 
