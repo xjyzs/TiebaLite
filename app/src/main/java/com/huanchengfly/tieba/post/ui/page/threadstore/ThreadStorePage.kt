@@ -44,8 +44,8 @@ import com.huanchengfly.tieba.post.api.models.ThreadStoreBean
 import com.huanchengfly.tieba.post.arch.collectPartialAsState
 import com.huanchengfly.tieba.post.arch.onEvent
 import com.huanchengfly.tieba.post.arch.pageViewModel
-import com.huanchengfly.tieba.post.dpToPxFloat
-import com.huanchengfly.tieba.post.pxToSp
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.pxToSp
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.theme.compose.pullRefreshIndicator
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination

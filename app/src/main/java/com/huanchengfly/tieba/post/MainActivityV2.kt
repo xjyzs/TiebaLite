@@ -77,6 +77,7 @@ import com.huanchengfly.tieba.post.components.ClipBoardForumLink
 import com.huanchengfly.tieba.post.components.ClipBoardLink
 import com.huanchengfly.tieba.post.components.ClipBoardLinkDetector
 import com.huanchengfly.tieba.post.components.ClipBoardThreadLink
+import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.services.NotifyJobService
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.page.NavGraphs
@@ -165,13 +166,13 @@ class MainActivityV2 : BaseComposeActivity() {
 
     private val pickMediasLauncher =
         registerPickMediasLauncher {
-            emitGlobalEvent(GlobalEvent.SelectedImages(it.id, it.uris))
+            lifecycleScope.emitGlobalEvent(GlobalEvent.SelectedImages(it.id, it.uris))
         }
 
     private val mLaunchActivityForResultLauncher = registerForActivityResult(
         LaunchActivityForResult()
     ) {
-        emitGlobalEvent(GlobalEvent.ActivityResult(it.requesterId, it.resultCode, it.intent))
+        lifecycleScope.emitGlobalEvent(GlobalEvent.ActivityResult(it.requesterId, it.resultCode, it.intent))
     }
 
     private val devicePostureFlow: StateFlow<DevicePosture> by lazy {
@@ -206,7 +207,7 @@ class MainActivityV2 : BaseComposeActivity() {
         set(value) {
             field = value
             if (value != null && waitingNavCollectorToNavigate.get() && direction != null) {
-                launch {
+                lifecycleScope.launch {
                     value.currentDestinationFlow
                         .take(1)
                         .collect {
@@ -317,7 +318,7 @@ class MainActivityV2 : BaseComposeActivity() {
         super.onCreate(savedInstanceState)
         window.decorView.setBackgroundColor(0)
         window.setBackgroundDrawable(ColorDrawable(0))
-        launch {
+        lifecycleScope.launch {
             ClientUtils.setActiveTimestamp()
         }
         intent?.let { checkIntent(it) }

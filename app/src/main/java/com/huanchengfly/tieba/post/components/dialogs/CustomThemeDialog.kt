@@ -12,8 +12,8 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
-import com.huanchengfly.tieba.post.App.ThemeDelegate.getColorByAttr
 import com.huanchengfly.tieba.post.R
+import com.huanchengfly.tieba.post.ui.common.theme.ThemeDelegate
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.appPreferences
@@ -43,7 +43,7 @@ class CustomThemeDialog(context: Context) : AlertDialog(context),
         statusBarFont = contentView.findViewById(R.id.custom_theme_status_bar_font)
         toolbarPrimaryColor = contentView.findViewById(R.id.custom_theme_toolbar_primary_color)
         setView(contentView)
-        primaryColor = getColorByAttr(context, R.attr.colorPrimary, ThemeUtil.THEME_CUSTOM)
+        primaryColor = ThemeDelegate.getColorByAttr(context, R.attr.colorPrimary, ThemeUtil.THEME_CUSTOM)
         statusBarFontDark = context.appPreferences.customStatusBarFontDark
         toolbarPrimary = context.appPreferences.toolbarPrimaryColor
         refreshView()

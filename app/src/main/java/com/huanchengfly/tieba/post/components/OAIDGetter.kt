@@ -5,7 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import com.github.gzuliyujiang.oaid.DeviceID
 import com.github.gzuliyujiang.oaid.IGetter
-import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.AppConfig
 import com.huanchengfly.tieba.post.utils.helios.Base32
 
 object OAIDGetter : Application.ActivityLifecycleCallbacks, IGetter {
@@ -14,14 +14,14 @@ object OAIDGetter : Application.ActivityLifecycleCallbacks, IGetter {
     override fun onActivityStarted(activity: Activity) {}
 
     override fun onActivityResumed(activity: Activity) {
-        if (!App.Config.inited) {
-            App.Config.isOAIDSupported = DeviceID.supportedOAID(activity)
-            if (App.Config.isOAIDSupported) {
+        if (!AppConfig.inited) {
+            AppConfig.isOAIDSupported = DeviceID.supportedOAID(activity)
+            if (AppConfig.isOAIDSupported) {
                 DeviceID.getOAID(activity, this)
             } else {
-                App.Config.inited = true
-                App.Config.statusCode = -200
-                App.Config.isTrackLimited = false
+                AppConfig.inited = true
+                AppConfig.statusCode = -200
+                AppConfig.isTrackLimited = false
             }
         }
     }
@@ -35,16 +35,16 @@ object OAIDGetter : Application.ActivityLifecycleCallbacks, IGetter {
     override fun onActivityDestroyed(activity: Activity) {}
 
     override fun onOAIDGetComplete(result: String) {
-        App.Config.inited = true
-        App.Config.oaid = result
-        App.Config.encodedOAID = Base32.encode(result.encodeToByteArray())
-        App.Config.statusCode = 0
-        App.Config.isTrackLimited = false
+        AppConfig.inited = true
+        AppConfig.oaid = result
+        AppConfig.encodedOAID = Base32.encode(result.encodeToByteArray())
+        AppConfig.statusCode = 0
+        AppConfig.isTrackLimited = false
     }
 
     override fun onOAIDGetError(error: Exception?) {
-        App.Config.inited = true
-        App.Config.statusCode = -100
-        App.Config.isTrackLimited = true
+        AppConfig.inited = true
+        AppConfig.statusCode = -100
+        AppConfig.isTrackLimited = true
     }
 }

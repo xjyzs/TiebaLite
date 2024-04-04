@@ -1,4 +1,4 @@
-package com.huanchengfly.tieba.post
+package com.huanchengfly.tieba.post.ext
 
 import android.animation.LayoutTransition
 import android.app.Activity
@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.utils.GsonUtil
 import com.huanchengfly.tieba.post.utils.MD5Util
 import kotlinx.collections.immutable.ImmutableList
@@ -26,6 +28,7 @@ import kotlinx.collections.immutable.toImmutableList
 import java.io.File
 import kotlin.math.roundToInt
 
+// TODO: replace to new api
 private val Context.scaledDensity: Float
     get() = resources.displayMetrics.scaledDensity
 
@@ -33,7 +36,7 @@ fun Float.dpToPx(): Int =
     dpToPxFloat().roundToInt()
 
 fun Float.dpToPxFloat(): Float =
-    this * App.ScreenInfo.DENSITY + 0.5f
+    this * ScreenInfo.DENSITY + 0.5f
 
 fun Float.spToPx(context: Context = App.INSTANCE): Int =
     (this * context.scaledDensity + 0.5f).roundToInt()
@@ -42,10 +45,10 @@ fun Float.spToPxFloat(context: Context = App.INSTANCE): Float =
     this * context.scaledDensity + 0.5f
 
 fun Float.pxToDp(): Int =
-    (this / App.ScreenInfo.DENSITY + 0.5f).roundToInt()
+    (this / ScreenInfo.DENSITY + 0.5f).roundToInt()
 
 fun Float.pxToDpFloat(): Float =
-    this / App.ScreenInfo.DENSITY + 0.5f
+    this / ScreenInfo.DENSITY + 0.5f
 
 fun Float.pxToSp(context: Context = App.INSTANCE): Int =
     (this / context.scaledDensity + 0.5f).roundToInt()
@@ -75,7 +78,9 @@ inline fun <reified Data> File.fromJson(): Data {
     return GsonUtil.getGson().fromJson(reader(), type)
 }
 
-fun Any.toJson(): String = Gson().toJson(this)
+private val gson = Gson()
+
+fun Any.toJson(): String = gson.toJson(this)
 
 fun String.toMD5(): String = MD5Util.toMd5(this)
 

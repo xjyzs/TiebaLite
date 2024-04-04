@@ -1,14 +1,14 @@
 package com.huanchengfly.tieba.post.api.models
 
 import com.google.gson.annotations.SerializedName
-import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.AppConfig
 
 data class OAID(
     @SerializedName("v")
-    val encodedOAID: String = App.Config.encodedOAID,
+    val encodedOAID: String = AppConfig.encodedOAID,
     @SerializedName("sc")
-    val statusCode: Int = App.Config.statusCode,
+    val statusCode: Int = AppConfig.statusCode,
     @SerializedName("sup")
-    val support: Int = if (App.Config.isOAIDSupported) 1 else 0,
-    val isTrackLimited: Int = if (App.Config.isTrackLimited) 1 else 0
+    val support: Int = if (AppConfig.isOAIDSupported) 1 else 0,
+    val isTrackLimited: Int = if (AppConfig.isTrackLimited) 1 else 0
 )

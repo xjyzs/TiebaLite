@@ -49,7 +49,7 @@ import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.models.protos.ThreadInfo
 import com.huanchengfly.tieba.post.api.models.protos.User
 import com.huanchengfly.tieba.post.api.models.protos.personalized.DislikeReason
-import com.huanchengfly.tieba.post.arch.CommonUiEvent.ScrollToTop.bindScrollToTopEvent
+import com.huanchengfly.tieba.post.arch.CommonUiEvent.ScrollToTop.BindScrollToTopEvent
 import com.huanchengfly.tieba.post.arch.GlobalEvent
 import com.huanchengfly.tieba.post.arch.ImmutableHolder
 import com.huanchengfly.tieba.post.arch.collectPartialAsState
@@ -121,7 +121,7 @@ fun PersonalizedPage(
         onRefresh = { viewModel.send(PersonalizedUiIntent.Refresh) }
     )
     val lazyListState = rememberLazyListState()
-    viewModel.bindScrollToTopEvent(lazyListState = lazyListState)
+    viewModel.BindScrollToTopEvent(lazyListState = lazyListState)
     val isEmpty by remember {
         derivedStateOf {
             data.isEmpty()

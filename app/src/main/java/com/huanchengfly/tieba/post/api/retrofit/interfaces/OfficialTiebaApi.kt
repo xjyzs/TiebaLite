@@ -2,12 +2,29 @@ package com.huanchengfly.tieba.post.api.retrofit.interfaces
 
 import android.os.Build
 import com.huanchengfly.tieba.post.App
-import com.huanchengfly.tieba.post.App.ScreenInfo
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.api.Header
 import com.huanchengfly.tieba.post.api.Param
 import com.huanchengfly.tieba.post.api.getScreenHeight
 import com.huanchengfly.tieba.post.api.getScreenWidth
-import com.huanchengfly.tieba.post.api.models.*
+import com.huanchengfly.tieba.post.api.models.AddPostBean
+import com.huanchengfly.tieba.post.api.models.AgreeBean
+import com.huanchengfly.tieba.post.api.models.CheckReportBean
+import com.huanchengfly.tieba.post.api.models.CommonResponse
+import com.huanchengfly.tieba.post.api.models.FollowBean
+import com.huanchengfly.tieba.post.api.models.GetForumListBean
+import com.huanchengfly.tieba.post.api.models.InitNickNameBean
+import com.huanchengfly.tieba.post.api.models.LoginBean
+import com.huanchengfly.tieba.post.api.models.MSignBean
+import com.huanchengfly.tieba.post.api.models.PersonalizedBean
+import com.huanchengfly.tieba.post.api.models.Profile
+import com.huanchengfly.tieba.post.api.models.SignResultBean
+import com.huanchengfly.tieba.post.api.models.SubFloorListBean
+import com.huanchengfly.tieba.post.api.models.Sync
+import com.huanchengfly.tieba.post.api.models.ThreadContentBean
+import com.huanchengfly.tieba.post.api.models.ThreadStoreBean
+import com.huanchengfly.tieba.post.api.models.UploadPictureResultBean
+import com.huanchengfly.tieba.post.api.models.UserLikeForumBean
 import com.huanchengfly.tieba.post.api.retrofit.ApiResult
 import com.huanchengfly.tieba.post.api.retrofit.body.MyMultipartBody
 import com.huanchengfly.tieba.post.utils.AccountUtil
@@ -19,7 +36,12 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FieldMap
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 
 interface OfficialTiebaApi {

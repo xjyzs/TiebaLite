@@ -2,6 +2,7 @@ package com.huanchengfly.tieba.post.api.retrofit
 
 import android.os.Build
 import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.AppConfig
 import com.huanchengfly.tieba.post.api.ClientVersion
 import com.huanchengfly.tieba.post.api.Header
 import com.huanchengfly.tieba.post.api.Param
@@ -30,7 +31,7 @@ import com.huanchengfly.tieba.post.api.retrofit.interfaces.OfficialProtobufTieba
 import com.huanchengfly.tieba.post.api.retrofit.interfaces.OfficialTiebaApi
 import com.huanchengfly.tieba.post.api.retrofit.interfaces.SofireApi
 import com.huanchengfly.tieba.post.api.retrofit.interfaces.WebTiebaApi
-import com.huanchengfly.tieba.post.toJson
+import com.huanchengfly.tieba.post.ext.toJson
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import com.huanchengfly.tieba.post.utils.CacheUtil.base64Encode
 import com.huanchengfly.tieba.post.utils.ClientUtils
@@ -204,11 +205,11 @@ object RetrofitTiebaApi {
                     )
                 },
                 Param.EXTRA to { "" },
-                Param.FIRST_INSTALL_TIME to { App.Config.appFirstInstallTime.toString() },
+                Param.FIRST_INSTALL_TIME to { AppConfig.appFirstInstallTime.toString() },
                 Param.FRAMEWORK_VER to { "3340042" },
                 Param.FROM to { "tieba" },
                 Param.IS_TEENAGER to { "0" },
-                Param.LAST_UPDATE_TIME to { App.Config.appLastUpdateTime.toString() },
+                Param.LAST_UPDATE_TIME to { AppConfig.appLastUpdateTime.toString() },
                 Param.MAC to { "02:00:00:00:00:00" },
                 Param.SAMPLE_ID to { ClientUtils.sampleId },
                 Param.SDK_VER to { "2.34.0" },
@@ -318,11 +319,11 @@ object RetrofitTiebaApi {
                     )
                 },
                 Param.EXTRA to { "" },
-                Param.FIRST_INSTALL_TIME to { App.Config.appFirstInstallTime.toString() },
+                Param.FIRST_INSTALL_TIME to { AppConfig.appFirstInstallTime.toString() },
                 Param.FRAMEWORK_VER to { "3340042" },
                 Param.FROM to { "tieba" },
                 Param.IS_TEENAGER to { "0" },
-                Param.LAST_UPDATE_TIME to { App.Config.appLastUpdateTime.toString() },
+                Param.LAST_UPDATE_TIME to { AppConfig.appLastUpdateTime.toString() },
                 Param.MAC to { "02:00:00:00:00:00" },
                 "naws_game_ver" to { "1038000" },
                 Param.OAID to { OAID().toJson() },

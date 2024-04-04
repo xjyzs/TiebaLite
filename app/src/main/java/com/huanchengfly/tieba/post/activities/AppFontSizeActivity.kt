@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.huanchengfly.tieba.post.*
+import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.adapters.ChatBubbleStyleAdapter
 import com.huanchengfly.tieba.post.components.MyLinearLayoutManager
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.ui.widgets.RulerSeekBar
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 
@@ -32,8 +35,8 @@ class AppFontSizeActivity : BaseActivity() {
     @BindView(R.id.app_font_size_bubbles)
     lateinit var chatBubblesRv: RecyclerView
 
-    var oldFontSize: Float = 0f
-    var finished: Boolean = false
+    private var oldFontSize: Float = 0f
+    private var finished: Boolean = false
 
     private val bubblesAdapter: ChatBubbleStyleAdapter by lazy {
         ChatBubbleStyleAdapter(

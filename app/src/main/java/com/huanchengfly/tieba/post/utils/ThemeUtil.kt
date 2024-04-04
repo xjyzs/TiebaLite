@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.panpf.sketch.fetch.newFileUri
 import com.github.panpf.sketch.request.DisplayRequest
@@ -100,7 +101,7 @@ object ThemeUtil {
 
     private fun refreshUI(activity: Activity?) {
         if (activity is BaseActivity) {
-            activity.refreshUIIfNeed()
+            activity.refreshUiIfNeed()
             return
         }
         ThemeUtils.refreshUI(activity)
@@ -362,7 +363,7 @@ object ThemeUtil {
             view.background = translucentBackground
             return
         }
-        activity.launch {
+        activity.lifecycleScope.launch {
             val result = DisplayRequest(activity, newFileUri(backgroundFilePath)) {
                 resizeScale(Scale.CENTER_CROP)
             }.execute()

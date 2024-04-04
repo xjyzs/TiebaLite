@@ -49,11 +49,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.dpToPxFloat
-import com.huanchengfly.tieba.post.pxToDp
-import com.huanchengfly.tieba.post.pxToSp
-import com.huanchengfly.tieba.post.pxToSpFloat
-import com.huanchengfly.tieba.post.spToPxFloat
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.pxToDp
+import com.huanchengfly.tieba.post.ext.pxToSp
+import com.huanchengfly.tieba.post.ext.pxToSpFloat
+import com.huanchengfly.tieba.post.ext.spToPxFloat
 import com.huanchengfly.tieba.post.ui.common.PbContentText
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.utils.EmoticonManager

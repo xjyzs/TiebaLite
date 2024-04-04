@@ -7,7 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.getColorStateListCompat
+import com.huanchengfly.tieba.post.ext.getColorStateListCompat
 import com.huanchengfly.tieba.post.ui.common.theme.interfaces.Tintable
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ColorStateListUtils
 

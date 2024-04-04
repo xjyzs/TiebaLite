@@ -3,7 +3,7 @@ package com.huanchengfly.tieba.post.utils
 import android.util.Base64
 import com.huanchengfly.tieba.post.api.models.SofireResponseData
 import com.huanchengfly.tieba.post.api.retrofit.RetrofitTiebaApi
-import com.huanchengfly.tieba.post.toMD5
+import com.huanchengfly.tieba.post.ext.toMD5
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

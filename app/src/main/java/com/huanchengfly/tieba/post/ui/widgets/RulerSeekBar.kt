@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSeekBar
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
 
 class RulerSeekBar : AppCompatSeekBar {
     /**

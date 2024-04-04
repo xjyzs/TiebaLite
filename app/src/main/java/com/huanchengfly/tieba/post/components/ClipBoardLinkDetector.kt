@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.MainActivityV2
 import com.huanchengfly.tieba.post.activities.BaseActivity
@@ -114,7 +115,7 @@ object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
                 val link = parseLink(url)
                 if (link != null) {
                     if (activity is MainActivityV2) {
-                        activity.launch {
+                        activity.lifecycleScope.launch {
                             QuickPreviewUtil.getPreviewInfoFlow(
                                 activity,
                                 link,

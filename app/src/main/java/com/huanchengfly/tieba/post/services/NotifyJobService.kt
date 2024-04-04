@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.TiebaApi
 import com.huanchengfly.tieba.post.api.models.MsgBean
-import com.huanchengfly.tieba.post.pendingIntentFlagImmutable
+import com.huanchengfly.tieba.post.ext.pendingIntentFlagImmutable
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import retrofit2.Call
 import retrofit2.Callback

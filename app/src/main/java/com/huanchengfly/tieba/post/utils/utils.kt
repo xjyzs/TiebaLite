@@ -28,9 +28,9 @@ import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.retrofit.exception.TiebaException
 import com.huanchengfly.tieba.post.dataStore
-import com.huanchengfly.tieba.post.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.getBoolean
-import com.huanchengfly.tieba.post.toastShort
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ColorStateListUtils
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination

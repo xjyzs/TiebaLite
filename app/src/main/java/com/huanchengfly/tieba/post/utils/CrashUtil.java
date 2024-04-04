@@ -1,6 +1,6 @@
 package com.huanchengfly.tieba.post.utils;
 
-import static com.huanchengfly.tieba.post.ExtensionsKt.pendingIntentFlagMutable;
+import static com.huanchengfly.tieba.post.ext.ExtensionsKt.pendingIntentFlagMutable;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;

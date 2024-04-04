@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.huanchengfly.tieba.post.api.models.protos.hasAgree
-import com.huanchengfly.tieba.post.arch.CommonUiEvent.ScrollToTop.bindScrollToTopEvent
+import com.huanchengfly.tieba.post.arch.CommonUiEvent.ScrollToTop.BindScrollToTopEvent
 import com.huanchengfly.tieba.post.arch.GlobalEvent
 import com.huanchengfly.tieba.post.arch.collectPartialAsState
 import com.huanchengfly.tieba.post.arch.onGlobalEvent
@@ -73,7 +73,7 @@ fun ConcernPage(
     }
 
     val lazyListState = rememberLazyListState()
-    viewModel.bindScrollToTopEvent(lazyListState = lazyListState)
+    viewModel.BindScrollToTopEvent(lazyListState = lazyListState)
 
     Box(
         modifier = Modifier.pullRefresh(pullRefreshState)

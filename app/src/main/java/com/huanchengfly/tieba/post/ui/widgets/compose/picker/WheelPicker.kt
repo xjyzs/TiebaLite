@@ -26,7 +26,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.huanchengfly.tieba.post.pxToDp
+import com.huanchengfly.tieba.post.ext.pxToDp
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 

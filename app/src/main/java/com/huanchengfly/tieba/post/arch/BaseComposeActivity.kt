@@ -64,6 +64,7 @@ abstract class BaseComposeActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             TiebaLiteTheme {
+                // TODO: replace to new api
                 val systemUiController = rememberSystemUiController()
                 SideEffect {
                     systemUiController.apply {
@@ -101,7 +102,8 @@ abstract class BaseComposeActivity : BaseActivity() {
      */
     open fun onCreateContent(
         systemUiController: SystemUiController
-    ) {}
+    ) {
+    }
 
     @Composable
     abstract fun Content()
@@ -118,18 +120,16 @@ abstract class BaseComposeActivity : BaseActivity() {
 
     companion object {
         val LocalWindowSizeClass =
-            staticCompositionLocalOf<WindowSizeClass> {
+            staticCompositionLocalOf {
                 WindowSizeClass.calculateFromSize(DpSize(0.dp, 0.dp))
             }
     }
 }
 
-
-
 sealed interface CommonUiEvent : UiEvent {
-    object ScrollToTop : CommonUiEvent
+    data object ScrollToTop : CommonUiEvent
 
-    object NavigateUp : CommonUiEvent
+    data object NavigateUp : CommonUiEvent
 
     data class Toast(
         val message: CharSequence,
@@ -137,7 +137,7 @@ sealed interface CommonUiEvent : UiEvent {
     ) : CommonUiEvent
 
     @Composable
-    fun BaseViewModel<*, *, *, *>.bindScrollToTopEvent(lazyListState: LazyListState) {
+    fun BaseViewModel<*, *, *, *>.BindScrollToTopEvent(lazyListState: LazyListState) {
         onEvent<ScrollToTop> {
             lazyListState.scrollToItem(0, 0)
         }

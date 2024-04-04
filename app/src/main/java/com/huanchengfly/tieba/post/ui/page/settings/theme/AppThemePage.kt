@@ -67,13 +67,13 @@ import com.github.panpf.sketch.fetch.newResourceUri
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
-import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.activities.TranslucentThemeActivity
 import com.huanchengfly.tieba.post.components.dialogs.CustomThemeDialog
-import com.huanchengfly.tieba.post.goToActivity
+import com.huanchengfly.tieba.post.ext.goToActivity
 import com.huanchengfly.tieba.post.rememberPreferenceAsMutableState
 import com.huanchengfly.tieba.post.rememberPreferenceAsState
+import com.huanchengfly.tieba.post.ui.common.theme.ThemeDelegate
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.theme.compose.dynamicTonalPalette
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
@@ -107,7 +107,7 @@ fun AppThemePage(
     var customPrimaryColor by remember {
         mutableStateOf(
             Color(
-                App.ThemeDelegate.getColorByAttr(
+                ThemeDelegate.getColorByAttr(
                     context,
                     R.attr.colorPrimary,
                     ThemeUtil.THEME_CUSTOM
@@ -148,7 +148,7 @@ fun AppThemePage(
                 text = stringResource(id = R.string.button_cancel),
                 onClick = {
                     customPrimaryColor = Color(
-                        App.ThemeDelegate.getColorByAttr(
+                        ThemeDelegate.getColorByAttr(
                             context,
                             R.attr.colorPrimary,
                             ThemeUtil.THEME_CUSTOM
@@ -471,7 +471,7 @@ fun AppThemePage(
                     val name = themeNames[index]
                     val backgroundColor = remember {
                         Color(
-                            App.ThemeDelegate.getColorByAttr(
+                            ThemeDelegate.getColorByAttr(
                                 context,
                                 R.attr.colorBackground,
                                 item
@@ -480,7 +480,7 @@ fun AppThemePage(
                     }
                     val primaryColor = remember {
                         Color(
-                            App.ThemeDelegate.getColorByAttr(
+                            ThemeDelegate.getColorByAttr(
                                 context,
                                 R.attr.colorNewPrimary,
                                 item
@@ -489,7 +489,7 @@ fun AppThemePage(
                     }
                     val accentColor = remember {
                         Color(
-                            App.ThemeDelegate.getColorByAttr(
+                            ThemeDelegate.getColorByAttr(
                                 context,
                                 R.attr.colorAccent,
                                 item
@@ -498,7 +498,7 @@ fun AppThemePage(
                     }
                     val onAccentColor = remember {
                         Color(
-                            App.ThemeDelegate.getColorByAttr(
+                            ThemeDelegate.getColorByAttr(
                                 context,
                                 R.attr.colorOnAccent,
                                 item
@@ -507,7 +507,7 @@ fun AppThemePage(
                     }
                     val onBackgroundColor = remember {
                         Color(
-                            App.ThemeDelegate.getColorByAttr(
+                            ThemeDelegate.getColorByAttr(
                                 context,
                                 R.attr.colorText,
                                 item

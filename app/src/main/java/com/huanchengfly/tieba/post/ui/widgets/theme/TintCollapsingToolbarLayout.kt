@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.getColorStateListCompat
+import com.huanchengfly.tieba.post.ext.getColorStateListCompat
 import com.huanchengfly.tieba.post.ui.common.theme.interfaces.Tintable
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ColorStateListUtils
 

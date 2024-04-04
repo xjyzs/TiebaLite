@@ -3,6 +3,7 @@ package com.huanchengfly.tieba.post.api.interfaces.impls
 import android.os.Build
 import android.text.TextUtils
 import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.api.ClientVersion
 import com.huanchengfly.tieba.post.api.ForumSortType
 import com.huanchengfly.tieba.post.api.Param
@@ -116,10 +117,10 @@ import com.huanchengfly.tieba.post.api.retrofit.ApiResult
 import com.huanchengfly.tieba.post.api.retrofit.RetrofitTiebaApi
 import com.huanchengfly.tieba.post.api.retrofit.body.MyMultipartBody
 import com.huanchengfly.tieba.post.api.urlEncode
+import com.huanchengfly.tieba.post.ext.toJson
 import com.huanchengfly.tieba.post.models.DislikeBean
 import com.huanchengfly.tieba.post.models.MyInfoBean
 import com.huanchengfly.tieba.post.models.PhotoInfoBean
-import com.huanchengfly.tieba.post.toJson
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import com.huanchengfly.tieba.post.utils.CuidUtils
 import com.huanchengfly.tieba.post.utils.ImageUtil
@@ -166,7 +167,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         new_install = 0,
                         request_times = 0,
                         invoke_source = "",
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth()
                     )
@@ -1066,7 +1067,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         q_type = 2,
                         rn = 90,
                         rn_need = 30,
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth(),
                         sort_type = sortType,
@@ -1097,7 +1098,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         ad_param = AdParam(3, 0, null),
                         app_pos = buildAppPosInfo(),
                         common = buildCommonRequest(clientVersion = ClientVersion.TIEBA_V12),
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth(),
                         forum_id = forumId,
@@ -1195,7 +1196,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         pn = 1,
                         q_type = 0,
                         rn = 20,
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth(),
                         uid = selfUid,
@@ -1259,7 +1260,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         request_times = 0,
                         rn = 15,
                         s_model = 0,
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth(),
                         similar_from = 0,
@@ -1292,7 +1293,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         pid = postId,
                         pn = page,
                         spid = subPostId,
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         scr_h = getScreenHeight(),
                         scr_w = getScreenWidth(),
                         is_comm_reverse = 0,
@@ -1409,7 +1410,7 @@ object MixedTiebaApiImpl : ITiebaApi {
                         common = buildCommonRequest(clientVersion = ClientVersion.TIEBA_V12),
                         scr_w = getScreenWidth(),
                         scr_h = getScreenHeight(),
-                        scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+                        scr_dip = ScreenInfo.DENSITY.toDouble(),
                         q_type = 1,
                         is_view_card = if (isThread) 1 else 0,
                         subtype = 0.takeUnless { isThread },

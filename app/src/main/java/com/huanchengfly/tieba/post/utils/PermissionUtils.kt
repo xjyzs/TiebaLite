@@ -11,7 +11,7 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.components.dialogs.RequestPermissionTipDialog
-import com.huanchengfly.tieba.post.toastShort
+import com.huanchengfly.tieba.post.ext.toastShort
 
 
 object PermissionUtils {

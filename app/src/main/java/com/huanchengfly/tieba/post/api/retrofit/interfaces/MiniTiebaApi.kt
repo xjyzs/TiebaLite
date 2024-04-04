@@ -1,17 +1,37 @@
 package com.huanchengfly.tieba.post.api.retrofit.interfaces
 
 import android.text.TextUtils
-import com.huanchengfly.tieba.post.App.ScreenInfo
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.api.Header
 import com.huanchengfly.tieba.post.api.getScreenHeight
 import com.huanchengfly.tieba.post.api.getScreenWidth
-import com.huanchengfly.tieba.post.api.models.*
+import com.huanchengfly.tieba.post.api.models.AgreeBean
+import com.huanchengfly.tieba.post.api.models.CheckReportBean
+import com.huanchengfly.tieba.post.api.models.CommonResponse
+import com.huanchengfly.tieba.post.api.models.ForumPageBean
+import com.huanchengfly.tieba.post.api.models.ForumRecommend
+import com.huanchengfly.tieba.post.api.models.LikeForumResultBean
+import com.huanchengfly.tieba.post.api.models.PersonalizedBean
+import com.huanchengfly.tieba.post.api.models.PicPageBean
+import com.huanchengfly.tieba.post.api.models.ProfileBean
+import com.huanchengfly.tieba.post.api.models.SearchPostBean
+import com.huanchengfly.tieba.post.api.models.SearchUserBean
+import com.huanchengfly.tieba.post.api.models.SignResultBean
+import com.huanchengfly.tieba.post.api.models.SubFloorListBean
+import com.huanchengfly.tieba.post.api.models.UserLikeForumBean
+import com.huanchengfly.tieba.post.api.models.UserPostBean
 import com.huanchengfly.tieba.post.api.retrofit.ApiResult
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Field
+import retrofit2.http.FieldMap
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 
 interface MiniTiebaApi {

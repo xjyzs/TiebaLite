@@ -3,13 +3,15 @@ package com.huanchengfly.tieba.post.api
 import android.content.Context
 import android.os.Build
 import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.AppConfig
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.api.models.OAID
 import com.huanchengfly.tieba.post.api.models.protos.AppPosInfo
 import com.huanchengfly.tieba.post.api.models.protos.CommonRequest
 import com.huanchengfly.tieba.post.api.models.protos.frsPage.AdParam
 import com.huanchengfly.tieba.post.api.retrofit.RetrofitTiebaApi
 import com.huanchengfly.tieba.post.api.retrofit.body.MyMultipartBody
-import com.huanchengfly.tieba.post.toJson
+import com.huanchengfly.tieba.post.ext.toJson
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import com.huanchengfly.tieba.post.utils.CacheUtil.base64Encode
 import com.huanchengfly.tieba.post.utils.ClientUtils
@@ -123,11 +125,11 @@ fun buildCommonRequest(
                 )
             ),
             extra = "",
-            first_install_time = App.Config.appFirstInstallTime,
+            first_install_time = AppConfig.appFirstInstallTime,
             framework_ver = "3340042",
             from = "1020031h",
             is_teenager = 0,
-            last_update_time = App.Config.appLastUpdateTime,
+            last_update_time = AppConfig.appLastUpdateTime,
             lego_lib_version = "3.0.0",
             model = Build.MODEL,
             net_type = 1,
@@ -136,7 +138,7 @@ fun buildCommonRequest(
             pversion = "1.0.3",
             q_type = 0,
             sample_id = ClientUtils.sampleId,
-            scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+            scr_dip = ScreenInfo.DENSITY.toDouble(),
             scr_h = getScreenHeight(),
             scr_w = getScreenWidth(),
             sdk_ver = "2.34.0",
@@ -174,20 +176,20 @@ fun buildCommonRequest(
                 )
             ),
             extra = "",
-            first_install_time = App.Config.appFirstInstallTime,
+            first_install_time = AppConfig.appFirstInstallTime,
             framework_ver = "3340042",
             from = "1020031h",
             is_teenager = 0,
-            last_update_time = App.Config.appLastUpdateTime,
+            last_update_time = AppConfig.appLastUpdateTime,
             lego_lib_version = "3.0.0",
             model = Build.MODEL,
             net_type = 1,
-            oaid = App.Config.encodedOAID,
+            oaid = AppConfig.encodedOAID,
             personalized_rec_switch = 1,
             pversion = "1.0.3",
             q_type = 0,
             sample_id = ClientUtils.sampleId,
-            scr_dip = App.ScreenInfo.DENSITY.toDouble(),
+            scr_dip = ScreenInfo.DENSITY.toDouble(),
             scr_h = getScreenHeight(),
             scr_w = getScreenWidth(),
             sdk_ver = "2.34.0",

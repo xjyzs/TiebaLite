@@ -35,7 +35,7 @@ import com.github.panpf.sketch.transform.CircleCropTransformation
 import com.github.panpf.sketch.transform.RoundedCornersTransformation
 import com.huanchengfly.tieba.post.App.Companion.INSTANCE
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.dpToPxFloat
+import com.huanchengfly.tieba.post.ext.dpToPxFloat
 import com.huanchengfly.tieba.post.utils.PermissionUtils.PermissionData
 import com.huanchengfly.tieba.post.utils.PermissionUtils.askPermission
 import com.huanchengfly.tieba.post.utils.ThemeUtil.isNightMode

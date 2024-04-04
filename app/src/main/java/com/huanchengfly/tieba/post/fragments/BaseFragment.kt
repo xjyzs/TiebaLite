@@ -14,17 +14,21 @@ import androidx.fragment.app.Fragment
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.ext.isLandscape
+import com.huanchengfly.tieba.post.ext.isPortrait
+import com.huanchengfly.tieba.post.ext.isTablet
 import com.huanchengfly.tieba.post.interfaces.BackHandledInterface
 import com.huanchengfly.tieba.post.interfaces.Refreshable
-import com.huanchengfly.tieba.post.isLandscape
-import com.huanchengfly.tieba.post.isPortrait
-import com.huanchengfly.tieba.post.isTablet
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.utils.AppPreferencesUtils
 import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.HandleBackUtil
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 

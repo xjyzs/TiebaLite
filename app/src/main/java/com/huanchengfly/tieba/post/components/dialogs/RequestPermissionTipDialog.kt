@@ -8,7 +8,7 @@ import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.view.setPadding
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.dpToPx
+import com.huanchengfly.tieba.post.ext.dpToPx
 import com.huanchengfly.tieba.post.utils.PermissionUtils
 
 

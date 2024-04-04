@@ -47,9 +47,9 @@ import com.github.panpf.sketch.request.DisplayRequest
 import com.github.panpf.sketch.request.DisplayResult
 import com.github.panpf.sketch.stateimage.ThumbnailMemoryCacheStateImage
 import com.github.panpf.sketch.transform.MaskTransformation
-import com.huanchengfly.tieba.post.App
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.arch.BaseComposeActivity.Companion.LocalWindowSizeClass
-import com.huanchengfly.tieba.post.goToActivity
+import com.huanchengfly.tieba.post.ext.goToActivity
 import com.huanchengfly.tieba.post.models.PhotoViewData
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.windowsizeclass.WindowWidthSizeClass
@@ -104,7 +104,7 @@ private fun PreviewImage(
     }
     val imageAspectRatio = imageAspectRatioProvider()
     val previewImageWidthPx = remember(widthFraction) {
-        App.ScreenInfo.EXACT_SCREEN_WIDTH * widthFraction
+        ScreenInfo.EXACT_SCREEN_WIDTH * widthFraction
     }
     val previewImageHeightPx = remember(imageAspectRatio, previewImageWidthPx) {
         previewImageWidthPx * imageAspectRatio
@@ -116,9 +116,9 @@ private fun PreviewImage(
         with(density) { previewImageHeightPx.toDp() }
     }
 
-    val screenWidth = App.ScreenInfo.EXACT_SCREEN_WIDTH
+    val screenWidth = ScreenInfo.EXACT_SCREEN_WIDTH
     val screenCenterX = screenWidth / 2
-    val screenHeight = App.ScreenInfo.EXACT_SCREEN_HEIGHT
+    val screenHeight = ScreenInfo.EXACT_SCREEN_HEIGHT
     val screenCenterY = screenHeight / 2
     val statusBarHeight = WindowInsets.statusBars.getTop(density)
 

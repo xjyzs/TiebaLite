@@ -19,6 +19,7 @@ import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,8 +32,9 @@ import com.github.panpf.sketch.request.execute
 import com.github.panpf.sketch.resize.Scale
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gyf.immersionbar.ImmersionBar
-import com.huanchengfly.tieba.post.*
 import com.huanchengfly.tieba.post.App.Companion.translucentBackground
+import com.huanchengfly.tieba.post.R
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.adapters.TranslucentThemeColorAdapter
 import com.huanchengfly.tieba.post.adapters.WallpaperAdapter
 import com.huanchengfly.tieba.post.api.LiteApi
@@ -40,16 +42,28 @@ import com.huanchengfly.tieba.post.api.retrofit.doIfSuccess
 import com.huanchengfly.tieba.post.components.MyLinearLayoutManager
 import com.huanchengfly.tieba.post.components.dividers.HorizontalSpacesDecoration
 import com.huanchengfly.tieba.post.components.transformations.SketchBlurTransformation
+import com.huanchengfly.tieba.post.ext.dpToPx
+import com.huanchengfly.tieba.post.ext.enableChangingLayoutTransition
+import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.interfaces.OnItemClickListener
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.ui.widgets.theme.TintMaterialButton
-import com.huanchengfly.tieba.post.utils.*
+import com.huanchengfly.tieba.post.utils.CacheUtil
+import com.huanchengfly.tieba.post.utils.ColorUtils
+import com.huanchengfly.tieba.post.utils.ImageCacheUtil
+import com.huanchengfly.tieba.post.utils.ImageUtil
+import com.huanchengfly.tieba.post.utils.PermissionUtils
+import com.huanchengfly.tieba.post.utils.PickMediasRequest
+import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.ThemeUtil.TRANSLUCENT_THEME_DARK
 import com.huanchengfly.tieba.post.utils.ThemeUtil.TRANSLUCENT_THEME_LIGHT
+import com.huanchengfly.tieba.post.utils.registerPickMediasLauncher
+import com.huanchengfly.tieba.post.utils.requestPermission
+import com.huanchengfly.tieba.post.utils.shouldUsePhotoPicker
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.yalantis.ucrop.UCrop
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -118,7 +132,7 @@ class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBar
 
     private fun launchUCrop(sourceUri: Uri) {
         mProgress.visibility = View.VISIBLE
-        launch {
+        lifecycleScope.launch {
             val result = LoadRequest(this@TranslucentThemeActivity, sourceUri.toString()).execute()
             if (result is LoadResult.Success) {
                 mProgress.visibility = View.GONE
@@ -126,8 +140,8 @@ class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBar
                     ImageUtil.bitmapToFile(result.bitmap, File(cacheDir, "origin_background.jpg"))
                 val sourceFileUri = Uri.fromFile(file)
                 val destUri = Uri.fromFile(File(filesDir, "cropped_background.jpg"))
-                val height = App.ScreenInfo.EXACT_SCREEN_HEIGHT.toFloat()
-                val width = App.ScreenInfo.EXACT_SCREEN_WIDTH.toFloat()
+                val height = ScreenInfo.EXACT_SCREEN_HEIGHT.toFloat()
+                val width = ScreenInfo.EXACT_SCREEN_WIDTH.toFloat()
                 UCrop.of(sourceFileUri, destUri)
                     .withAspectRatio(width / height, 1f)
                     .withOptions(UCrop.Options().apply {
@@ -204,7 +218,7 @@ class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBar
             mProgress.visibility = View.GONE
             return
         }
-        launch {
+        lifecycleScope.launch {
             val result = DisplayRequest(this@TranslucentThemeActivity, mUri.toString()) {
                 resizeScale(Scale.CENTER_CROP)
                 if (blur > 0) {
@@ -331,7 +345,7 @@ class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBar
     }
 
     private fun fetchWallpapers() {
-        launch(IO + job) {
+        lifecycleScope.launch(Dispatchers.IO) {
             LiteApi.instance
                 .wallpapersAsync()
                 .doIfSuccess {
@@ -364,7 +378,7 @@ class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBar
             }
         }
         mProgress.visibility = View.VISIBLE
-        launch {
+        lifecycleScope.launch {
             val result = DisplayRequest(this@TranslucentThemeActivity, mUri.toString()) {
                 resizeScale(Scale.CENTER_CROP)
                 if (blur > 0) {

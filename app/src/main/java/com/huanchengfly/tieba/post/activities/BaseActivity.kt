@@ -9,7 +9,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -24,11 +23,13 @@ import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Lifecycle
 import butterknife.ButterKnife
 import com.gyf.immersionbar.ImmersionBar
 import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.App.Companion.INSTANCE
 import com.huanchengfly.tieba.post.R
+import com.huanchengfly.tieba.post.ScreenInfo
 import com.huanchengfly.tieba.post.ui.common.theme.interfaces.ExtraRefreshable
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.ui.widgets.VoicePlayerView
@@ -38,33 +39,20 @@ import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.HandleBackUtil
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.calcStatusBarColorInt
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineScope {
-    val job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
-
+abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable {
     private var mTintToolbar: TintToolbar? = null
     private var oldTheme: String = ""
 
-    private var isActivityRunning = true
     private var customStatusColor = -1
     private var statusBarTinted = false
 
     val appPreferences: AppPreferencesUtils by lazy { AppPreferencesUtils.getInstance(this) }
 
-    override fun onPause() {
-        super.onPause()
-        isActivityRunning = false
-    }
+    private val isActivityResumed: Boolean
+        get() = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
 
-    //禁止app字体大小跟随系统字体大小调节
+    // 禁止app字体大小跟随系统字体大小调节
     override fun getResources(): Resources {
         val fontScale = appPreferences.fontScale
         val resources = super.getResources()
@@ -77,18 +65,20 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
     }
 
     protected fun showDialog(dialog: Dialog): Boolean {
-        if (isActivityRunning) {
+        if (isActivityResumed) {
             dialog.show()
             return true
         }
         return false
     }
 
+    // TODO: optimize
     fun showDialog(builder: AlertDialog.Builder.() -> Unit): AlertDialog {
         val dialog = DialogUtil.build(this)
             .apply(builder)
             .create()
-        if (isActivityRunning) {
+
+        if (isActivityResumed) {
             dialog.show()
         }
         return dialog
@@ -105,10 +95,13 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (isNeedFixBg) fixBackground()
+        if (isNeedFixBg) {
+            fixBackground()
+        }
         getDeviceDensity()
-        INSTANCE.addActivity(this)
-        if (isNeedSetTheme) ThemeUtil.setTheme(this)
+        if (isNeedSetTheme) {
+            ThemeUtil.setTheme(this)
+        }
         oldTheme = ThemeUtil.getRawTheme()
         if (isNeedImmersionBar) {
             refreshStatusBarColor()
@@ -130,9 +123,10 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
         decorChild.setBackgroundColor(Color.BLACK)
     }
 
-    fun refreshUIIfNeed() {
-        if (TextUtils.equals(oldTheme, ThemeUtil.getRawTheme()) &&
-            ThemeUtil.THEME_CUSTOM != ThemeUtil.getRawTheme() &&
+    fun refreshUiIfNeed() {
+        val rawTheme = ThemeUtil.getRawTheme()
+        if (oldTheme.contentEquals(rawTheme) &&
+            ThemeUtil.THEME_CUSTOM != rawTheme &&
             !ThemeUtil.isTranslucentTheme()
         ) {
             return
@@ -145,7 +139,6 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
 
     override fun onResume() {
         super.onResume()
-        isActivityRunning = true
         if (appPreferences.followSystemNight) {
             if (App.isSystemNight && !ThemeUtil.isNightMode()) {
                 ThemeUtil.switchToNightMode(this, false)
@@ -153,13 +146,7 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
                 ThemeUtil.switchFromNightMode(this, false)
             }
         }
-        refreshUIIfNeed()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        INSTANCE.removeActivity(this)
-        job.cancel()
+        refreshUiIfNeed()
     }
 
     fun exitApplication() {
@@ -179,16 +166,12 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (mTintToolbar != null) {
-            mTintToolbar!!.tint()
-        }
+        mTintToolbar?.tint()
         return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        if (mTintToolbar != null) {
-            mTintToolbar!!.tint()
-        }
+        mTintToolbar?.tint()
         return true
     }
 
@@ -199,6 +182,7 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
         }
     }
 
+    // TODO: optimize
     override fun onBackPressed() {
         if (!HandleBackUtil.handleBackPress(this)) {
             super.onBackPressed()
@@ -208,33 +192,32 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
     open fun setTitle(newTitle: String?) {}
     open fun setSubTitle(newTitle: String?) {}
 
+    // TODO: optimize
     private fun getDeviceDensity() {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         val width = metrics.widthPixels
         val height = metrics.heightPixels
-        App.ScreenInfo.EXACT_SCREEN_HEIGHT = height
-        App.ScreenInfo.EXACT_SCREEN_WIDTH = width
+        ScreenInfo.EXACT_SCREEN_HEIGHT = height
+        ScreenInfo.EXACT_SCREEN_WIDTH = width
         val density = metrics.density
-        App.ScreenInfo.DENSITY = metrics.density
-        App.ScreenInfo.SCREEN_HEIGHT = (height / density).toInt()
-        App.ScreenInfo.SCREEN_WIDTH = (width / density).toInt()
+        ScreenInfo.DENSITY = metrics.density
+        ScreenInfo.SCREEN_HEIGHT = (height / density).toInt()
+        ScreenInfo.SCREEN_WIDTH = (width / density).toInt()
     }
 
     protected fun colorAnim(view: ImageView, vararg value: Int): ValueAnimator {
-        val animator: ValueAnimator =
-            ObjectAnimator.ofArgb(ImageViewAnimWrapper(view), "tint", *value)
-        animator.duration = 150
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        return animator
+        return ObjectAnimator.ofArgb(ImageViewAnimWrapper(view), "tint", *value).apply {
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+        }
     }
 
     protected fun colorAnim(view: TextView, vararg value: Int): ValueAnimator {
-        val animator: ValueAnimator =
-            ObjectAnimator.ofArgb(TextViewAnimWrapper(view), "textColor", *value)
-        animator.duration = 150
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        return animator
+        return ObjectAnimator.ofArgb(TextViewAnimWrapper(view), "textColor", *value).apply {
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+        }
     }
 
     fun setCustomStatusColor(customStatusColor: Int) {
@@ -329,11 +312,4 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable, CoroutineSc
     }
 
     open fun getLayoutId(): Int = -1
-
-    fun launchIO(
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
-    ): Job {
-        return launch(Dispatchers.IO + job, start, block)
-    }
 }

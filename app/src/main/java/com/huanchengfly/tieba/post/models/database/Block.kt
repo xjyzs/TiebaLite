@@ -1,6 +1,6 @@
 package com.huanchengfly.tieba.post.models.database
 
-import com.huanchengfly.tieba.post.fromJson
+import com.huanchengfly.tieba.post.ext.fromJson
 import org.litepal.crud.LitePalSupport
 
 data class Block @JvmOverloads constructor(
