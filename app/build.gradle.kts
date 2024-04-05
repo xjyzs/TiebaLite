@@ -252,4 +252,6 @@ dependencies {
     implementation(libs.appcenter.analytics)
     implementation(libs.appcenter.crashes)
     implementation(libs.appcenter.distribute)
+
+    implementation(libs.himari)
 }
