@@ -169,4 +169,4 @@ appcenter-distribute = { group = "com.microsoft.appcenter", name = "appcenter-di
 compose-runtime-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version = "1.0.0-beta01" }
 junit = { group = "junit", name = "junit", version = "4.13.2" }
 
-himari = { group = "com.kiral.himari", name = "himari", version = "0.0.1" }
+himari = { group = "com.kiral.himari", name = "himari", version = "0.0.2" }
