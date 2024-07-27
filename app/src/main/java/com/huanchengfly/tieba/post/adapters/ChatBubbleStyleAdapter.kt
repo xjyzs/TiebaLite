@@ -58,11 +58,12 @@ class ChatBubbleStyleAdapter(
         viewHolder.setText(R.id.chat_bubble_text, item.text)
         viewHolder.setVisibility(R.id.chat_bubble_text, item.text != null)
         val customViewParent = viewHolder.getView<FrameLayout>(R.id.chat_bubble_custom_view)
-        val customView = item.customViewBuilder?.invoke(context, item.position, customViewParent)
-        if (customView != null) {
-            customViewParent
-                .addView(customView, FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
-            customViewParent.visibility = View.VISIBLE
+        if (item.customViewBuilder != null) {
+            val customView = item.customViewBuilder.invoke(context, item.position, customViewParent)
+            customViewParent.apply {
+                addView(customView, FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
+                visibility = View.VISIBLE
+            }
         } else {
             customViewParent.visibility = View.GONE
         }

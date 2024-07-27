@@ -36,7 +36,6 @@ wire {
 
 android {
     val packageName = "com.huanchengfly.tieba.post"
-    buildToolsVersion = "34.0.0"
     compileSdk = 34
     namespace = packageName
     defaultConfig {
@@ -80,7 +79,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             isDebuggable = false
             isJniDebuggable = false
             multiDexEnabled = true
@@ -93,7 +95,7 @@ android {
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     val javaVersion = JavaVersion.VERSION_17
     compileOptions {
@@ -102,6 +104,8 @@ android {
     }
     kotlinOptions {
         jvmTarget = javaVersion.toString()
+
+        // TODO: 有用？
         val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
         val rootDir = project.rootDir.absolutePath
         freeCompilerArgs += listOf(
@@ -127,7 +131,8 @@ android {
     applicationVariants.configureEach {
         val variant = this
         outputs.configureEach {
-            val fileName = "${variant.buildType.name}-${applicationVersionName}(${applicationVersionCode}).apk"
+            val fileName =
+                "${variant.buildType.name}-${applicationVersionName}(${applicationVersionCode}).apk"
             (this as BaseVariantOutputImpl).outputFileName = fileName
         }
     }

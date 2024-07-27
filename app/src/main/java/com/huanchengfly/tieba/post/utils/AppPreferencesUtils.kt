@@ -26,7 +26,6 @@ import java.lang.ref.WeakReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-
 open class AppPreferencesUtils private constructor(ctx: Context) {
     companion object {
         private var instance: AppPreferencesUtils? = null

@@ -1,58 +1,70 @@
-package com.huanchengfly.tieba.post.utils;
+package com.huanchengfly.tieba.post.utils
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.annotation.StringDef
+import com.huanchengfly.tieba.post.App
 
-import androidx.annotation.StringDef;
+object SharedPreferencesUtil {
+    const val SP_APP_DATA: String = "appData"
+    const val SP_DRAFT: String = "draft"
+    const val SP_SETTINGS: String = "settings"
+    const val SP_PERMISSION: String = "permission"
+    const val SP_IGNORE_VERSIONS: String = "ignore_version"
+    const val SP_WEBVIEW_INFO: String = "webview_info"
+    const val SP_PLUGINS: String = "plugins"
 
-import com.huanchengfly.tieba.post.App;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-public class SharedPreferencesUtil {
-    public static final String SP_APP_DATA = "appData";
-    public static final String SP_DRAFT = "draft";
-    public static final String SP_SETTINGS = "settings";
-    public static final String SP_PERMISSION = "permission";
-    public static final String SP_IGNORE_VERSIONS = "ignore_version";
-    public static final String SP_WEBVIEW_INFO = "webview_info";
-    public static final String SP_PLUGINS = "plugins";
-
-    public static SharedPreferences get(@Preferences String name) {
-        return get(App.getINSTANCE(), name);
+    fun get(@Preferences name: String?): SharedPreferences {
+        return get(App.INSTANCE, name)
     }
 
-    public static SharedPreferences get(Context context, @Preferences String name) {
-        return context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    @JvmStatic
+    fun get(context: Context, @Preferences name: String?): SharedPreferences {
+        return context.getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
-    public static boolean put(SharedPreferences sharedPreferences, String key, String value) {
-        return sharedPreferences.edit().putString(key, value).commit();
+    fun put(sharedPreferences: SharedPreferences, key: String?, value: String?): Boolean {
+        return sharedPreferences.edit().putString(key, value).commit()
     }
 
-    public static boolean put(SharedPreferences sharedPreferences, String key, boolean value) {
-        return sharedPreferences.edit().putBoolean(key, value).commit();
+    fun put(sharedPreferences: SharedPreferences, key: String?, value: Boolean): Boolean {
+        return sharedPreferences.edit().putBoolean(key, value).commit()
     }
 
-    public static boolean put(SharedPreferences sharedPreferences, String key, int value) {
-        return sharedPreferences.edit().putInt(key, value).commit();
+    fun put(sharedPreferences: SharedPreferences, key: String?, value: Int): Boolean {
+        return sharedPreferences.edit().putInt(key, value).commit()
     }
 
-    public static boolean put(Context context, @Preferences String preference, String key, String value) {
-        return put(get(context, preference), key, value);
+    fun put(
+        context: Context,
+        @Preferences preference: String?,
+        key: String?,
+        value: String?
+    ): Boolean {
+        return put(get(context, preference), key, value)
     }
 
-    public static boolean put(Context context, @Preferences String preference, String key, boolean value) {
-        return put(get(context, preference), key, value);
+    fun put(
+        context: Context,
+        @Preferences preference: String?,
+        key: String?,
+        value: Boolean
+    ): Boolean {
+        return put(get(context, preference), key, value)
     }
 
-    public static boolean put(Context context, @Preferences String preference, String key, int value) {
-        return put(get(context, preference), key, value);
+    fun put(context: Context, @Preferences preference: String?, key: String?, value: Int): Boolean {
+        return put(get(context, preference), key, value)
     }
 
-    @StringDef({SP_APP_DATA, SP_IGNORE_VERSIONS, SP_PERMISSION, SP_WEBVIEW_INFO, SP_DRAFT, SP_PLUGINS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Preferences {
-    }
+    @Retention(AnnotationRetention.SOURCE)
+    @StringDef(
+        SP_APP_DATA,
+        SP_IGNORE_VERSIONS,
+        SP_PERMISSION,
+        SP_WEBVIEW_INFO,
+        SP_DRAFT,
+        SP_PLUGINS
+    )
+    annotation class Preferences
 }

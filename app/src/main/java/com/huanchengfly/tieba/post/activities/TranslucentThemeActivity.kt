@@ -67,6 +67,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
+// TODO: 清理 ButterKnife
 class TranslucentThemeActivity : BaseActivity(), View.OnClickListener, OnSeekBarChangeListener,
     ColorPickerDialogListener {
     private var mUri: Uri? = null

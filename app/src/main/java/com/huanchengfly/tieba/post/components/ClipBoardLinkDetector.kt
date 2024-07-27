@@ -2,12 +2,13 @@ package com.huanchengfly.tieba.post.components
 
 import android.app.Activity
 import android.app.Application
-import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.MainActivityV2
 import com.huanchengfly.tieba.post.activities.BaseActivity
+import com.huanchengfly.tieba.post.api.isTiebaUrl
 import com.huanchengfly.tieba.post.arch.collectIn
 import com.huanchengfly.tieba.post.utils.QuickPreviewUtil
 import com.huanchengfly.tieba.post.utils.getClipBoardText
@@ -33,12 +34,15 @@ class ClipBoardThreadLink(
 ) : ClipBoardLink(url)
 
 object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
-    private val mutablePreviewInfoStateFlow = MutableStateFlow<QuickPreviewUtil.PreviewInfo?>(null)
+    private val _previewInfoStateFlow = MutableStateFlow<QuickPreviewUtil.PreviewInfo?>(null)
+
     val previewInfoStateFlow
-        get() = mutablePreviewInfoStateFlow.asStateFlow()
+        get() = _previewInfoStateFlow.asStateFlow()
 
     private var clipBoardHash: String? = null
+
     private var lastTimestamp: Long = 0L
+
     private fun updateClipBoardHashCode() {
         clipBoardHash = getClipBoardHash()
     }
@@ -61,12 +65,6 @@ object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
     private val clipBoardTimestamp: Long
         get() = App.INSTANCE.getClipBoardTimestamp()
 
-    private fun isTiebaDomain(host: String?): Boolean {
-        return host != null && (host.equals("wapp.baidu.com", ignoreCase = true) ||
-                host.equals("tieba.baidu.com", ignoreCase = true) ||
-                host.equals("tiebac.baidu.com", ignoreCase = true))
-    }
-
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
     override fun onActivityStarted(activity: Activity) {
@@ -74,15 +72,14 @@ object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
     }
 
     private fun parseLink(url: String): ClipBoardLink? {
-        val uri = Uri.parse(url)
-        if (!isTiebaDomain(uri.host)) {
-            return null
-        }
+        val uri = url.toUri()
+        if (!uri.isTiebaUrl()) return null
         val path = uri.path
         return when {
             path.isNullOrEmpty() -> null
             path.startsWith("/p/") -> ClipBoardThreadLink(url, path.substring(3))
-            path.equals("/f", ignoreCase = true) || path.equals("/mo/q/m", ignoreCase = true) -> {
+            path.equals("/f", ignoreCase = true)
+                    || path.equals("/mo/q/m", ignoreCase = true) -> {
                 val kw = uri.getQueryParameter("kw")
                 val word = uri.getQueryParameter("word")
                 val kz = uri.getQueryParameter("kz")
@@ -100,7 +97,7 @@ object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
     private fun checkClipBoard(activity: Activity) {
         if (activity !is BaseActivity) return
         if (clipBoardHash == getClipBoardHash()) {
-            mutablePreviewInfoStateFlow.value = null
+            _previewInfoStateFlow.value = null
             return
         }
         updateClipBoardHashCode()
@@ -121,16 +118,16 @@ object ClipBoardLinkDetector : Application.ActivityLifecycleCallbacks {
                                 link,
                                 activity.lifecycle
                             ).collectIn(activity) {
-                                mutablePreviewInfoStateFlow.value = it
+                                _previewInfoStateFlow.value = it
                             }
                         }
                     }
                 }
             } else {
-                mutablePreviewInfoStateFlow.value = null
+                _previewInfoStateFlow.value = null
             }
         } else {
-            mutablePreviewInfoStateFlow.value = null
+            _previewInfoStateFlow.value = null
         }
     }
 

@@ -28,46 +28,30 @@ import retrofit2.Callback
 import retrofit2.Response
 
 object QuickPreviewUtil {
-    private fun isTiebaUrl(host: String?): Boolean {
-        return host != null && (host.equals("wapp.baidu.com", ignoreCase = true) ||
-                host.equals("tieba.baidu.com", ignoreCase = true) ||
-                host.equals("tiebac.baidu.com", ignoreCase = true))
-    }
 
-    @JvmStatic
-    fun isForumUrl(uri: Uri?): Boolean {
-        if (uri == null || uri.host == null || uri.path == null) {
-            return false
-        }
+    private fun Uri.isInvalid(): Boolean = this.host == null || this.path == null
+
+    fun isForumUrl(uri: Uri): Boolean {
+        if (uri.isInvalid()) return false
         val path = uri.path
         val kw = uri.getQueryParameter("kw")
         val word = uri.getQueryParameter("word")
-        return (path.equals("/f", ignoreCase = true) || path.equals(
-            "/mo/q/m",
-            ignoreCase = true
-        )) &&
-                kw != null || word != null
+        return (path.equals("/f", ignoreCase = true)
+                || path.equals("/mo/q/m", ignoreCase = true))
+                && kw != null || word != null
     }
 
-    @JvmStatic
-    fun isThreadUrl(uri: Uri?): Boolean {
-        if (uri == null || uri.host == null || uri.path == null) {
-            return false
-        }
+    fun isThreadUrl(uri: Uri): Boolean {
+        if (uri.isInvalid()) return false
         val path = uri.path
         val kz = uri.getQueryParameter("kz")
-        return (path.equals("/f", ignoreCase = true) || path.equals(
-            "/mo/q/m",
-            ignoreCase = true
-        )) &&
-                kz != null || path!!.startsWith("/p/")
+        return (path.equals("/f", ignoreCase = true)
+                || path.equals("/mo/q/m", ignoreCase = true))
+                && kz != null || path!!.startsWith("/p/")
     }
 
-    @JvmStatic
-    fun getForumName(uri: Uri?): String? {
-        if (uri == null || uri.host == null || uri.path == null) {
-            return null
-        }
+    fun getForumName(uri: Uri): String? {
+        if (uri.isInvalid()) return null
         val path = uri.path
         val kw = uri.getQueryParameter("kw")
         val word = uri.getQueryParameter("word")
@@ -219,7 +203,6 @@ object QuickPreviewUtil {
             .apply { if (lifeCycle != null) flowWithLifecycle(lifeCycle) }
     }
 
-    @JvmStatic
     fun getPreviewInfo(
         context: Context,
         link: ClipBoardLink,
@@ -256,7 +239,6 @@ object QuickPreviewUtil {
         @DrawableRes
         val res: Int = 0,
     ) {
-
         constructor(url: String?) : this(
             type = TYPE_URL,
             url = url

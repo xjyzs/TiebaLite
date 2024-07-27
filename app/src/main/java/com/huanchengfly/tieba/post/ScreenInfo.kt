@@ -1,5 +1,6 @@
 package com.huanchengfly.tieba.post
 
+// TODO: 清理
 object ScreenInfo {
     @JvmField
     var EXACT_SCREEN_HEIGHT = 0

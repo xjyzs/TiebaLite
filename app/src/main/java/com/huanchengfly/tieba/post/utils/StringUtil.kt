@@ -166,16 +166,16 @@ object StringUtil {
         } else "http://tb.himg.baidu.com/sys/portraith/item/$portrait"
     }
 
-    fun String.getShortNumString(): String {
+    private fun String.getShortNumString(): String {
         val long = toLongOrNull() ?: return ""
         return long.getShortNumString()
     }
 
-    fun Int.getShortNumString(): String {
+    private fun Int.getShortNumString(): String {
         return toLong().getShortNumString()
     }
 
-    fun Long.getShortNumString(): String {
+    private fun Long.getShortNumString(): String {
         val long = this
         return if (long > 9999) {
             val longW = long * 10 / 10000L / 10F

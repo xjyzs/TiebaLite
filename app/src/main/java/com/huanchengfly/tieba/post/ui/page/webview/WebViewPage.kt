@@ -65,12 +65,12 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
 import com.huanchengfly.tieba.post.ui.widgets.compose.Toolbar
 import com.huanchengfly.tieba.post.ui.widgets.compose.rememberMenuState
 import com.huanchengfly.tieba.post.utils.AccountUtil
-import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.PermissionUtils
 import com.huanchengfly.tieba.post.utils.PermissionUtils.PermissionData
 import com.huanchengfly.tieba.post.utils.TiebaUtil
 import com.huanchengfly.tieba.post.utils.appPreferences
 import com.huanchengfly.tieba.post.utils.compose.launchActivityForResult
+import com.huanchengfly.tieba.post.utils.showDialog
 import com.kevinnzou.web.AccompanistWebChromeClient
 import com.kevinnzou.web.AccompanistWebViewClient
 import com.kevinnzou.web.LoadingState
@@ -560,14 +560,14 @@ class MyWebChromeClient(
         message: String?,
         result: JsResult?,
     ): Boolean {
-        DialogUtil.build(view?.context ?: context)
-            .setMessage(message)
-            .setPositiveButton(R.string.button_sure_default) { _, _ ->
+        val context = view?.context ?: context
+        context.showDialog {
+            setMessage(message)
+            setPositiveButton(R.string.button_sure_default) { _, _ ->
                 result?.confirm()
             }
-            .setCancelable(false)
-            .create()
-            .show()
+            setCancelable(false)
+        }
         return true
     }
 
@@ -598,17 +598,16 @@ class MyWebChromeClient(
                     .show()
             }
         } else {
-            DialogUtil.build(view.context)
-                .setTitle("Confirm")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
+            view.context.showDialog {
+                setTitle("Confirm")
+                setMessage(message)
+                setPositiveButton(android.R.string.ok) { _, _ ->
                     result.confirm()
                 }
-                .setNegativeButton(android.R.string.cancel) { _, _ ->
+                setNegativeButton(android.R.string.cancel) { _, _ ->
                     result.cancel()
                 }
-                .create()
-                .show()
+            }
         }
         return true
     }

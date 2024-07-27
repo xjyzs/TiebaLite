@@ -1,18 +1,17 @@
-package com.huanchengfly.tieba.post.utils;
+package com.huanchengfly.tieba.post.utils
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import androidx.core.content.edit
 
-public class JobServiceUtil {
-    public static int getJobId(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("appData", Context.MODE_PRIVATE);
-        int jobId = sharedPreferences.getInt("jobId", -1);
+object JobServiceUtil {
+    fun getJobId(): Int {
+        val sp = SharedPreferencesUtil.get(SharedPreferencesUtil.SP_APP_DATA)
+        var jobId = sp.getInt("jobId", -1)
         if (jobId == -1) {
-            jobId = (int) (Math.random() * (99999 + 1));
-            sharedPreferences.edit()
-                    .putInt("jobId", jobId)
-                    .apply();
+            jobId = (Math.random() * (99999 + 1)).toInt()
+            sp.edit {
+                putInt("jobId", jobId)
+            }
         }
-        return jobId;
+        return jobId
     }
 }

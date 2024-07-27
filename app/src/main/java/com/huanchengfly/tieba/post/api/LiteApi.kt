@@ -18,14 +18,16 @@ object LiteApi {
             .addCallAdapterFactory(DeferredCallAdapterFactory())
             .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
-            .client(OkHttpClient.Builder().apply {
-                addInterceptor(
-                    CommonHeaderInterceptor(
-                        Header.USER_AGENT to { System.getProperty("http.agent") },
+            .client(
+                OkHttpClient.Builder().apply {
+                    addInterceptor(
+                        CommonHeaderInterceptor(
+                            Header.USER_AGENT to { System.getProperty("http.agent") },
+                        )
                     )
-                )
-                connectionPool(connectionPool)
-            }.build())
+                    connectionPool(connectionPool)
+                }.build()
+            )
             .build()
             .create(LiteApiInterface::class.java)
     }

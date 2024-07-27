@@ -22,7 +22,8 @@ import com.huanchengfly.tieba.post.ui.common.windowsizeclass.calculateWindowSize
 import com.huanchengfly.tieba.post.utils.AccountUtil.LocalAccountProvider
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 
-abstract class BaseComposeActivityWithParcelable<DATA : Parcelable> : BaseComposeActivityWithData<DATA>() {
+abstract class BaseComposeActivityWithParcelable<DATA : Parcelable> :
+    BaseComposeActivityWithData<DATA>() {
     abstract val dataExtraKey: String
 
     override fun parseData(intent: Intent): DATA? {

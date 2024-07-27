@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
+// TODO: 清理
 public class DisplayUtil {
     /**
      * 将px值转换为dp值

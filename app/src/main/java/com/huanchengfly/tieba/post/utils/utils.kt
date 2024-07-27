@@ -39,6 +39,8 @@ import com.huanchengfly.tieba.post.ui.page.destinations.WebViewPageDestination
 import com.huanchengfly.tieba.post.utils.Util.createSnackbar
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+// TODO: 清理
+
 @JvmOverloads
 fun getItemBackgroundDrawable(
     context: Context,
@@ -238,14 +240,14 @@ fun showErrorSnackBar(view: View, throwable: Throwable) {
     )
         .setAction(R.string.button_detail) {
             val stackTrace = throwable.stackTraceToString()
-            DialogUtil.build(view.context)
-                .setTitle(R.string.title_dialog_error_detail)
-                .setMessage(stackTrace)
-                .setPositiveButton(R.string.button_copy_detail) { _, _ ->
+            view.context.showDialog {
+                setTitle(R.string.title_dialog_error_detail)
+                setMessage(stackTrace)
+                setPositiveButton(R.string.button_copy_detail) { _, _ ->
                     TiebaUtil.copyText(stackTrace)
                 }
-                .setNegativeButton(R.string.btn_close, null)
-                .show()
+                setNegativeButton(R.string.btn_close, null)
+            }
         }
         .show()
 }
@@ -256,11 +258,11 @@ fun calcStatusBarColorInt(context: Context, @ColorInt originColor: Int): Int {
     val darkerStatusBar =
         if (!ThemeUtil.isTranslucentTheme() && !ThemeUtil.isNightMode() && !isToolbarPrimaryColor) {
             false
-    } else if (!context.dataStore.getBoolean("status_bar_darker", true)) {
+        } else if (!context.dataStore.getBoolean("status_bar_darker", true)) {
             false
         } else {
             true
-    }
+        }
     return if (darkerStatusBar) {
         ColorUtils.getDarkerColor(originColor)
     } else {

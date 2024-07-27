@@ -29,6 +29,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 
+// TODO: move to WorkManager
 class OKSignService : IntentService(TAG), CoroutineScope, ProgressListener {
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext

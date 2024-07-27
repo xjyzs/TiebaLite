@@ -154,7 +154,13 @@ class MainActivityV2 : BaseComposeActivity() {
     private val launchActivityForResultLauncher = registerForActivityResult(
         LaunchActivityForResult()
     ) {
-        lifecycleScope.emitGlobalEvent(GlobalEvent.ActivityResult(it.requesterId, it.resultCode, it.intent))
+        lifecycleScope.emitGlobalEvent(
+            GlobalEvent.ActivityResult(
+                it.requesterId,
+                it.resultCode,
+                it.intent
+            )
+        )
     }
 
     private val devicePostureFlow: StateFlow<DevicePosture> by lazy {
@@ -171,6 +177,7 @@ class MainActivityV2 : BaseComposeActivity() {
                         foldingFeature.bounds,
                         foldingFeature.orientation
                     )
+
                     else -> DevicePosture.NormalPosture
                 }
             }
@@ -308,14 +315,14 @@ class MainActivityV2 : BaseComposeActivity() {
 
     private fun scheduleNotifyJob() {
         val jobInfo = JobInfo.Builder(
-            JobServiceUtil.getJobId(this),
+            JobServiceUtil.getJobId(),
             ComponentName(this, NotifyJobService::class.java)
         )
             .setPersisted(true)
             .setPeriodic(30 * 60 * 1000L)
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
             .build()
-        val jobScheduler = requireNotNull(getSystemService<JobScheduler>())
+        val jobScheduler = getSystemService<JobScheduler>()!!
         jobScheduler.schedule(jobInfo)
     }
 

@@ -20,6 +20,8 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
+
+// TODO: 移除
 plugins {
     id("com.highcapable.sweetproperty") version "1.0.5"
 }

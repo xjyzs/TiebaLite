@@ -29,6 +29,7 @@ class BootCompleteSignReceiver : BroadcastReceiver() {
                     val time = Util.time2Calendar(autoSignTimeStr).apply {
                         add(Calendar.DAY_OF_MONTH, 1)
                     }.timeInMillis
+                    // TODO: replace to new api (PendingIntentCompat)
                     val pendingIntent = PendingIntent.getBroadcast(
                         context,
                         0,

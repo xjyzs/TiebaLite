@@ -25,8 +25,7 @@ abstract class BaseViewModel<
         PC : PartialChange<State>,
         State : UiState,
         Event : UiEvent
-        > :
-    ViewModel() {
+        > : ViewModel() {
 
     var initialized = false
 
@@ -41,6 +40,7 @@ abstract class BaseViewModel<
     private val partialChangeProducer: PartialChangeProducer<Intent, PC, State> by lazy { createPartialChangeProducer() }
 
     protected abstract fun createInitialState(): State
+
     protected abstract fun createPartialChangeProducer(): PartialChangeProducer<Intent, PC, State>
 
     val uiState = partialChangeProducer.toPartialChangeFlow(_intentFlow)
@@ -69,11 +69,7 @@ abstract class BaseViewModel<
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as BaseViewModel<*, *, *, *>
-
-        if (initialized != other.initialized) return false
-
-        return true
+        return initialized == other.initialized
     }
 }

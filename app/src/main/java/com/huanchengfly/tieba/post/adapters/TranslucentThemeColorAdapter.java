@@ -21,11 +21,11 @@ import java.util.List;
 
 public class TranslucentThemeColorAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private static final int[] sColors = new int[]{
-            Color.parseColor("#FF4477E0"),
-            Color.parseColor("#FFFF9A9E"),
-            Color.parseColor("#FFC51100"),
-            Color.parseColor("#FF000000"),
-            Color.parseColor("#FF512DA8")
+            0xFF4477E0,
+            0xFFFF9A9E,
+            0xFFC51100,
+            Color.BLACK,
+            0xFF512DA8
     };
     private final WeakReference<Context> mContextWeakReference;
     private List<Integer> mColors;

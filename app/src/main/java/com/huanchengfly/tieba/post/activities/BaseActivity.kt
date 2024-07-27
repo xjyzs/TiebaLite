@@ -34,9 +34,9 @@ import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.ui.widgets.VoicePlayerView
 import com.huanchengfly.tieba.post.ui.widgets.theme.TintToolbar
 import com.huanchengfly.tieba.post.utils.AppPreferencesUtils
-import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.HandleBackUtil
 import com.huanchengfly.tieba.post.utils.ThemeUtil
+import com.huanchengfly.tieba.post.utils.buildDialog
 import com.huanchengfly.tieba.post.utils.calcStatusBarColorInt
 import com.kiral.himari.ext.android.app.appContext
 import com.kiral.himari.ext.android.app.isSystemNightMode
@@ -75,10 +75,7 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable {
 
     // TODO: optimize
     fun showDialog(builder: AlertDialog.Builder.() -> Unit): AlertDialog {
-        val dialog = DialogUtil.build(this)
-            .apply(builder)
-            .create()
-
+        val dialog = this.buildDialog()
         if (isActivityResumed) {
             dialog.show()
         }
