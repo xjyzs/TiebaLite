@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.OfflinePin
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.WatchLater
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -57,15 +58,21 @@ fun OKSignSettingsPage(
 ) {
     val coroutineScope = rememberCoroutineScope()
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
-                title = stringResource(id = R.string.title_oksign),
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.title_oksign),
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 navigationIcon = {
                     BackNavigationIcon(onBackPressed = { navigator.navigateUp() })
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         val context = LocalContext.current
         val dataStore = context.dataStore
@@ -161,11 +168,15 @@ fun OKSignSettingsPage(
                         }
                     },
                     title = stringResource(id = R.string.title_ignore_battery_optimization),
-                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !context.isIgnoringBatteryOptimizations(),
+                    enabled = Build.VERSION.SDK_INT >= 23 && !context.isIgnoringBatteryOptimizations(),
                     summary =
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) stringResource(id = R.string.summary_battery_optimization_old_android_version)
-                    else if (context.isIgnoringBatteryOptimizations()) stringResource(id = R.string.summary_battery_optimization_ignored)
-                    else stringResource(id = R.string.summary_ignore_battery_optimization),
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                        stringResource(id = R.string.summary_battery_optimization_old_android_version)
+                    } else if (context.isIgnoringBatteryOptimizations()) {
+                        stringResource(id = R.string.summary_battery_optimization_ignored)
+                    } else {
+                        stringResource(id = R.string.summary_ignore_battery_optimization)
+                    },
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (!context.powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
@@ -196,9 +207,9 @@ fun OKSignSettingsPage(
                         .padding(16.dp)
                         .padding(start = 8.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(color = ExtendedTheme.colors.chip)
+                        .background(color = ExtendedTheme.colorScheme.chip)
                         .padding(12.dp),
-                    color = ExtendedTheme.colors.onChip,
+                    color = ExtendedTheme.colorScheme.onChip,
                     fontSize = 12.sp
                 )
             }

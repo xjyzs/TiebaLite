@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -110,22 +112,23 @@ fun <T> WheelPicker(
             }
         }
         if (divider.showed) {
-            Divider(
-                color = divider.color,
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .offset(y = -itemHeight / 2)
-                    .offset(x = -divider.indent),
+                    .offset(x = -divider.indent)
+                    .padding(start = divider.indent * 2),
                 thickness = divider.thickness,
-                startIndent = divider.indent * 2
+                color = divider.color,
             )
-            Divider(
-                color = divider.color, modifier = Modifier
+            HorizontalDivider(
+                modifier = Modifier
                     .fillMaxWidth(1f)
                     .offset(y = itemHeight / 2)
-                    .offset(x = -divider.indent),
+                    .offset(x = -divider.indent)
+                    .padding(start = divider.indent * 2),
                 thickness = divider.thickness,
-                startIndent = divider.indent * 2
+                color = divider.color,
             )
         }
     }

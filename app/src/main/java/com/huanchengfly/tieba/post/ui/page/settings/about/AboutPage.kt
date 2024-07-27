@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,6 +39,7 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
 import com.huanchengfly.tieba.post.ui.widgets.compose.TitleCentredToolbar
 import com.huanchengfly.tieba.post.utils.appPreferences
 import com.huanchengfly.tieba.post.utils.launchUrl
+import com.kiral.himari.ext.android.content.getDrawableCompat
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -51,21 +52,21 @@ fun AboutPage(
     var clickCount by remember { mutableIntStateOf(0) }
 
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_about),
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
                     BackNavigationIcon(onBackPressed = { navigator.navigateUp() })
                 }
             )
-        }
+        },
+        containerColor = Color.Transparent
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -77,7 +78,7 @@ fun AboutPage(
                 Column(modifier = Modifier.align(Alignment.Center)) {
                     Image(
                         painter = rememberDrawablePainter(
-                            drawable = LocalContext.current.getDrawable(
+                            drawable = LocalContext.current.getDrawableCompat(
                                 R.mipmap.ic_launcher_new
                             )
                         ),
@@ -94,10 +95,10 @@ fun AboutPage(
                 TextButton(
                     shape = RoundedCornerShape(100),
                     colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = ExtendedTheme.colors.text.copy(
+                        containerColor = ExtendedTheme.colorScheme.text.copy(
                             alpha = 0.1f
                         ),
-                        contentColor = ExtendedTheme.colors.text
+                        contentColor = ExtendedTheme.colorScheme.text
                     ),
                     onClick = {
                         launchUrl(context, navigator, "https://github.com/HuanCheng65/TiebaLite")
@@ -109,8 +110,8 @@ fun AboutPage(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(id = R.string.tip_about, BuildConfig.VERSION_NAME),
-                    style = MaterialTheme.typography.caption,
-                    color = ExtendedTheme.colors.textSecondary,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = ExtendedTheme.colorScheme.textSecondary,
                     modifier = Modifier.clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,

@@ -6,13 +6,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.job.JobParameters
 import android.app.job.JobService
-import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.TiebaApi
 import com.huanchengfly.tieba.post.api.models.MsgBean
@@ -23,32 +23,32 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class NotifyJobService : JobService() {
-    var notificationManager: NotificationManager? = null
+    private val notificationManager: NotificationManager
+        get() = getSystemService<NotificationManager>()!!
+
     private fun createChannel(id: String, name: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 id,
                 name, NotificationManager.IMPORTANCE_DEFAULT
-            )
-            channel.group = CHANNEL_GROUP
-            channel.setShowBadge(true)
-            notificationManager!!.createNotificationChannel(channel)
+            ).apply {
+                group = CHANNEL_GROUP
+                setShowBadge(true)
+            }
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
     override fun onStartJob(params: JobParameters): Boolean {
         Log.i(TAG, "onStartJob")
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (notificationManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channelGroup = NotificationChannelGroup(CHANNEL_GROUP, CHANNEL_GROUP_NAME)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    channelGroup.description = "贴吧的各种消息通知"
-                }
-                notificationManager!!.createNotificationChannelGroup(channelGroup)
-                createChannel(CHANNEL_REPLY, CHANNEL_REPLY_NAME)
-                createChannel(CHANNEL_AT, CHANNEL_AT_NAME)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelGroup = NotificationChannelGroup(CHANNEL_GROUP, CHANNEL_GROUP_NAME)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                channelGroup.description = "贴吧的各种消息通知"
             }
+            notificationManager.createNotificationChannelGroup(channelGroup)
+            createChannel(CHANNEL_REPLY, CHANNEL_REPLY_NAME)
+            createChannel(CHANNEL_AT, CHANNEL_AT_NAME)
         }
         TiebaApi.getInstance().msg().enqueue(object : Callback<MsgBean> {
             override fun onFailure(call: Call<MsgBean>, t: Throwable) {
@@ -57,59 +57,57 @@ class NotifyJobService : JobService() {
 
             override fun onResponse(call: Call<MsgBean>, response: Response<MsgBean>) {
                 val msgBean = response.body() ?: return
-                if (notificationManager != null) {
-                    var total = 0
-                    if ("0" != msgBean.message?.replyMe) {
-                        val replyCount = msgBean.message?.replyMe?.let { Integer.valueOf(it) }
-                        if (replyCount != null) {
-                            total += replyCount
-                        }
-                        sendBroadcast(
-                            Intent()
-                                .setAction(ACTION_NEW_MESSAGE)
-                                .putExtra("channel", CHANNEL_REPLY)
-                                .putExtra("count", replyCount)
-                        )
-                        updateNotification(
-                            getString(
-                                R.string.tips_message_reply,
-                                msgBean.message?.replyMe
-                            ),
-                            ID_REPLY,
-                            CHANNEL_REPLY,
-                            CHANNEL_REPLY_NAME,
-                            Intent(ACTION_VIEW, Uri.parse("tblite://notifications/0"))
-                        )
-                    }
-                    if ("0" != msgBean.message?.atMe) {
-                        val atCount = msgBean.message?.atMe?.let { Integer.valueOf(it) }
-                        if (atCount != null) {
-                            total += atCount
-                        }
-                        sendBroadcast(
-                            Intent()
-                                .setAction(ACTION_NEW_MESSAGE)
-                                .putExtra("channel", CHANNEL_AT)
-                                .putExtra("count", msgBean.message?.atMe)
-                        )
-                        updateNotification(
-                            getString(
-                                R.string.tips_message_at,
-                                msgBean.message?.atMe
-                            ),
-                            ID_AT,
-                            CHANNEL_AT,
-                            CHANNEL_AT_NAME,
-                            Intent(ACTION_VIEW, Uri.parse("tblite://notifications/1"))
-                        )
+                var total = 0
+                if ("0" != msgBean.message?.replyMe) {
+                    val replyCount = msgBean.message?.replyMe?.let { Integer.valueOf(it) }
+                    if (replyCount != null) {
+                        total += replyCount
                     }
                     sendBroadcast(
                         Intent()
                             .setAction(ACTION_NEW_MESSAGE)
-                            .putExtra("channel", CHANNEL_TOTAL)
-                            .putExtra("count", total)
+                            .putExtra(EXTRA_CHANNEL, CHANNEL_REPLY)
+                            .putExtra(EXTRA_COUNT, replyCount)
+                    )
+                    updateNotification(
+                        getString(
+                            R.string.tips_message_reply,
+                            msgBean.message?.replyMe
+                        ),
+                        ID_REPLY,
+                        CHANNEL_REPLY,
+                        CHANNEL_REPLY_NAME,
+                        Intent(ACTION_VIEW, Uri.parse("tblite://notifications/0"))
                     )
                 }
+                if ("0" != msgBean.message?.atMe) {
+                    val atCount = msgBean.message?.atMe?.let { Integer.valueOf(it) }
+                    if (atCount != null) {
+                        total += atCount
+                    }
+                    sendBroadcast(
+                        Intent()
+                            .setAction(ACTION_NEW_MESSAGE)
+                            .putExtra(EXTRA_CHANNEL, CHANNEL_AT)
+                            .putExtra(EXTRA_COUNT, msgBean.message?.atMe)
+                    )
+                    updateNotification(
+                        getString(
+                            R.string.tips_message_at,
+                            msgBean.message?.atMe
+                        ),
+                        ID_AT,
+                        CHANNEL_AT,
+                        CHANNEL_AT_NAME,
+                        Intent(ACTION_VIEW, Uri.parse("tblite://notifications/1"))
+                    )
+                }
+                sendBroadcast(
+                    Intent()
+                        .setAction(ACTION_NEW_MESSAGE)
+                        .putExtra(EXTRA_CHANNEL, CHANNEL_TOTAL)
+                        .putExtra(EXTRA_COUNT, total)
+                )
                 jobFinished(params, false)
             }
         })
@@ -145,11 +143,11 @@ class NotifyJobService : JobService() {
             )
             .setColor(ThemeUtils.getColorByAttr(this, R.attr.colorPrimary))
             .build()
-        notificationManager!!.notify(id, notification)
+        notificationManager.notify(id, notification)
     }
 
     companion object {
-        val TAG = NotifyJobService::class.java.simpleName
+        val TAG: String = NotifyJobService::class.java.simpleName
         const val ACTION_NEW_MESSAGE = "com.huanchengfly.tieba.post.action.NEW_MESSAGE"
         const val CHANNEL_GROUP = "20"
         const val CHANNEL_AT = "3"
@@ -160,5 +158,8 @@ class NotifyJobService : JobService() {
         private const val CHANNEL_GROUP_NAME = "消息通知"
         private const val CHANNEL_REPLY = "2"
         private const val CHANNEL_REPLY_NAME = "回复我的"
+
+        const val EXTRA_CHANNEL = "channel"
+        const val EXTRA_COUNT = "count"
     }
 }

@@ -60,7 +60,7 @@ internal class GridScopeImpl : GridScope {
 class GridCounter(
     private val initialValue: Int
 ) {
-    var mutableValue: Int = initialValue
+    private var mutableValue: Int = initialValue
 
     val value: Int
         get() = mutableValue
@@ -71,9 +71,7 @@ class GridCounter(
 
         other as GridCounter
 
-        if (initialValue != other.initialValue) return false
-
-        return true
+        return initialValue == other.initialValue
     }
 
     override fun hashCode(): Int {

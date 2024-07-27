@@ -18,7 +18,6 @@ import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.ui.widgets.RulerSeekBar
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 
-
 class AppFontSizeActivity : BaseActivity() {
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar

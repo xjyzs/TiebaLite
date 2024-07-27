@@ -15,19 +15,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -41,7 +41,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.gson.reflect.TypeToken
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.arch.collectPartialAsState
@@ -64,6 +63,7 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.states.StateScreen
 import com.huanchengfly.tieba.post.utils.GsonUtil
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.github.fornewid.placeholder.material3.placeholder
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -75,7 +75,7 @@ fun BlockListPage(
     ),
     navigator: DestinationsNavigator,
 ) {
-    var addBlockCategory by remember { mutableStateOf(Block.CATEGORY_BLACK_LIST) }
+    var addBlockCategory by remember { mutableIntStateOf(Block.CATEGORY_BLACK_LIST) }
     val dialogState = rememberDialogState()
     PromptDialog(
         onConfirm = {
@@ -113,13 +113,12 @@ fun BlockListPage(
         initial = false
     )
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_block_list),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -136,7 +135,7 @@ fun BlockListPage(
                         },
                         divider = {},
                         backgroundColor = Color.Transparent,
-                        contentColor = ExtendedTheme.colors.onTopBar,
+                        contentColor = ExtendedTheme.colorScheme.onTopBar,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .width(84.dp * 2),
@@ -211,7 +210,8 @@ fun BlockListPage(
                     }
                 }
             }
-        }
+        },
+        containerColor = Color.Transparent
     ) { paddingValues ->
         val snackbarHostState = LocalSnackbarHostState.current
         viewModel.onEvent<BlockListUiEvent.Success> {
@@ -249,17 +249,21 @@ fun BlockListPage(
             ) {
                 MyLazyColumn(Modifier.fillMaxSize()) {
                     items(items, key = { it.id }) {
-                        LongClickMenu(menuContent = {
-                            DropdownMenuItem(onClick = {
-                                viewModel.send(
-                                    BlockListUiIntent.Delete(
-                                        it.id
-                                    )
-                                )
-                            }) {
-                                Text(text = stringResource(id = R.string.title_delete))
+                        LongClickMenu(
+                            menuContent = {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = stringResource(id = R.string.title_delete))
+                                    },
+                                    onClick = {
+                                        viewModel.send(
+                                            BlockListUiIntent.Delete(
+                                                it.id
+                                            )
+                                        )
+                                    })
                             }
-                        }) {
+                        ) {
                             BlockItem(item = it)
                         }
                     }
@@ -314,11 +318,11 @@ private fun BlockItem(
             if (item.type == Block.TYPE_USER) {
                 Text(
                     text = "${item.username}",
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = "UID: ${item.uid}",
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.bodySmall
                 )
             } else {
                 val keywordsList: List<String> = runCatching {
@@ -330,7 +334,7 @@ private fun BlockItem(
                 }.getOrDefault(emptyList())
                 Text(
                     text = keywordsList.joinToString(" "),
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }

@@ -16,12 +16,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -29,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -51,9 +50,10 @@ import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.SubPostsPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Card
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
 import com.huanchengfly.tieba.post.ui.widgets.compose.FeedCard
 import com.huanchengfly.tieba.post.ui.widgets.compose.FeedCardPlaceholder
@@ -67,7 +67,7 @@ import com.huanchengfly.tieba.post.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserPostPage(
     uid: Long,
@@ -193,7 +193,7 @@ fun UserPostPage(
                         },
                         actions = {
                             if (canReload) {
-                                Button(onClick = { reload() }) {
+                                DefaultButton(onClick = { reload() }) {
                                     Text(text = stringResource(id = R.string.btn_refresh))
                                 }
                             }
@@ -204,15 +204,18 @@ fun UserPostPage(
             }
         },
     ) {
-        val pullRefreshState = rememberPullRefreshState(
+        val pullToRefreshState = rememberPullToRefreshState(
             refreshing = isRefreshing,
-            onRefresh = ::reload
+            onRefresh = { reload() }
         )
 
         val lazyListState = rememberLazyListState()
 
-        val pullRefreshModifier =
-            if (enablePullRefresh) Modifier.pullRefresh(pullRefreshState) else Modifier
+        val pullRefreshModifier = if (enablePullRefresh) {
+            Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)
+        } else {
+            Modifier
+        }
 
         Box(modifier = pullRefreshModifier) {
             LoadMoreLayout(
@@ -280,12 +283,11 @@ fun UserPostPage(
                 )
             }
 
-            PullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
+            PullToRefreshContainer(
+                state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
-                backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                contentColor = ExtendedTheme.colors.primary,
+                containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                contentColor = ExtendedTheme.colorScheme.primary,
             )
         }
     }
@@ -379,8 +381,8 @@ fun UserPostItem(
                         ) {
                             Text(
                                 text = it.contentText,
-                                style = MaterialTheme.typography.body1,
-                                color = ExtendedTheme.colors.text,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = ExtendedTheme.colorScheme.text,
                             )
 
                             Text(
@@ -388,8 +390,8 @@ fun UserPostItem(
                                     LocalContext.current,
                                     it.createTime
                                 ),
-                                style = MaterialTheme.typography.caption,
-                                color = ExtendedTheme.colors.textSecondary,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = ExtendedTheme.colorScheme.textSecondary,
                             )
                         }
                     }
@@ -401,12 +403,12 @@ fun UserPostItem(
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(6.dp))
-                        .background(ExtendedTheme.colors.floorCard)
+                        .background(ExtendedTheme.colorScheme.floorCard)
                         .clickable {
                             onClickOriginThread(item.get { thread_id })
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             },
             modifier = modifier,

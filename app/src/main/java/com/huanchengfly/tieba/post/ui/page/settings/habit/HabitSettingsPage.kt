@@ -3,8 +3,8 @@ package com.huanchengfly.tieba.post.ui.page.settings.habit
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.BrandingWatermark
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
@@ -51,13 +51,12 @@ fun HabitSettingsPage(
 ) {
     val context = LocalContext.current
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_settings_read_habit),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -65,6 +64,7 @@ fun HabitSettingsPage(
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         PrefsScreen(
             dataStore = LocalContext.current.dataStore,

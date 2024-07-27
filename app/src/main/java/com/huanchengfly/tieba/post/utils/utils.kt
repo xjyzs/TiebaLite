@@ -17,6 +17,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -100,15 +101,18 @@ fun getRadiusDrawable(
             bottomLeftPx, bottomLeftPx
         )
     }
-    return if (ripple)
+    return if (ripple) {
         wrapRipple(
             Util.getColorByAttr(
                 App.INSTANCE,
                 R.attr.colorControlHighlight,
                 R.color.transparent
-            ), drawable
+            ),
+            drawable
         )
-    else drawable
+    } else {
+        drawable
+    }
 }
 
 fun getRadiusDrawable(
@@ -121,7 +125,6 @@ fun getRadiusDrawable(
 fun wrapRipple(rippleColor: Int, drawable: Drawable): Drawable {
     return RippleDrawable(ColorStateList.valueOf(rippleColor), drawable, drawable)
 }
-
 
 @JvmOverloads
 fun getIntermixedColorBackground(
@@ -194,14 +197,12 @@ fun launchUrl(
             }
             return
         }
-        val isTiebaLink =
-            host.contains("tieba.baidu.com") || host.contains("wappass.baidu.com") || host.contains(
-                "ufosdk.baidu.com"
-            ) || host.contains("m.help.baidu.com")
+        val isTiebaLink = "tieba.baidu.com" in host ||
+                "wappass.baidu.com" in host ||
+                "ufosdk.baidu.com" in host ||
+                "m.help.baidu.com" in host
         if (isTiebaLink || context.appPreferences.useWebView) {
-            navigator.navigate(
-                WebViewPageDestination(url)
-            )
+            navigator.navigate(WebViewPageDestination(url))
         } else {
             if (context.appPreferences.useCustomTabs) {
                 val intentBuilder = CustomTabsIntent.Builder()
@@ -241,7 +242,7 @@ fun showErrorSnackBar(view: View, throwable: Throwable) {
                 .setTitle(R.string.title_dialog_error_detail)
                 .setMessage(stackTrace)
                 .setPositiveButton(R.string.button_copy_detail) { _, _ ->
-                    TiebaUtil.copyText(view.context, stackTrace)
+                    TiebaUtil.copyText(stackTrace)
                 }
                 .setNegativeButton(R.string.btn_close, null)
                 .show()
@@ -250,33 +251,40 @@ fun showErrorSnackBar(view: View, throwable: Throwable) {
 }
 
 fun calcStatusBarColorInt(context: Context, @ColorInt originColor: Int): Int {
-    var darkerStatusBar = true
     val isToolbarPrimaryColor =
         context.dataStore.getBoolean(ThemeUtil.KEY_CUSTOM_TOOLBAR_PRIMARY_COLOR, false)
-    if (!ThemeUtil.isTranslucentTheme() && !ThemeUtil.isNightMode() && !isToolbarPrimaryColor) {
-        darkerStatusBar = false
+    val darkerStatusBar =
+        if (!ThemeUtil.isTranslucentTheme() && !ThemeUtil.isNightMode() && !isToolbarPrimaryColor) {
+            false
     } else if (!context.dataStore.getBoolean("status_bar_darker", true)) {
-        darkerStatusBar = false
+            false
+        } else {
+            true
     }
-    return if (darkerStatusBar) ColorUtils.getDarkerColor(originColor) else originColor
+    return if (darkerStatusBar) {
+        ColorUtils.getDarkerColor(originColor)
+    } else {
+        originColor
+    }
 }
 
 val Context.powerManager: PowerManager
-    get() = getSystemService(Context.POWER_SERVICE) as PowerManager
+    get() = getSystemService<PowerManager>()!!
 
 @SuppressLint("BatteryLife")
 fun Context.requestIgnoreBatteryOptimizations() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= 23) {
         if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-            intent.data = Uri.parse("package:${packageName}")
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                data = Uri.parse("package:$packageName")
+            }
             startActivity(intent)
         }
     }
 }
 
 fun Context.isIgnoringBatteryOptimizations(): Boolean =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= 23) {
         powerManager.isIgnoringBatteryOptimizations(packageName)
     } else {
         true
@@ -289,7 +297,7 @@ suspend fun requestPinShortcut(
     label: String,
     shortcutIntent: Intent,
     onSuccess: () -> Unit = {},
-    onFailure: (String) -> Unit = {}
+    onFailure: (failureMessage: String) -> Unit = {}
 ) {
     if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
         val imageResult = LoadRequest(context, iconImageUri).execute()

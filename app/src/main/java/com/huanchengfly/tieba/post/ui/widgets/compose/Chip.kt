@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,9 +34,9 @@ fun Chip(
     shape: Shape = RoundedCornerShape(100),
 ) {
     val color =
-        if (invertColor) ExtendedTheme.colors.invertChipContent else ExtendedTheme.colors.onChip
+        if (invertColor) ExtendedTheme.colorScheme.invertChipContent else ExtendedTheme.colorScheme.onChip
     val backgroundColor =
-        if (invertColor) ExtendedTheme.colors.invertChipBackground else ExtendedTheme.colors.chip
+        if (invertColor) ExtendedTheme.colorScheme.invertChipBackground else ExtendedTheme.colorScheme.chip
 
     val animatedColor by animateColorAsState(targetValue = color, label = "ChipColor")
     val animatedBackgroundColor by animateColorAsState(

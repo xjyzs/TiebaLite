@@ -5,9 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -42,12 +52,11 @@ fun DropDownPref(
     onValueChange: ((String) -> Unit)? = null,
     useSelectedAsSummary: Boolean = false,
     dropdownBackgroundColor: Color? = null,
-    textColor: Color = MaterialTheme.colors.onBackground,
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
     enabled: Boolean = true,
     leadingIcon: @Composable (() -> Unit)? = null,
     entries: Map<String, String> = mapOf()
 ) {
-
     var expanded by rememberSaveable { mutableStateOf(false) }
     val selectionKey = stringPreferencesKey(key)
     val scope = rememberCoroutineScope()
@@ -96,19 +105,22 @@ fun DropDownPref(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = if (dropdownBackgroundColor != null) Modifier.background(dropdownBackgroundColor) else Modifier
+                modifier = if (dropdownBackgroundColor != null) {
+                    Modifier.background(dropdownBackgroundColor)
+                } else {
+                    Modifier
+                }
             ) {
                 entries.forEach { item ->
                     DropdownMenuItem(
-                        onClick = {
-                            edit(item)
-                        }
-                    ) {
-                        Text(
-                            text = item.value,
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
+                        text = {
+                            Text(
+                                text = item.value,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        },
+                        onClick = { edit(item) }
+                    )
                 }
             }
         }

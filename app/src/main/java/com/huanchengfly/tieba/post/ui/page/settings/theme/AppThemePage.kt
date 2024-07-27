@@ -26,13 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BorderColor
 import androidx.compose.material.icons.rounded.Check
@@ -40,6 +33,13 @@ import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.NightsStay
 import androidx.compose.material.icons.rounded.PhotoSizeSelectActual
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -206,10 +206,10 @@ fun AppThemePage(
                             maxLines = 1,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             modifier = Modifier.weight(1f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                cursorColor = ExtendedTheme.colors.primary,
-                                focusedBorderColor = ExtendedTheme.colors.primary,
-                                focusedLabelColor = ExtendedTheme.colors.primary
+                            colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = ExtendedTheme.colorScheme.primary,
+                                focusedBorderColor = ExtendedTheme.colorScheme.primary,
+                                focusedLabelColor = ExtendedTheme.colorScheme.primary
                             )
                         )
                         IconButton(
@@ -299,13 +299,13 @@ fun AppThemePage(
     }
 
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_theme),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -313,6 +313,7 @@ fun AppThemePage(
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -322,7 +323,7 @@ fun AppThemePage(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= 31) {
                     item {
                         val tonalPalette = remember { dynamicTonalPalette(context) }
                         Row(
@@ -358,19 +359,19 @@ fun AppThemePage(
                                         Icons.Rounded.Colorize
                                     },
                                     contentDescription = null,
-                                    tint = ExtendedTheme.colors.windowBackground
+                                    tint = ExtendedTheme.colorScheme.windowBackground
                                 )
                                 Text(
                                     text = stringResource(id = R.string.title_dynamic_theme),
                                     fontWeight = FontWeight.Bold,
-                                    color = ExtendedTheme.colors.windowBackground
+                                    color = ExtendedTheme.colorScheme.windowBackground
                                 )
                             }
                         }
                     }
                 }
                 item {
-                    ProvideContentColor(color = ExtendedTheme.colors.windowBackground) {
+                    ProvideContentColor(color = ExtendedTheme.colorScheme.windowBackground) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -602,7 +603,7 @@ private fun ThemeItem(
             Icon(
                 imageVector = Icons.Rounded.Check,
                 contentDescription = stringResource(id = R.string.desc_checked),
-                tint = ExtendedTheme.colors.primary
+                tint = ExtendedTheme.colorScheme.primary
             )
         }
     }

@@ -6,14 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.huanchengfly.tieba.post.api.models.protos.hasAgree
 import com.huanchengfly.tieba.post.arch.CommonUiEvent.ScrollToTop.BindScrollToTopEvent
@@ -28,6 +27,7 @@ import com.huanchengfly.tieba.post.ui.page.LocalNavigator
 import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
 import com.huanchengfly.tieba.post.ui.widgets.compose.FeedCard
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
@@ -36,7 +36,7 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.MyLazyColumn
 import com.huanchengfly.tieba.post.ui.widgets.compose.VerticalDivider
 import kotlinx.collections.immutable.persistentListOf
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConcernPage(
     viewModel: ConcernViewModel = pageViewModel()
@@ -62,9 +62,10 @@ fun ConcernPage(
         prop1 = ConcernUiState::data,
         initial = persistentListOf()
     )
-    val pullRefreshState = rememberPullRefreshState(
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
-        onRefresh = { viewModel.send(ConcernUiIntent.Refresh) })
+        onRefresh = { viewModel.send(ConcernUiIntent.Refresh) }
+    )
 
     onGlobalEvent<GlobalEvent.Refresh>(
         filter = { it.key == "concern" }
@@ -76,7 +77,8 @@ fun ConcernPage(
     viewModel.BindScrollToTopEvent(lazyListState = lazyListState)
 
     Box(
-        modifier = Modifier.pullRefresh(pullRefreshState)
+        modifier = Modifier
+            .nestedScroll(pullToRefreshState.nestedScrollConnection)
     ) {
         LoadMoreLayout(
             isLoading = isLoadingMore,
@@ -143,12 +145,11 @@ fun ConcernPage(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = isRefreshing,
-            state = pullRefreshState,
+        PullToRefreshContainer(
+            state = pullToRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-            contentColor = ExtendedTheme.colors.primary,
+            containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+            contentColor = ExtendedTheme.colorScheme.primary,
         )
     }
 }

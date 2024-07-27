@@ -3,8 +3,8 @@ package com.huanchengfly.tieba.post.ui.page.settings.more
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Info
@@ -54,13 +54,12 @@ fun MoreSettingsPage(
 ) {
     val coroutineScope = rememberCoroutineScope()
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_settings_more),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -68,6 +67,7 @@ fun MoreSettingsPage(
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         val snackbarHostState = LocalSnackbarHostState.current
         val context = LocalContext.current

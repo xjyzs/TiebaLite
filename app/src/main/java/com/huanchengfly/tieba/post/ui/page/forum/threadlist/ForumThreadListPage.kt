@@ -20,12 +20,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -56,6 +55,7 @@ import com.huanchengfly.tieba.post.ui.page.destinations.ForumRuleDetailPageDesti
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
 import com.huanchengfly.tieba.post.ui.page.forum.getSortType
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockTip
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockableContent
 import com.huanchengfly.tieba.post.ui.widgets.compose.Chip
@@ -153,7 +153,7 @@ private fun TopThreadItem(
         )
         Text(
             text = title,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -255,7 +255,7 @@ private fun ThreadList(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForumThreadListPage(
     forumId: Long,
@@ -339,7 +339,8 @@ fun ForumThreadListPage(
         prop1 = ForumThreadListUiState::goodClassifies,
         initial = persistentListOf()
     )
-    val pullRefreshState = rememberPullRefreshState(
+
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
         onRefresh = { viewModel.send(getRefreshIntent(context, forumName, isGood)) }
     )
@@ -431,12 +432,11 @@ fun ForumThreadListPage(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = isRefreshing,
-            state = pullRefreshState,
+        PullToRefreshContainer(
+            state = pullToRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-            contentColor = ExtendedTheme.colors.primary,
+            containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+            contentColor = ExtendedTheme.colorScheme.primary,
         )
     }
 }

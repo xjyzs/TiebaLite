@@ -39,22 +39,22 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Badge
-import androidx.compose.material.BadgedBox
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.EmojiEmotions
 import androidx.compose.material.icons.outlined.InsertPhoto
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -158,8 +158,8 @@ fun ReplyDialog(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            color = ExtendedTheme.colors.windowBackground,
-            elevation = 0.dp,
+            color = ExtendedTheme.colorScheme.windowBackground,
+            shadowElevation = 0.dp,
         ) {
             ReplyPageContent(
                 viewModel = pageViewModel(),
@@ -446,8 +446,8 @@ internal fun ReplyPageContent(
             )
             Text(
                 text = "$textLength",
-                style = MaterialTheme.typography.caption,
-                color = ExtendedTheme.colors.textSecondary
+                style = MaterialTheme.typography.bodySmall,
+                color = ExtendedTheme.colorScheme.textSecondary
             )
         }
         VerticalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -540,12 +540,12 @@ internal fun ReplyPageContent(
                         badge = {
                             if (selectedImageList.isNotEmpty()) {
                                 Badge(
-                                    backgroundColor = ExtendedTheme.colors.accent,
-                                    contentColor = ExtendedTheme.colors.background,
+                                    containerColor = ExtendedTheme.colorScheme.accent,
+                                    contentColor = ExtendedTheme.colorScheme.background,
                                 ) {
                                     Text(
                                         text = "${selectedImageList.size}",
-                                        style = MaterialTheme.typography.caption
+                                        style = MaterialTheme.typography.bodySmall
                                     )
                                 }
                             }
@@ -574,7 +574,7 @@ internal fun ReplyPageContent(
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     strokeWidth = 2.dp,
-                    color = ExtendedTheme.colors.primary
+                    color = ExtendedTheme.colorScheme.primary
                 )
             } else {
                 IconButton(
@@ -867,7 +867,7 @@ private fun ImagePanel(
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(1f)
-                            .background(ExtendedTheme.colors.chip)
+                            .background(ExtendedTheme.colorScheme.chip)
                             .clickable {
                                 coroutineScope.emitGlobalEvent(
                                     GlobalEvent.StartSelectImages(

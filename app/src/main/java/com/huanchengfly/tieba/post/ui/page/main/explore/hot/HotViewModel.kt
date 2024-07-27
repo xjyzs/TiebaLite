@@ -90,7 +90,7 @@ class HotViewModel @Inject constructor() :
 }
 
 sealed interface HotUiIntent : UiIntent {
-    object Load : HotUiIntent
+    data object Load : HotUiIntent
 
     data class RefreshThreadList(val tabCode: String) : HotUiIntent
 
@@ -117,7 +117,7 @@ sealed interface HotPartialChange : PartialChange<HotUiState> {
                 is Failure -> oldState.copy(isRefreshing = false)
             }
 
-        object Start : Load()
+        data object Start : Load()
 
         data class Success(
             val topicList: List<RecommendTopicList>,

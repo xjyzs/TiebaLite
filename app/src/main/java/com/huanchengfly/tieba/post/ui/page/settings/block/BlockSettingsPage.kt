@@ -3,8 +3,8 @@ package com.huanchengfly.tieba.post.ui.page.settings.block
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.HideSource
@@ -39,13 +39,12 @@ fun BlockSettingsPage(
 ) {
     val context = LocalContext.current
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_block_settings),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -53,6 +52,7 @@ fun BlockSettingsPage(
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         PrefsScreen(
             dataStore = context.dataStore,

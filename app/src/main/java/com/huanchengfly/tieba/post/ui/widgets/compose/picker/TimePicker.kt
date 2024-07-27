@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -41,12 +41,10 @@ fun TimePicker(
     itemHeight: Dp = 32.dp,
     divider: NumberPickerDivider = NumberPickerDivider(),
     itemStyles: ItemStyles = ItemStyles(
-        defaultTextStyle = MaterialTheme.typography.body1.copy(
-            color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+        defaultTextStyle = MaterialTheme.typography.bodyLarge.copy(
             fontWeight = FontWeight.Normal
         ),
-        selectedTextStyle = MaterialTheme.typography.h5.copy(
-            color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.high),
+        selectedTextStyle = MaterialTheme.typography.headlineSmall.copy(
             fontWeight = FontWeight.Medium
         )
     )
@@ -128,7 +126,7 @@ fun AmPmPicker(
     var listHeightInPixels by remember { mutableStateOf(0) }
     var itemHeightInPixels by remember { mutableStateOf(0) }
 
-    val items = TimesOfDay.values()
+    val items = TimesOfDay.entries.toTypedArray()
 
     val listState =
         rememberLazyListState(initialFirstVisibleItemIndex = items.indexOf(selectedItem))
@@ -191,22 +189,23 @@ fun AmPmPicker(
             }
         }
         if (divider.showed) {
-            Divider(
-                color = divider.color,
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .offset(y = -itemHeight / 2)
-                    .offset(x = -divider.indent),
+                    .offset(x = -divider.indent)
+                    .padding(start = divider.indent * 2),
                 thickness = divider.thickness,
-                startIndent = divider.indent * 2
+                color = divider.color,
             )
-            Divider(
-                color = divider.color, modifier = Modifier
+            HorizontalDivider(
+                modifier = Modifier
                     .fillMaxWidth(1f)
                     .offset(y = itemHeight / 2)
-                    .offset(x = -divider.indent),
+                    .offset(x = -divider.indent)
+                    .padding(start = divider.indent * 2),
                 thickness = divider.thickness,
-                startIndent = divider.indent * 2
+                color = divider.color,
             )
         }
     }
@@ -233,7 +232,7 @@ data class PickerTime(
                 minutes = string.split(":")[1].toInt()
             } else {
                 val timesOfDay =
-                    TimesOfDay.values().first { it.string == string.split(":")[1].split(" ")[1] }
+                    TimesOfDay.entries.first { it.string == string.split(":")[1].split(" ")[1] }
                 hours = string.split(":")[0].toInt() + if (timesOfDay == TimesOfDay.PM) 12 else 0
                 minutes = string.split(":")[1].split(" ")[0].toInt()
             }

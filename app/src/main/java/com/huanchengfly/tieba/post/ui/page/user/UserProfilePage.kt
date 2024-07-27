@@ -25,14 +25,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.rounded.Add
@@ -87,7 +87,7 @@ import com.huanchengfly.tieba.post.ui.page.user.likeforum.UserLikeForumPage
 import com.huanchengfly.tieba.post.ui.page.user.post.UserPostPage
 import com.huanchengfly.tieba.post.ui.widgets.compose.Avatar
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.Chip
 import com.huanchengfly.tieba.post.ui.widgets.compose.ClickMenu
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
@@ -261,6 +261,9 @@ private fun UserProfileToolbar(
                 ClickMenu(
                     menuContent = {
                         DropdownMenuItem(
+                            text = {
+                                Text(text = stringResource(id = R.string.menu_add_user_to_black_list))
+                            },
                             onClick = {
                                 BlockManager.addBlockAsync(
                                     Block(
@@ -273,10 +276,11 @@ private fun UserProfileToolbar(
                                     if (it) context.toastShort(R.string.toast_add_success)
                                 }
                             }
-                        ) {
-                            Text(text = stringResource(id = R.string.menu_add_user_to_black_list))
-                        }
+                        )
                         DropdownMenuItem(
+                            text = {
+                                Text(text = stringResource(id = R.string.menu_add_user_to_white_list))
+                            },
                             onClick = {
                                 BlockManager.addBlockAsync(
                                     Block(
@@ -289,9 +293,7 @@ private fun UserProfileToolbar(
                                     if (it) context.toastShort(R.string.toast_add_success)
                                 }
                             }
-                        ) {
-                            Text(text = stringResource(id = R.string.menu_add_user_to_white_list))
-                        }
+                        )
                     },
                     triggerShape = CircleShape
                 ) {
@@ -313,6 +315,7 @@ private fun UserProfileToolbar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UserProfileContentNormal(
+    modifier: Modifier = Modifier,
     user: ImmutableHolder<User>,
     showActionBtn: Boolean,
     disableButton: Boolean,
@@ -320,7 +323,6 @@ private fun UserProfileContentNormal(
     onBack: () -> Unit,
     onFollow: () -> Unit,
     onUnfollow: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -342,6 +344,7 @@ private fun UserProfileContentNormal(
     }
 
     MyScaffold(
+        modifier = modifier,
         topBar = {
             UserProfileToolbar(
                 user = user,
@@ -404,7 +407,7 @@ private fun UserProfileContentNormal(
                 }
             }
 
-            ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
@@ -506,10 +509,7 @@ private fun UserProfileContentNormal(
                                     }
                                 },
                                 onCopyIdClick = {
-                                    TiebaUtil.copyText(
-                                        context,
-                                        user.get { id }.toString()
-                                    )
+                                    TiebaUtil.copyText(user.get { id }.toString())
                                 }
                             )
                         }
@@ -538,6 +538,7 @@ private fun UserProfileContentNormal(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UserProfileContentExpanded(
+    modifier: Modifier = Modifier,
     user: ImmutableHolder<User>,
     showActionBtn: Boolean,
     disableButton: Boolean,
@@ -545,11 +546,11 @@ private fun UserProfileContentExpanded(
     onBack: () -> Unit,
     onFollow: () -> Unit,
     onUnfollow: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
 
     MyScaffold(
+        modifier = modifier,
         topBar = {
             UserProfileToolbar(
                 user = user,
@@ -559,7 +560,7 @@ private fun UserProfileContentExpanded(
             )
         }
     ) { paddingValues ->
-        ProvideContentColor(color = ExtendedTheme.colors.text) {
+        ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -647,10 +648,7 @@ private fun UserProfileContentExpanded(
                             }
                         },
                         onCopyIdClick = {
-                            TiebaUtil.copyText(
-                                context,
-                                user.get { id }.toString()
-                            )
+                            TiebaUtil.copyText(user.get { id }.toString())
                         }
                     )
 
@@ -694,7 +692,7 @@ private fun UserProfileTabRow(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    val tabTextStyle = MaterialTheme.typography.button.copy(
+    val tabTextStyle = MaterialTheme.typography.labelLarge.copy(
         fontWeight = FontWeight.Bold,
         fontSize = 13.sp,
         letterSpacing = 0.sp
@@ -710,7 +708,7 @@ private fun UserProfileTabRow(
         },
         divider = {},
         backgroundColor = Color.Transparent,
-        contentColor = ExtendedTheme.colors.primary,
+        contentColor = ExtendedTheme.colorScheme.primary,
         edgePadding = 0.dp,
         modifier = modifier.wrapContentWidth(align = Alignment.Start),
     ) {
@@ -722,8 +720,8 @@ private fun UserProfileTabRow(
                         pagerState.animateScrollToPage(i)
                     }
                 },
-                selectedContentColor = ExtendedTheme.colors.primary,
-                unselectedContentColor = ExtendedTheme.colors.textSecondary,
+                selectedContentColor = ExtendedTheme.colorScheme.primary,
+                unselectedContentColor = ExtendedTheme.colorScheme.textSecondary,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -791,7 +789,7 @@ private fun UserProfileDetail(
             )
             Spacer(modifier = Modifier.weight(1f))
             if (showBtn) {
-                Button(
+                DefaultButton(
                     onClick = onBtnClick,
                     colors = if (user.get { has_concerned } == 0 || isSelf) {
                         ButtonDefaults.buttonColors()
@@ -801,7 +799,7 @@ private fun UserProfileDetail(
                     border = if (user.get { has_concerned } == 0 || isSelf) {
                         null
                     } else {
-                        ButtonDefaults.outlinedBorder
+                        ButtonDefaults.outlinedButtonBorder
                     },
                 ) {
                     Row(
@@ -828,12 +826,12 @@ private fun UserProfileDetail(
                 user.get { nameShow },
                 LocalContentColor.current
             ),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold
         )
-        ProvideTextStyle(value = MaterialTheme.typography.body2) {
+        ProvideTextStyle(value = MaterialTheme.typography.bodyMedium) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -845,11 +843,11 @@ private fun UserProfileDetail(
                 ) {
                     Text(
                         text = stringResource(id = R.string.text_stat_follow),
-                        color = ExtendedTheme.colors.textSecondary
+                        color = ExtendedTheme.colorScheme.textSecondary
                     )
                     Text(
                         text = user.get { concern_num }.getShortNumString(),
-                        color = ExtendedTheme.colors.text,
+                        color = ExtendedTheme.colorScheme.text,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -860,11 +858,11 @@ private fun UserProfileDetail(
                 ) {
                     Text(
                         text = stringResource(id = R.string.text_stat_fans),
-                        color = ExtendedTheme.colors.textSecondary
+                        color = ExtendedTheme.colorScheme.textSecondary
                     )
                     Text(
                         text = user.get { fans_num }.getShortNumString(),
-                        color = ExtendedTheme.colors.text,
+                        color = ExtendedTheme.colorScheme.text,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -875,11 +873,11 @@ private fun UserProfileDetail(
                 ) {
                     Text(
                         text = stringResource(id = R.string.text_stat_agrees),
-                        color = ExtendedTheme.colors.textSecondary
+                        color = ExtendedTheme.colorScheme.textSecondary
                     )
                     Text(
                         text = user.get { total_agree_num }.getShortNumString(),
-                        color = ExtendedTheme.colors.text,
+                        color = ExtendedTheme.colorScheme.text,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -888,7 +886,7 @@ private fun UserProfileDetail(
         Text(
             text = user.get { intro }.takeIf { it.isNotEmpty() }
                 ?: stringResource(id = R.string.tip_no_intro),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -901,12 +899,12 @@ private fun UserProfileDetail(
                     imageVector = Icons.Rounded.Verified,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = ExtendedTheme.colors.primary,
+                    tint = ExtendedTheme.colorScheme.primary,
                 )
                 Text(
                     text = it.get { desc },
-                    style = MaterialTheme.typography.body2,
-                    color = ExtendedTheme.colors.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = ExtendedTheme.colorScheme.primary,
                 )
             }
         } ?: user.getNullableImmutable { new_god_data }
@@ -920,12 +918,12 @@ private fun UserProfileDetail(
                         imageVector = Icons.Rounded.Verified,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = ExtendedTheme.colors.primary,
+                        tint = ExtendedTheme.colorScheme.primary,
                     )
                     Text(
                         text = stringResource(id = R.string.text_god_verify, it.get { field_name }),
-                        style = MaterialTheme.typography.body2,
-                        color = ExtendedTheme.colors.primary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = ExtendedTheme.colorScheme.primary,
                     )
                 }
             }
@@ -974,7 +972,7 @@ private fun UserProfileDetail(
 private fun HorizontalDivider(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
-            .background(ExtendedTheme.colors.divider)
+            .background(ExtendedTheme.colorScheme.divider)
             .width(1.dp)
             .then(modifier)
     )

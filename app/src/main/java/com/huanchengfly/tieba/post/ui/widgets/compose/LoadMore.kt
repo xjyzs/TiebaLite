@@ -193,8 +193,8 @@ fun DefaultIndicator(
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(100),
-        color = ExtendedTheme.colors.loadMoreIndicator,
-        contentColor = ExtendedTheme.colors.text
+        color = ExtendedTheme.colorScheme.loadMoreIndicator,
+        contentColor = ExtendedTheme.colorScheme.text
     ) {
         Row(
             modifier = Modifier
@@ -207,7 +207,7 @@ fun DefaultIndicator(
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     strokeWidth = 3.dp,
-                    color = ExtendedTheme.colors.primary
+                    color = ExtendedTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = loadingText, modifier = Modifier.padding(horizontal = 8.dp))

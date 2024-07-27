@@ -11,15 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -46,17 +46,17 @@ import com.huanchengfly.tieba.post.ui.page.webview.isInternalHost
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.ClickMenu
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
-import com.huanchengfly.tieba.post.ui.widgets.compose.LoadingState
 import com.huanchengfly.tieba.post.ui.widgets.compose.LocalSnackbarHostState
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
 import com.huanchengfly.tieba.post.ui.widgets.compose.Toolbar
-import com.huanchengfly.tieba.post.ui.widgets.compose.WebView
 import com.huanchengfly.tieba.post.ui.widgets.compose.rememberMenuState
-import com.huanchengfly.tieba.post.ui.widgets.compose.rememberSaveableWebViewState
-import com.huanchengfly.tieba.post.ui.widgets.compose.rememberWebViewNavigator
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import com.huanchengfly.tieba.post.utils.AccountUtil.parseCookie
 import com.huanchengfly.tieba.post.utils.ClientUtils
+import com.kevinnzou.web.LoadingState
+import com.kevinnzou.web.WebView
+import com.kevinnzou.web.rememberSaveableWebViewState
+import com.kevinnzou.web.rememberWebViewNavigator
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +67,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 const val LOGIN_URL =
@@ -107,15 +109,14 @@ fun LoginPage(
     }
 
     DisposableEffect(Unit) {
-        val job = coroutineScope.launch {
-            snapshotFlow { webViewState.pageTitle }
-                .filterNotNull()
-                .filter { it.isNotEmpty() }
-                .cancellable()
-                .collect {
-                    pageTitle = it
-                }
-        }
+        val job = snapshotFlow { webViewState.pageTitle }
+            .filterNotNull()
+            .filter { it.isNotEmpty() }
+            .cancellable()
+            .onEach {
+                pageTitle = it
+            }
+            .launchIn(coroutineScope)
         onDispose {
             job.cancel()
         }
@@ -161,8 +162,8 @@ fun LoginPage(
                                 text = currentHost,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                color = ExtendedTheme.colors.onTopBarSecondary,
-                                style = MaterialTheme.typography.caption
+                                color = ExtendedTheme.colorScheme.onTopBarSecondary,
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
@@ -173,13 +174,14 @@ fun LoginPage(
                     ClickMenu(
                         menuContent = {
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_refresh))
+                                },
                                 onClick = {
                                     webViewNavigator.reload()
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_refresh))
-                            }
+                            )
                         },
                         menuState = menuState,
                         triggerShape = CircleShape
@@ -219,6 +221,7 @@ fun LoginPage(
                     LoginWebViewClient(
                         navigator,
                         coroutineScope,
+                        // TODO: Material3
                         snackbarHostState
                     )
                 },
@@ -227,8 +230,8 @@ fun LoginPage(
 
             if (isLoading) {
                 LinearProgressIndicator(
-                    progress = animatedProgress,
-                    modifier = Modifier.fillMaxWidth()
+                    progress = { animatedProgress },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

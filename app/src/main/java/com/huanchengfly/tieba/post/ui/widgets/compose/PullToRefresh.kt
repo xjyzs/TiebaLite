@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -42,11 +42,13 @@ fun PullToRefreshLayout(
                 .align(Alignment.TopCenter)
         ) {
             Text(
-                text = if (isRefreshing || willLoad)
+                text = if (isRefreshing || willLoad) {
                     stringResource(id = R.string.release_to_refresh)
-                else stringResource(id = R.string.pull_down_to_refresh),
+                } else {
+                    stringResource(id = R.string.pull_down_to_refresh)
+                },
                 modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     },
@@ -84,6 +86,8 @@ fun PullToRefreshLayout(
         Box(
             modifier = Modifier
                 .nestedScroll(swipeableState.LoadPreUpPostDownNestedScrollConnection)
+                // TODO: Migrate to AnchoredDraggable
+                // Migrate Guide: https://developer.android.com/develop/ui/compose/touch-input/pointer-input/migrate-swipeable
                 .swipeable(
                     state = swipeableState,
                     anchors = mapOf(
@@ -119,7 +123,6 @@ fun PullToRefreshLayout(
 
 object PullToRefreshDefaults {
     val RefreshingOffset = 36.dp
-
     val RefreshDistance = 72.dp
 
     internal val <T> SwipeableState<T>.LoadPreUpPostDownNestedScrollConnection: NestedScrollConnection

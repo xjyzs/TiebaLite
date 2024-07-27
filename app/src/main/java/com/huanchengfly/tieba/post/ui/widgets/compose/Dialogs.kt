@@ -13,13 +13,14 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -68,8 +69,8 @@ fun DialogScope.DialogPositiveButton(
             .fillMaxWidth(),
         shape = RoundedCornerShape(100),
         colors = ButtonDefaults.textButtonColors(
-            backgroundColor = MaterialTheme.colors.secondary,
-            contentColor = MaterialTheme.colors.onSecondary
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
         ),
     ) {
         Text(
@@ -93,10 +94,10 @@ fun DialogScope.DialogNegativeButton(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(100),
         colors = ButtonDefaults.textButtonColors(
-            backgroundColor = ExtendedTheme.colors.text.copy(
+            containerColor = ExtendedTheme.colorScheme.text.copy(
                 alpha = 0.1f
             ),
-            contentColor = ExtendedTheme.colors.text
+            contentColor = ExtendedTheme.colorScheme.text
         ),
     ) {
         Text(
@@ -133,8 +134,8 @@ fun TimePickerDialog(
         },
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            ProvideTextStyle(value = MaterialTheme.typography.body1) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     content()
                 }
             }
@@ -171,8 +172,8 @@ fun AlertDialog(
         },
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            ProvideTextStyle(value = MaterialTheme.typography.body1) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     content()
                 }
             }
@@ -197,8 +198,8 @@ fun AlertDialog(
         buttons = buttons,
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            ProvideTextStyle(value = MaterialTheme.typography.body1) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     content()
                 }
             }
@@ -229,8 +230,8 @@ fun ConfirmDialog(
         },
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            ProvideTextStyle(value = MaterialTheme.typography.body1) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     content()
                 }
             }
@@ -243,6 +244,7 @@ fun ConfirmDialog(
  *
  * @param onValueChange 输入框内容变化时的回调，返回true表示允许变化，false表示不允许变化
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromptDialog(
     onConfirm: (String) -> Unit,
@@ -280,8 +282,8 @@ fun PromptDialog(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ProvideTextStyle(value = MaterialTheme.typography.body1) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     content()
                 }
             }
@@ -298,10 +300,10 @@ fun PromptDialog(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    cursorColor = ExtendedTheme.colors.primary,
-                    focusedBorderColor = ExtendedTheme.colors.primary,
-                    focusedLabelColor = ExtendedTheme.colors.primary
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = ExtendedTheme.colorScheme.primary,
+                    focusedBorderColor = ExtendedTheme.colorScheme.primary,
+                    focusedLabelColor = ExtendedTheme.colorScheme.primary
                 )
             )
             LaunchedEffect(focusRequester) {
@@ -347,6 +349,7 @@ fun BaseDialog(
             },
         )
         AnyPopDialog(
+            modifier = modifier,
             isActiveClose = isActiveClose,
             onDismiss = {
                 onDismiss?.invoke()
@@ -360,7 +363,7 @@ fun BaseDialog(
                 imePadding = imePadding
             )
         ) {
-            ProvideContentColor(color = ExtendedTheme.colors.text) {
+            ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                 dialogScope.content()
             }
         }
@@ -404,7 +407,7 @@ fun Dialog(
                 )
                 .padding(16.dp)
                 .background(
-                    color = ExtendedTheme.colors.windowBackground,
+                    color = ExtendedTheme.colorScheme.windowBackground,
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(vertical = 24.dp),
@@ -430,7 +433,7 @@ fun Dialog(
                             .padding(horizontal = 24.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
-                        ProvideTextStyle(value = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)) {
+                        ProvideTextStyle(value = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)) {
                             title()
                         }
                     }

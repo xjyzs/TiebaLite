@@ -61,9 +61,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.R
@@ -95,6 +92,9 @@ import com.huanchengfly.tieba.post.utils.ImageUtil
 import com.huanchengfly.tieba.post.utils.StringUtil
 import com.huanchengfly.tieba.post.utils.StringUtil.getShortNumString
 import com.huanchengfly.tieba.post.utils.appPreferences
+import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
+import io.github.fornewid.placeholder.material3.fade
+import io.github.fornewid.placeholder.material3.placeholder
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.max
@@ -137,7 +137,7 @@ private fun UserHeader(
                     nickname = user.get { nameShow },
                     color = LocalContentColor.current
                 ),
-                color = ExtendedTheme.colors.text
+                color = ExtendedTheme.colorScheme.text
             )
         },
         onClick = onClick,
@@ -185,7 +185,7 @@ fun UserHeader(
                     nickname = nameShow,
                     color = LocalContentColor.current
                 ),
-                color = ExtendedTheme.colors.text
+                color = ExtendedTheme.colorScheme.text
             )
         },
         onClick = onClick,
@@ -277,7 +277,7 @@ fun ThreadContent(
         if (showTitle) {
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                 if (isGood) {
-                    withStyle(style = SpanStyle(color = ExtendedTheme.colors.accent)) {
+                    withStyle(style = SpanStyle(color = ExtendedTheme.colorScheme.accent)) {
                         append(stringResource(id = R.string.tip_good))
                     }
                     append(" ")
@@ -370,7 +370,7 @@ fun ForumInfoChip(
         modifier = Modifier
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(4.dp))
-            .background(color = ExtendedTheme.colors.chip)
+            .background(color = ExtendedTheme.colorScheme.chip)
             .clickable(onClick = onClick)
             .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -389,7 +389,7 @@ fun ForumInfoChip(
         Text(
             text = stringResource(id = R.string.title_forum_name, name),
             style = MaterialTheme.typography.body2,
-            color = ExtendedTheme.colors.onChip,
+            color = ExtendedTheme.colorScheme.onChip,
             fontSize = 12.sp,
         )
     }
@@ -405,7 +405,7 @@ private fun MediaPlaceholder(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(ExtendedTheme.colors.chip)
+            .background(ExtendedTheme.colorScheme.chip)
             .clickable(
                 enabled = onClick != null
             ) { onClick?.invoke() }
@@ -413,7 +413,7 @@ private fun MediaPlaceholder(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        ProvideContentColor(color = ExtendedTheme.colors.onChip) {
+        ProvideContentColor(color = ExtendedTheme.colorScheme.onChip) {
             Box(
                 modifier = Modifier.size(16.dp),
             ) {
@@ -684,7 +684,7 @@ fun ThreadReplyBtn(
         },
         modifier = modifier,
         onClick = onClick,
-        color = ExtendedTheme.colors.textSecondary,
+        color = ExtendedTheme.colorScheme.textSecondary,
     )
 }
 
@@ -696,7 +696,7 @@ fun ThreadAgreeBtn(
     modifier: Modifier = Modifier,
 ) {
     val contentColor =
-        if (hasAgree) ExtendedTheme.colors.primary else ExtendedTheme.colors.textSecondary
+        if (hasAgree) ExtendedTheme.colorScheme.primary else ExtendedTheme.colorScheme.textSecondary
     val animatedColor by animateColorAsState(contentColor, label = "agreeBtnContentColor")
 
     ActionBtn(
@@ -741,7 +741,7 @@ fun ThreadShareBtn(
         },
         modifier = modifier,
         onClick = onClick,
-        color = ExtendedTheme.colors.textSecondary,
+        color = ExtendedTheme.colorScheme.textSecondary,
     )
 }
 
@@ -790,7 +790,7 @@ fun FeedCard(
                         originThreadInfo = it,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(ExtendedTheme.colors.floorCard)
+                            .background(ExtendedTheme.colorScheme.floorCard)
                             .clickable {
                                 onClickOriginThread(it.get())
                             }
@@ -872,7 +872,7 @@ fun FeedCard(
                         originThreadInfo = it,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(ExtendedTheme.colors.floorCard)
+                            .background(ExtendedTheme.colorScheme.floorCard)
                             .clickable {
                                 onClickOriginThread(it.get())
                             }
@@ -1033,6 +1033,6 @@ fun FeedCardPreview() {
         ),
         onClick = {},
         onAgree = {},
-        modifier = Modifier.background(ExtendedTheme.colors.card)
+        modifier = Modifier.background(ExtendedTheme.colorScheme.card)
     )
 }

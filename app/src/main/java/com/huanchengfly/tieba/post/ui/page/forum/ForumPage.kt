@@ -2,7 +2,6 @@ package com.huanchengfly.tieba.post.ui.page.forum
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,24 +25,22 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.VerticalAlignTop
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -59,7 +54,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -71,7 +65,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -79,9 +72,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.models.protos.frsPage.ForumInfo
 import com.huanchengfly.tieba.post.arch.ImmutableHolder
@@ -105,9 +95,9 @@ import com.huanchengfly.tieba.post.ui.page.forum.threadlist.ForumThreadListUiEve
 import com.huanchengfly.tieba.post.ui.widgets.compose.Avatar
 import com.huanchengfly.tieba.post.ui.widgets.compose.AvatarPlaceholder
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
 import com.huanchengfly.tieba.post.ui.widgets.compose.ClickMenu
 import com.huanchengfly.tieba.post.ui.widgets.compose.ConfirmDialog
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.FeedCardPlaceholder
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
 import com.huanchengfly.tieba.post.ui.widgets.compose.MenuScope
@@ -124,13 +114,15 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.rememberMenuState
 import com.huanchengfly.tieba.post.ui.widgets.compose.states.StateScreen
 import com.huanchengfly.tieba.post.utils.AccountUtil.LocalAccount
 import com.huanchengfly.tieba.post.utils.HistoryUtil
-import com.huanchengfly.tieba.post.utils.StringUtil.getShortNumString
 import com.huanchengfly.tieba.post.utils.TiebaUtil
 import com.huanchengfly.tieba.post.utils.appPreferences
 import com.huanchengfly.tieba.post.utils.requestPinShortcut
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
+import io.github.fornewid.placeholder.material3.fade
+import io.github.fornewid.placeholder.material3.placeholder
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -139,9 +131,6 @@ import kotlinx.serialization.json.Json
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
-
-
-private val LoadDistance = 70.dp
 
 fun getSortType(
     context: Context,
@@ -181,7 +170,7 @@ private fun ForumHeaderPlaceholder(
             ) {
                 Text(
                     text = stringResource(id = R.string.title_forum, forumName),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -239,7 +228,7 @@ private fun ForumHeader(
                 ) {
                     Text(
                         text = stringResource(id = R.string.title_forum, forum.name),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -252,18 +241,23 @@ private fun ForumHeader(
                 AnimatedVisibility(visible = forum.is_like == 1) {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         LinearProgressIndicator(
-                            progress = max(
-                                0F,
-                                min(
-                                    1F,
-                                    forum.cur_score * 1.0F / (max(1.0F, forum.levelup_score * 1.0F))
+                            progress = {
+                                max(
+                                    0F,
+                                    min(
+                                        1F,
+                                        forum.cur_score * 1.0F / (max(
+                                            1.0F,
+                                            forum.levelup_score * 1.0F
+                                        ))
+                                    )
                                 )
-                            ),
+                            },
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100))
                                 .height(8.dp),
-                            color = ExtendedTheme.colors.primary,
-                            backgroundColor = ExtendedTheme.colors.primary.copy(alpha = 0.25f)
+                            color = ExtendedTheme.colorScheme.primary,
+                            trackColor = ExtendedTheme.colorScheme.primary.copy(alpha = 0.25f),
                         )
                         Text(
                             text = stringResource(
@@ -271,8 +265,8 @@ private fun ForumHeader(
                                 forum.user_level.toString(),
                                 forum.level_name
                             ),
-                            style = MaterialTheme.typography.caption,
-                            color = ExtendedTheme.colors.textSecondary,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = ExtendedTheme.colorScheme.textSecondary,
                             fontSize = 10.sp,
                         )
                     }
@@ -281,13 +275,13 @@ private fun ForumHeader(
             val btnEnabled =
                 (forum.is_like != 1) || (forum.sign_in_info?.user_info?.is_sign_in != 1)
             if (LocalAccount.current != null) {
-                Button(
+                DefaultButton(
                     onClick = onBtnClick,
                     elevation = null,
                     shape = RoundedCornerShape(100),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = ExtendedTheme.colors.primary,
-                        contentColor = ExtendedTheme.colors.onAccent
+                        containerColor = ExtendedTheme.colorScheme.primary,
+                        contentColor = ExtendedTheme.colorScheme.onAccent
                     ),
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 6.dp),
                     enabled = btnEnabled
@@ -342,7 +336,7 @@ private suspend fun sendToDesktop(
     context: Context,
     forum: ForumInfo,
     onSuccess: () -> Unit = {},
-    onFailure: (String) -> Unit = {}
+    onFailure: (failureMessage: String) -> Unit = {}
 ) {
     requestPinShortcut(
         context,
@@ -355,7 +349,7 @@ private suspend fun sendToDesktop(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "tblite://forum/{forumName}")
@@ -368,13 +362,15 @@ fun ForumPage(
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
     LazyLoad(loaded = viewModel.initialized) {
         viewModel.send(ForumUiIntent.Load(forumName, getSortType(context, forumName)))
         viewModel.initialized = true
     }
 
-    val scaffoldState = rememberScaffoldState()
-    val snackbarHostState = scaffoldState.snackbarHostState
+    val snackbarHostState = remember { SnackbarHostState() }
     viewModel.onEvent<ForumUiEvent.SignIn.Success> {
         snackbarHostState.showSnackbar(
             message = context.getString(
@@ -386,41 +382,27 @@ fun ForumPage(
     }
     viewModel.onEvent<ForumUiEvent.SignIn.Failure> {
         snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.toast_sign_failed,
-                it.errorMsg
-            )
+            message = context.getString(R.string.toast_sign_failed, it.errorMsg)
         )
     }
     viewModel.onEvent<ForumUiEvent.Like.Success> {
         snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.toast_like_success,
-                it.memberSum,
-            )
+            message = context.getString(R.string.toast_like_success, it.memberSum)
         )
     }
     viewModel.onEvent<ForumUiEvent.Like.Failure> {
         snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.toast_like_failed,
-                it.errorMsg
-            )
+            message = context.getString(R.string.toast_like_failed, it.errorMsg)
         )
     }
     viewModel.onEvent<ForumUiEvent.Unlike.Success> {
         snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.toast_unlike_success
-            )
+            message = context.getString(R.string.toast_unlike_success)
         )
     }
     viewModel.onEvent<ForumUiEvent.Unlike.Failure> {
         snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.toast_unlike_failed,
-                it.errorMsg
-            )
+            message = context.getString(R.string.toast_unlike_failed, it.errorMsg)
         )
     }
 
@@ -446,10 +428,6 @@ fun ForumPage(
             pagerState.currentPage
         }
     }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    val density = LocalDensity.current
 
     var heightOffset by rememberSaveable { mutableFloatStateOf(0f) }
     var headerHeight by rememberSaveable {
@@ -495,10 +473,7 @@ fun ForumPage(
             },
             title = {
                 Text(
-                    text = stringResource(
-                        id = R.string.title_dialog_unfollow_forum,
-                        forumName
-                    )
+                    text = stringResource(id = R.string.title_dialog_unfollow_forum, forumName)
                 )
             }
         )
@@ -511,20 +486,15 @@ fun ForumPage(
             isError = isError,
             isLoading = isLoading,
             onReload = {
-                viewModel.send(
-                    ForumUiIntent.Load(
-                        forumName,
-                        getSortType(context, forumName)
-                    )
-                )
+                viewModel.send(ForumUiIntent.Load(forumName, getSortType(context, forumName)))
             },
             loadingScreen = {
                 LoadingPlaceholder(forumName)
             }
         ) {
             MyScaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = Color.Transparent,
+                snackbarHostState = snackbarHostState,
+                containerColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     ForumToolbar(
@@ -532,14 +502,16 @@ fun ForumPage(
                         showTitle = !isShowTopBarArea,
                         menuContent = {
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_share))
+                                },
                                 onClick = {
                                     shareForum(context, forumName)
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_share))
-                            }
+                            )
                             DropdownMenuItem(
+                                text = { Text(text = stringResource(id = R.string.title_send_to_desktop)) },
                                 onClick = {
                                     if (forumInfo != null) {
                                         val (forum) = forumInfo!!
@@ -550,18 +522,16 @@ fun ForumPage(
                                                 onSuccess = {
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(
-                                                            message = context.getString(
-                                                                R.string.toast_send_to_desktop_success
-                                                            )
+                                                            message = context.getString(R.string.toast_send_to_desktop_success)
                                                         )
                                                     }
                                                 },
-                                                onFailure = {
+                                                onFailure = { failureMessage ->
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(
                                                             message = context.getString(
                                                                 R.string.toast_send_to_desktop_failed,
-                                                                it
+                                                                failureMessage
                                                             )
                                                         )
                                                     }
@@ -571,17 +541,16 @@ fun ForumPage(
                                     }
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_send_to_desktop))
-                            }
+                            )
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_unfollow))
+                                },
                                 onClick = {
                                     unlikeDialogState.show()
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_unfollow))
-                            }
+                            )
                         },
                         forumId = forumInfo?.get { id }
                     )
@@ -625,8 +594,8 @@ fun ForumPage(
                                     }
                                 }
                             },
-                            backgroundColor = ExtendedTheme.colors.windowBackground,
-                            contentColor = ExtendedTheme.colors.primary,
+                            containerColor = ExtendedTheme.colorScheme.windowBackground,
+                            contentColor = ExtendedTheme.colorScheme.primary,
                             modifier = Modifier.navigationBarsPadding()
                         ) {
                             Icon(
@@ -656,10 +625,7 @@ fun ForumPage(
                         coroutineScope.emitGlobalEvent(
                             ForumThreadListUiEvent.Refresh(
                                 currentPage == 1,
-                                getSortType(
-                                    context,
-                                    forumName
-                                )
+                                getSortType(context, forumName)
                             )
                         )
                         isFakeLoading = true
@@ -769,7 +735,7 @@ fun ForumPage(
                                 }
                             }
 
-                            val tabTextStyle = MaterialTheme.typography.button.copy(
+                            val tabTextStyle = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
                                 letterSpacing = 0.sp
@@ -785,7 +751,7 @@ fun ForumPage(
                                 },
                                 divider = {},
                                 backgroundColor = Color.Transparent,
-                                contentColor = ExtendedTheme.colors.primary,
+                                contentColor = ExtendedTheme.colorScheme.primary,
                                 edgePadding = 0.dp,
                                 modifier = Modifier
                                     .wrapContentWidth(align = Alignment.Start)
@@ -837,8 +803,8 @@ fun ForumPage(
                                             }
                                         )
                                     },
-                                    selectedContentColor = ExtendedTheme.colors.primary,
-                                    unselectedContentColor = ExtendedTheme.colors.textSecondary
+                                    selectedContentColor = ExtendedTheme.colorScheme.primary,
+                                    unselectedContentColor = ExtendedTheme.colorScheme.textSecondary
                                 )
                                 Tab(
                                     selected = currentPage == 1,
@@ -847,8 +813,8 @@ fun ForumPage(
                                             pagerState.animateScrollToPage(1)
                                         }
                                     },
-                                    selectedContentColor = ExtendedTheme.colors.primary,
-                                    unselectedContentColor = ExtendedTheme.colors.textSecondary
+                                    selectedContentColor = ExtendedTheme.colorScheme.primary,
+                                    unselectedContentColor = ExtendedTheme.colorScheme.textSecondary
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -894,7 +860,6 @@ fun LoadingPlaceholder(
     val context = LocalContext.current
 
     MyScaffold(
-        backgroundColor = Color.Transparent,
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
@@ -903,23 +868,25 @@ fun LoadingPlaceholder(
                 showTitle = false,
                 menuContent = {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.title_share))
+                        },
                         onClick = {
                             shareForum(context, forumName)
                             dismiss()
-                        }
-                    ) {
-                        Text(text = stringResource(id = R.string.title_share))
-                    }
+                        },
+                    )
                 }
             )
-        }
+        },
+        containerColor = Color.Transparent
     ) { contentPadding ->
         Column(modifier = Modifier.padding(contentPadding)) {
             ForumHeaderPlaceholder(
                 forumName = forumName,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
             )
             Row(modifier = Modifier.height(48.dp)) {
                 persistentListOf(
@@ -930,7 +897,7 @@ fun LoadingPlaceholder(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .fillMaxHeight(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = it,
@@ -941,7 +908,7 @@ fun LoadingPlaceholder(
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.sp,
-                            style = MaterialTheme.typography.button,
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
@@ -950,20 +917,6 @@ fun LoadingPlaceholder(
                 FeedCardPlaceholder()
             }
         }
-    }
-}
-
-@Composable
-private fun BackNavigationIconPlaceholder() {
-    IconButton(
-        onClick = {},
-        enabled = false,
-        modifier = Modifier.alpha(0f)
-    ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-            contentDescription = null
-        )
     }
 }
 
@@ -978,10 +931,7 @@ private fun ForumToolbar(
     Toolbar(
         title = {
             if (showTitle) Text(
-                text = stringResource(
-                    id = R.string.title_forum,
-                    forumName
-                )
+                text = stringResource(id = R.string.title_forum, forumName)
             )
         },
         navigationIcon = { BackNavigationIcon(onBackPressed = { navigator.navigateUp() }) },
@@ -1022,30 +972,3 @@ private fun ForumToolbar(
     )
 }
 
-@Composable
-private fun RowScope.StatCardItem(
-    statNum: Int,
-    statText: String
-) {
-    Column(
-        modifier = Modifier.weight(1f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = statNum.getShortNumString(),
-            fontSize = 20.sp,
-            fontFamily = FontFamily(
-                Typeface.createFromAsset(
-                    LocalContext.current.assets,
-                    "bebas.ttf"
-                )
-            ),
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = statText,
-            fontSize = 12.sp,
-            color = ExtendedTheme.colors.textSecondary
-        )
-    }
-}

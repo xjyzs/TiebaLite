@@ -14,14 +14,16 @@ object OAIDGetter : Application.ActivityLifecycleCallbacks, IGetter {
     override fun onActivityStarted(activity: Activity) {}
 
     override fun onActivityResumed(activity: Activity) {
-        if (!AppConfig.inited) {
-            AppConfig.isOAIDSupported = DeviceID.supportedOAID(activity)
-            if (AppConfig.isOAIDSupported) {
-                DeviceID.getOAID(activity, this)
-            } else {
-                AppConfig.inited = true
-                AppConfig.statusCode = -200
-                AppConfig.isTrackLimited = false
+        with(AppConfig) {
+            if (!inited) {
+                isOAIDSupported = DeviceID.supportedOAID(activity)
+                if (isOAIDSupported) {
+                    DeviceID.getOAID(activity, this@OAIDGetter)
+                } else {
+                    inited = true
+                    statusCode = -200
+                    isTrackLimited = false
+                }
             }
         }
     }
@@ -35,16 +37,20 @@ object OAIDGetter : Application.ActivityLifecycleCallbacks, IGetter {
     override fun onActivityDestroyed(activity: Activity) {}
 
     override fun onOAIDGetComplete(result: String) {
-        AppConfig.inited = true
-        AppConfig.oaid = result
-        AppConfig.encodedOAID = Base32.encode(result.encodeToByteArray())
-        AppConfig.statusCode = 0
-        AppConfig.isTrackLimited = false
+        AppConfig.apply {
+            inited = true
+            oaid = result
+            encodedOAID = Base32.encode(result.encodeToByteArray())
+            statusCode = 0
+            isTrackLimited = false
+        }
     }
 
     override fun onOAIDGetError(error: Exception?) {
-        AppConfig.inited = true
-        AppConfig.statusCode = -100
-        AppConfig.isTrackLimited = true
+        AppConfig.apply {
+            inited = true
+            statusCode = -100
+            isTrackLimited = true
+        }
     }
 }

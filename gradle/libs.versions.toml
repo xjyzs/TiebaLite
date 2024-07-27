@@ -1,9 +1,9 @@
 [versions]
-agp = "8.3.1"
-kotlin = "1.9.23"
-ksp = "1.9.23-1.0.20"
-compose-compiler = "1.5.11"
-compose-bom = "2024.04.00"
+agp = "8.5.1"
+kotlin = "1.9.24"
+ksp = "1.9.24-1.0.20"
+compose-compiler = "1.5.14"
+compose-bom = "2024.06.00"
 
 accompanist = "0.34.0"
 appcenter = "5.0.4"
@@ -13,13 +13,15 @@ sketch = "3.3.1"
 # TODO: > 4.9.3 Error
 wire = "4.9.3"
 lottie = "6.4.0"
-media3 = "1.3.0"
+media3 = "1.4.0"
+
+androidx-test = "1.6.1"
 
 compose-destinations = "1.10.2"
 
-androidx-activity = "1.8.2"
+androidx-activity = "1.9.1"
 
-lifecycle = "2.7.0"
+lifecycle = "2.8.4"
 
 glide = "4.16.0"
 retrofit = "2.11.0"
@@ -52,11 +54,11 @@ compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 
-androidx-test-core = { group = "androidx.test", name = "core", version = "1.5.0" }
-androidx-test-rules = { group = "androidx.test", name = "rules", version = "1.5.0" }
-androidx-test-runner = { group = "androidx.test", name = "runner", version = "1.5.2" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version = "1.1.5" }
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version = "3.5.1" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-test" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version = "1.2.1" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version = "3.6.1" }
 
 wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref = "wire" }
 
@@ -69,7 +71,7 @@ airbnb-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose",
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.3" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.3.7" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.8.0" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.8.1" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
@@ -106,7 +108,7 @@ compose-animation-graphics = { group = "androidx.compose.animation", name = "ani
 compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
-google-material = { group = "com.google.android.material", name = "material", version = "1.11.0" }
+google-material = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 compose-material = { group = "androidx.compose.material3", name = "material3" }
 
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.0-alpha13" }
@@ -123,12 +125,12 @@ androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-r
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.6.1" }
-androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.7.1" }
-androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.0" }
-androidx-collection = { group = "androidx.collection", name = "collection", version = "1.4.0" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.8.1" }
+androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.1" }
+androidx-collection = { group = "androidx.collection", name = "collection", version = "1.4.2" }
 
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.12.0" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
 
 androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version = "1.0.0" }
@@ -136,10 +138,10 @@ androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", vers
 androidx-browser = { group = "androidx.browser", name = "browser", version = "1.8.0" }
 
 androidx-palette = { group = "androidx.palette", name = "palette-ktx", version = "1.0.0" }
-androidx-window = { group = "androidx.window", name = "window", version = "1.2.0" }
+androidx-window = { group = "androidx.window", name = "window", version = "1.3.0" }
 androidx-startup-runtime = { group = "androidx.startup", name = "startup-runtime", version = "1.1.1" }
 
-androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version = "1.0.0" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version = "1.1.1" }
 
 glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
@@ -169,4 +171,10 @@ appcenter-distribute = { group = "com.microsoft.appcenter", name = "appcenter-di
 compose-runtime-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version = "1.0.0-beta01" }
 junit = { group = "junit", name = "junit", version = "4.13.2" }
 
-himari = { group = "com.kiral.himari", name = "himari", version = "0.0.2" }
+himari = { group = "com.kiral.himari", name = "himari", version = "0.0.4" }
+
+# GitHub: https://github.com/KevinnZou/compose-webview
+compose-webview = { group = "io.github.kevinnzou", name = "compose-webview", version = "0.33.6" }
+
+# GitHub: https://github.com/fornewid/placeholder
+compose-placeholder = { group = "io.github.fornewid", name = "placeholder-material3", version = "1.1.2" }

@@ -14,8 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,7 +47,6 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.Chip
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
-import com.huanchengfly.tieba.post.ui.widgets.compose.HorizontalDivider
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
 import com.huanchengfly.tieba.post.ui.widgets.compose.Sizes
@@ -151,13 +151,13 @@ private fun ForumDetailContent(
             )
             Text(
                 text = stringResource(id = R.string.title_forum, forumInfo.get { forum_name }),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
         }
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(color = ExtendedTheme.colors.chip)
+                .background(color = ExtendedTheme.colorScheme.chip)
                 .padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -165,7 +165,7 @@ private fun ForumDetailContent(
                 statNum = forumInfo.get { member_count },
                 statText = stringResource(id = R.string.text_stat_follow)
             )
-            HorizontalDivider(color = Color(if (ExtendedTheme.colors.isNightMode) 0xFF808080 else 0xFFDEDEDE))
+            HorizontalDivider(color = Color(if (ExtendedTheme.colorScheme.isNightMode) 0xFF808080 else 0xFFDEDEDE))
             StatCardItem(
                 statNum = forumInfo.get { thread_count },
                 statText = stringResource(id = R.string.text_stat_threads)
@@ -176,8 +176,8 @@ private fun ForumDetailContent(
         ) {
             Chip(text = stringResource(id = R.string.title_forum_intro))
             Column {
-                Text(text = forumInfo.get { slogan }, style = MaterialTheme.typography.body1)
-                Text(text = intro, style = MaterialTheme.typography.body1)
+                Text(text = forumInfo.get { slogan }, style = MaterialTheme.typography.bodyLarge)
+                Text(text = intro, style = MaterialTheme.typography.bodyLarge)
             }
         }
     }
@@ -206,7 +206,7 @@ private fun RowScope.StatCardItem(
         Text(
             text = statText,
             fontSize = 12.sp,
-            color = ExtendedTheme.colors.textSecondary
+            color = ExtendedTheme.colorScheme.textSecondary
         )
     }
 }

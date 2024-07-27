@@ -14,21 +14,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -37,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.placeholder.material.placeholder
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.models.protos.hasAgree
 import com.huanchengfly.tieba.post.arch.GlobalEvent
@@ -55,6 +52,7 @@ import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.HotTopicListPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
 import com.huanchengfly.tieba.post.ui.widgets.compose.FeedCard
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
@@ -66,8 +64,9 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.items
 import com.huanchengfly.tieba.post.ui.widgets.compose.itemsIndexed
 import com.huanchengfly.tieba.post.utils.StringUtil.getShortNumString
 import com.ramcosta.composedestinations.annotation.Destination
+import io.github.fornewid.placeholder.material3.placeholder
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun HotPage(
@@ -107,10 +106,13 @@ fun HotPage(
         prop1 = HotUiState::isLoadingThreadList,
         initial = false
     )
-    val pullRefreshState = rememberPullRefreshState(
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isLoading,
-        onRefresh = { viewModel.send(HotUiIntent.Load) })
-    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+        onRefresh = { viewModel.send(HotUiIntent.Load) }
+    )
+    Box(
+        modifier = Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)
+    ) {
         MyLazyColumn(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -147,8 +149,8 @@ fun HotPage(
                                             0 -> RedA700
                                             1 -> OrangeA700
                                             2 -> Yellow
-                                            else -> MaterialTheme.colors.onBackground.copy(
-                                                ContentAlpha.medium
+                                            else -> MaterialTheme.colorScheme.onBackground.copy(
+                                                MaterialTheme.colorScheme.onSurfaceVariant.alpha
                                             )
                                         },
                                         fontFamily = FontFamily(
@@ -189,7 +191,7 @@ fun HotPage(
                                 }
                             }
                             item {
-                                ProvideContentColor(color = ExtendedTheme.colors.primary) {
+                                ProvideContentColor(color = ExtendedTheme.colorScheme.primary) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -205,7 +207,7 @@ fun HotPage(
                                             fontWeight = FontWeight.Bold
                                         )
                                         Icon(
-                                            imageVector = Icons.Rounded.KeyboardArrowRight,
+                                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                                             contentDescription = null,
                                             modifier = Modifier.size(16.dp)
                                         )
@@ -234,7 +236,7 @@ fun HotPage(
                                 column = 5,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(ExtendedTheme.colors.background)
+                                    .background(ExtendedTheme.colorScheme.background)
                                     .padding(vertical = 8.dp)
                                     .padding(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -276,7 +278,7 @@ fun HotPage(
                     ) {
                         Text(
                             text = stringResource(id = R.string.hot_thread_rank_rule),
-                            color = ExtendedTheme.colors.textSecondary,
+                            color = ExtendedTheme.colorScheme.textSecondary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Normal,
                         )
@@ -328,8 +330,8 @@ fun HotPage(
                                         0 -> RedA700
                                         1 -> OrangeA700
                                         2 -> Yellow
-                                        else -> MaterialTheme.colors.onBackground.copy(
-                                            ContentAlpha.medium
+                                        else -> MaterialTheme.colorScheme.onBackground.copy(
+                                            MaterialTheme.colorScheme.onSurfaceVariant.alpha
                                         )
                                     }
                                     Text(
@@ -343,7 +345,7 @@ fun HotPage(
                                             id = R.string.hot_num,
                                             item.get { hotNum }.getShortNumString()
                                         ),
-                                        style = MaterialTheme.typography.caption,
+                                        style = MaterialTheme.typography.bodySmall,
                                         color = color
                                     )
                                 }
@@ -366,12 +368,11 @@ fun HotPage(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = isLoading,
-            state = pullRefreshState,
+        PullToRefreshContainer(
+            state = pullToRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-            contentColor = ExtendedTheme.colors.primary,
+            containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+            contentColor = ExtendedTheme.colorScheme.primary,
         )
     }
 }
@@ -388,7 +389,7 @@ private fun ThreadListItemPlaceholder() {
                 text = "1",
                 fontWeight = FontWeight.Bold,
                 fontSize = 10.sp,
-                color = ExtendedTheme.colors.background,
+                color = ExtendedTheme.colorScheme.background,
                 modifier = Modifier
                     .padding(top = 3.dp)
                     .clip(RoundedCornerShape(4.dp))
@@ -405,8 +406,8 @@ private fun ThreadListItemPlaceholder() {
                 )
                 Text(
                     text = stringResource(id = R.string.hot_num, "666"),
-                    style = MaterialTheme.typography.caption,
-                    color = ExtendedTheme.colors.textSecondary,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = ExtendedTheme.colorScheme.textSecondary,
                     modifier = Modifier.placeholder(visible = true)
                 )
             }
@@ -420,8 +421,8 @@ private fun ThreadListTab(
     selected: Boolean,
     onSelected: () -> Unit
 ) {
-    val textColor by animateColorAsState(targetValue = if (selected) ExtendedTheme.colors.onAccent else ExtendedTheme.colors.onChip)
-    val backgroundColor by animateColorAsState(targetValue = if (selected) ExtendedTheme.colors.primary else ExtendedTheme.colors.chip)
+    val textColor by animateColorAsState(targetValue = if (selected) ExtendedTheme.colorScheme.onAccent else ExtendedTheme.colorScheme.onChip)
+    val backgroundColor by animateColorAsState(targetValue = if (selected) ExtendedTheme.colorScheme.primary else ExtendedTheme.colorScheme.chip)
     Text(
         text = text,
         textAlign = TextAlign.Center,
@@ -441,19 +442,19 @@ private fun ThreadListTab(
 
 @Composable
 private fun ChipHeader(
+    modifier: Modifier = Modifier,
     text: String,
     invert: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     Text(
-        color = if (invert) MaterialTheme.colors.onSecondary else ExtendedTheme.colors.onChip,
+        color = if (invert) MaterialTheme.colorScheme.onSecondary else ExtendedTheme.colorScheme.onChip,
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
         text = text,
         modifier = Modifier
             .clip(RoundedCornerShape(100))
             .then(modifier)
-            .background(color = if (invert) MaterialTheme.colors.secondary else ExtendedTheme.colors.chip)
+            .background(color = if (invert) MaterialTheme.colorScheme.secondary else ExtendedTheme.colorScheme.chip)
             .padding(horizontal = 16.dp, vertical = 4.dp)
     )
 }

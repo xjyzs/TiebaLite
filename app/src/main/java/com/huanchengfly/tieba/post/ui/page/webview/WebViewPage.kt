@@ -22,13 +22,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -49,7 +49,6 @@ import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.net.toUri
 import com.hjq.permissions.Permission
-import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.arch.GlobalEvent
 import com.huanchengfly.tieba.post.arch.onGlobalEvent
@@ -59,18 +58,12 @@ import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ThemeUtils
 import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
-import com.huanchengfly.tieba.post.ui.widgets.compose.AccompanistWebChromeClient
-import com.huanchengfly.tieba.post.ui.widgets.compose.AccompanistWebViewClient
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.ClickMenu
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
-import com.huanchengfly.tieba.post.ui.widgets.compose.LoadingState
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
 import com.huanchengfly.tieba.post.ui.widgets.compose.Toolbar
-import com.huanchengfly.tieba.post.ui.widgets.compose.WebView
 import com.huanchengfly.tieba.post.ui.widgets.compose.rememberMenuState
-import com.huanchengfly.tieba.post.ui.widgets.compose.rememberSaveableWebViewState
-import com.huanchengfly.tieba.post.ui.widgets.compose.rememberWebViewNavigator
 import com.huanchengfly.tieba.post.utils.AccountUtil
 import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.PermissionUtils
@@ -78,6 +71,13 @@ import com.huanchengfly.tieba.post.utils.PermissionUtils.PermissionData
 import com.huanchengfly.tieba.post.utils.TiebaUtil
 import com.huanchengfly.tieba.post.utils.appPreferences
 import com.huanchengfly.tieba.post.utils.compose.launchActivityForResult
+import com.kevinnzou.web.AccompanistWebChromeClient
+import com.kevinnzou.web.AccompanistWebViewClient
+import com.kevinnzou.web.LoadingState
+import com.kevinnzou.web.WebView
+import com.kevinnzou.web.rememberSaveableWebViewState
+import com.kevinnzou.web.rememberWebViewNavigator
+import com.kiral.himari.ext.android.app.appContext
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
@@ -178,8 +178,8 @@ fun WebViewPage(
                                 text = currentHost,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                color = ExtendedTheme.colors.onTopBarSecondary,
-                                style = MaterialTheme.typography.caption
+                                color = ExtendedTheme.colorScheme.onTopBarSecondary,
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
@@ -190,17 +190,21 @@ fun WebViewPage(
                     ClickMenu(
                         menuContent = {
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_copy_link))
+                                },
                                 onClick = {
-                                    val url = webViewState.webView?.url ?: initialUrl
-                                    TiebaUtil.copyText(context, url)
+                                    val url = webViewState.lastLoadedUrl ?: initialUrl
+                                    TiebaUtil.copyText(url)
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_copy_link))
-                            }
+                            )
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_open_in_browser))
+                                },
                                 onClick = {
-                                    val uri = (webViewState.webView?.url ?: initialUrl).toUri()
+                                    val uri = (webViewState.lastLoadedUrl ?: initialUrl).toUri()
                                     context.startActivity(
                                         Intent(
                                             Intent.ACTION_VIEW,
@@ -209,17 +213,16 @@ fun WebViewPage(
                                     )
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_open_in_browser))
-                            }
+                            )
                             DropdownMenuItem(
+                                text = {
+                                    Text(text = stringResource(id = R.string.title_refresh))
+                                },
                                 onClick = {
                                     webViewNavigator.reload()
                                     dismiss()
                                 }
-                            ) {
-                                Text(text = stringResource(id = R.string.title_refresh))
-                            }
+                            )
                         },
                         menuState = menuState,
                         triggerShape = CircleShape
@@ -260,8 +263,8 @@ fun WebViewPage(
 
             if (isLoading) {
                 LinearProgressIndicator(
-                    progress = animatedProgress,
-                    modifier = Modifier.fillMaxWidth()
+                    progress = { animatedProgress },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -284,8 +287,8 @@ fun isInternalHost(host: String): Boolean {
 open class MyWebViewClient(
     protected val nativeNavigator: DestinationsNavigator? = null,
 ) : AccompanistWebViewClient() {
-    val context: Context
-        get() = state.webView?.context ?: App.INSTANCE
+    protected val context: Context
+        get() = appContext
 
     private fun interceptWebViewRequest(
         webView: WebView,
@@ -468,8 +471,8 @@ class MyWebChromeClient(
 ) : AccompanistWebChromeClient() {
     private val contextWeakReference = WeakReference(context)
 
-    val context: Context
-        get() = state.webView?.context ?: contextWeakReference.get() ?: App.INSTANCE
+    private val context: Context
+        get() = contextWeakReference.get() ?: appContext
 
     private var uploadMessage: ValueCallback<Array<Uri>>? = null
 

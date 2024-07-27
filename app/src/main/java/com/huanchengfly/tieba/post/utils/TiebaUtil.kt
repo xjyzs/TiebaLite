@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.PersistableBundle
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.TiebaApi
 import com.huanchengfly.tieba.post.api.retrofit.doIfFailure
@@ -20,10 +21,15 @@ import com.huanchengfly.tieba.post.ext.toastShort
 import com.huanchengfly.tieba.post.receivers.AutoSignAlarm
 import com.huanchengfly.tieba.post.services.OKSignService
 import com.huanchengfly.tieba.post.ui.page.destinations.WebViewPageDestination
+import com.kiral.himari.ext.android.app.appContext
+import com.kiral.himari.ext.android.content.startForegroundServiceCompat
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.util.Calendar
 
 object TiebaUtil {
+    private val context: Context
+        get() = appContext
+
     private fun ClipData.setIsSensitive(isSensitive: Boolean): ClipData = apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             description.extras = PersistableBundle().apply {
@@ -35,12 +41,11 @@ object TiebaUtil {
     @JvmStatic
     @JvmOverloads
     fun copyText(
-        context: Context,
         text: String?,
         toast: String = context.getString(R.string.toast_copy_success),
         isSensitive: Boolean = false
     ) {
-        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val cm = context.getSystemService<ClipboardManager>()!!
         val clipData = ClipData.newPlainText("Tieba Lite", text).setIsSensitive(isSensitive)
         cm.setPrimaryClip(clipData)
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
@@ -48,8 +53,8 @@ object TiebaUtil {
         }
     }
 
-    fun initAutoSign(context: Context) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun initAutoSign() {
+        val alarmManager = context.getSystemService<AlarmManager>()!!
         val autoSign = context.appPreferences.autoSign
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -91,29 +96,25 @@ object TiebaUtil {
 //                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //                .setAction(OKSignService.ACTION_START_SIGN)
 //        )
-        ContextCompat.startForegroundService(
-            context,
-            Intent()
-                .setClassName(
-                    context.packageName,
-                    "${context.packageName}.services.OKSignService"
-                )
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .setAction(OKSignService.ACTION_START_SIGN)
-        )
+        val intent = Intent()
+            .setClassName(context.packageName, "${context.packageName}.services.OKSignService")
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .setAction(OKSignService.ACTION_START_SIGN)
+        context.startForegroundServiceCompat(intent)
     }
 
     @JvmStatic
     @JvmOverloads
     fun shareText(context: Context, text: String, title: String? = null) {
-        context.startActivity(Intent().apply {
+        val intent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(
                 Intent.EXTRA_TEXT,
                 "${if (title != null) "「$title」\n" else ""}$text\n（分享自贴吧 Lite）"
             )
-        })
+        }
+        context.startActivity(intent)
     }
 
     suspend fun reportPost(
@@ -126,9 +127,7 @@ object TiebaUtil {
             .checkReportPostAsync(postId)
             .doIfSuccess {
                 dialog.dismiss()
-                navigator.navigate(
-                    WebViewPageDestination(it.data.url)
-                )
+                navigator.navigate(WebViewPageDestination(it.data.url))
             }
             .doIfFailure {
                 dialog.dismiss()

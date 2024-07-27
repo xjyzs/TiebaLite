@@ -6,16 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Configuration.SCREENLAYOUT_SIZE_MASK
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.ColorRes
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -85,14 +81,6 @@ fun Any.toJson(): String = gson.toJson(this)
 fun String.toMD5(): String = MD5Util.toMd5(this)
 
 fun ByteArray.toMD5(): String = MD5Util.toMd5(this)
-
-fun Context.getColorCompat(@ColorRes id: Int): Int {
-    return ContextCompat.getColor(this, id)
-}
-
-fun Context.getColorStateListCompat(id: Int): ColorStateList {
-    return AppCompatResources.getColorStateList(this, id)
-}
 
 inline fun <reified T : Activity> Context.goToActivity() {
     startActivity(Intent(this, T::class.java))

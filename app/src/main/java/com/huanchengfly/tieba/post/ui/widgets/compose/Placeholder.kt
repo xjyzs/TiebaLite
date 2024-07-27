@@ -24,7 +24,11 @@ fun EmptyPlaceholder(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = emptyText, style = MaterialTheme.typography.body1, color = ExtendedTheme.colors.textSecondary)
+        Text(
+            text = emptyText,
+            style = MaterialTheme.typography.body1,
+            color = ExtendedTheme.colorScheme.textSecondary
+        )
         actions()
     }
 }

@@ -2,7 +2,6 @@ package com.huanchengfly.tieba.post
 
 import android.app.Activity
 import android.app.Application
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -20,7 +19,6 @@ import com.github.panpf.sketch.http.OkHttpStack
 import com.github.panpf.sketch.request.PauseLoadWhenScrollingDrawableDecodeInterceptor
 import com.huanchengfly.tieba.post.components.ClipBoardLinkDetector
 import com.huanchengfly.tieba.post.components.OAIDGetter
-import com.huanchengfly.tieba.post.ext.initAppContext
 import com.huanchengfly.tieba.post.ext.progressName
 import com.huanchengfly.tieba.post.network.appcenter.MyDistributeListener
 import com.huanchengfly.tieba.post.ui.common.theme.ThemeDelegate
@@ -47,7 +45,7 @@ class App : Application(), SketchFactory {
     private val mActivityList = mutableListOf<Activity>()
 
     private fun setWebViewPath() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT >= 28) {
             val processName = progressName ?: return
             if (applicationContext.packageName != processName) { // 判断不等于默认进程名称
                 WebView.setDataDirectorySuffix(processName)
@@ -56,7 +54,7 @@ class App : Application(), SketchFactory {
     }
 
     override fun onCreate() {
-        initAppContext(this)
+        INSTANCE = this
         super.onCreate()
         ClientUtils.init(this)
         setWebViewPath()
@@ -80,6 +78,7 @@ class App : Application(), SketchFactory {
     @Keep
     fun mzNightModeUseOf(): Int = 2
 
+    // TODO: 有必要吗？
     // 禁止app字体大小跟随系统字体大小调节
     override fun getResources(): Resources {
         val fontScale = appPreferences.fontScale
@@ -125,8 +124,11 @@ class App : Application(), SketchFactory {
             Distribute.setUpdateTrack(if (appPreferences.checkCIUpdate) UpdateTrack.PRIVATE else UpdateTrack.PUBLIC)
             Distribute.setListener(MyDistributeListener())
             AppCenter.start(
-                this, "b56debcc-264b-4368-a2cd-8c20213f6433",
-                Analytics::class.java, Crashes::class.java, Distribute::class.java
+                this,
+                "b56debcc-264b-4368-a2cd-8c20213f6433",
+                Analytics::class.java,
+                Crashes::class.java,
+                Distribute::class.java
             )
         }
     }
@@ -149,6 +151,7 @@ class App : Application(), SketchFactory {
         @JvmStatic
         var translucentBackground: Drawable? = null
 
+        // TODO: 移除
         @JvmStatic
         lateinit var INSTANCE: App
             private set
@@ -156,35 +159,25 @@ class App : Application(), SketchFactory {
         val isInitialized: Boolean
             get() = this::INSTANCE.isInitialized
 
-        val isSystemNight: Boolean
-            get() = nightMode == Configuration.UI_MODE_NIGHT_YES
-
-        val isFirstRun: Boolean
-            get() = SharedPreferencesUtil.get(SharedPreferencesUtil.SP_APP_DATA)
-                .getBoolean("first", true)
-
-        private val nightMode: Int
-            get() = INSTANCE.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
     }
 
-    override fun createSketch(): Sketch = Sketch.Builder(this).apply {
-        httpStack(OkHttpStack.Builder().apply {
-            userAgent(System.getProperty("http.agent"))
-        }.build())
-        components {
+    override fun createSketch(): Sketch = Sketch.Builder(this)
+        .httpStack(
+            OkHttpStack.Builder()
+                .userAgent(System.getProperty("http.agent"))
+                .build()
+        )
+        .components {
             addDrawableDecodeInterceptor(PauseLoadWhenScrollingDrawableDecodeInterceptor())
-            addDrawableDecoder(
-                when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> GifAnimatedDrawableDecoder.Factory()
-                    else -> GifMovieDrawableDecoder.Factory()
-                }
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                addDrawableDecoder(WebpAnimatedDrawableDecoder.Factory())
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= 30) {
                 addDrawableDecoder(HeifAnimatedDrawableDecoder.Factory())
             }
+            if (Build.VERSION.SDK_INT >= 28) {
+                addDrawableDecoder(GifAnimatedDrawableDecoder.Factory())
+                addDrawableDecoder(WebpAnimatedDrawableDecoder.Factory())
+            } else {
+                addDrawableDecoder(GifMovieDrawableDecoder.Factory())
+            }
         }
-    }.build()
+        .build()
 }

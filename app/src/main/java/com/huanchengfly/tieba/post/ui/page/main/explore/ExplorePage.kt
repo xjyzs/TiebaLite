@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -46,7 +46,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
-
 @Immutable
 data class ExplorePageItem(
     val id: String,
@@ -72,7 +71,7 @@ private fun ColumnScope.ExplorePageTab(
         },
         divider = {},
         backgroundColor = Color.Transparent,
-        contentColor = ExtendedTheme.colors.onTopBar,
+        contentColor = ExtendedTheme.colorScheme.onTopBar,
         modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .width(76.dp * pages.size),
@@ -100,7 +99,7 @@ private fun TabText(
     text: String,
     selected: Boolean
 ) {
-    val style = MaterialTheme.typography.button.copy(
+    val style = MaterialTheme.typography.labelLarge.copy(
         letterSpacing = 0.75.sp,
         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
         textAlign = TextAlign.Center
@@ -145,7 +144,7 @@ fun ExplorePage() {
     }
 
     Scaffold(
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.title_explore),

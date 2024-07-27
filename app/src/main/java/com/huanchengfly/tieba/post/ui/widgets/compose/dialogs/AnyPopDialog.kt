@@ -46,7 +46,6 @@ import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.core.view.WindowCompat
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
 
@@ -188,10 +187,10 @@ private fun DialogFullScreen(
  */
 @Composable
 fun AnyPopDialog(
-    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isActiveClose: Boolean = false,
     properties: AnyPopDialogProperties = AnyPopDialogProperties(direction = DirectionState.BOTTOM),
+    onDismiss: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     DialogFullScreen(

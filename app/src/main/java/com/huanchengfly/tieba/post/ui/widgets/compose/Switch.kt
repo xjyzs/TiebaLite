@@ -4,12 +4,36 @@ import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.interaction.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.LocalAbsoluteElevation
+import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -110,14 +134,17 @@ private fun BoxScope.SwitchImpl(
 
     val elevation = 0.dp
     val trackColor by colors.trackColor(enabled, checked)
-    Canvas(Modifier.align(Alignment.Center).fillMaxSize()) {
+    Canvas(
+        Modifier
+            .align(Alignment.Center)
+            .fillMaxSize()) {
         drawTrack(trackColor, TrackWidth.toPx(), TrackStrokeWidth.toPx(), checked)
     }
     val thumbColor by colors.thumbColor(enabled, checked)
     val elevationOverlay = LocalElevationOverlay.current
     val absoluteElevation = LocalAbsoluteElevation.current + elevation
     val resolvedThumbColor =
-        if (thumbColor == MaterialTheme.colors.surface && elevationOverlay != null) {
+        if (thumbColor == MaterialTheme.colorScheme.surface && elevationOverlay != null) {
             elevationOverlay.apply(thumbColor, absoluteElevation)
         } else {
             thumbColor
@@ -191,24 +218,24 @@ object SwitchDefaults {
      */
     @Composable
     fun colors(
-        checkedThumbColor: Color = MaterialTheme.colors.onSecondary,
-        checkedTrackColor: Color = MaterialTheme.colors.secondary,
+        checkedThumbColor: Color = MaterialTheme.colorScheme.onSecondary,
+        checkedTrackColor: Color = MaterialTheme.colorScheme.secondary,
         checkedTrackAlpha: Float = 1f,
-        uncheckedThumbColor: Color = MaterialTheme.colors.onBackground,
-        uncheckedTrackColor: Color = MaterialTheme.colors.onBackground,
+        uncheckedThumbColor: Color = MaterialTheme.colorScheme.onBackground,
+        uncheckedTrackColor: Color = MaterialTheme.colorScheme.onBackground,
         uncheckedTrackAlpha: Float = 1f,
         disabledCheckedThumbColor: Color = checkedThumbColor
             .copy(alpha = ContentAlpha.disabled)
-            .compositeOver(MaterialTheme.colors.surface),
+            .compositeOver(MaterialTheme.colorScheme.surface),
         disabledCheckedTrackColor: Color = checkedTrackColor
             .copy(alpha = ContentAlpha.disabled)
-            .compositeOver(MaterialTheme.colors.surface),
+            .compositeOver(MaterialTheme.colorScheme.surface),
         disabledUncheckedThumbColor: Color = uncheckedThumbColor
             .copy(alpha = ContentAlpha.disabled)
-            .compositeOver(MaterialTheme.colors.surface),
+            .compositeOver(MaterialTheme.colorScheme.surface),
         disabledUncheckedTrackColor: Color = uncheckedTrackColor
             .copy(alpha = ContentAlpha.disabled)
-            .compositeOver(MaterialTheme.colors.surface)
+            .compositeOver(MaterialTheme.colorScheme.surface)
     ): SwitchColors = DefaultSwitchColors(
         checkedThumbColor = checkedThumbColor,
         checkedTrackColor = checkedTrackColor.copy(alpha = checkedTrackAlpha),

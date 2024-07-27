@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
@@ -59,13 +59,13 @@ fun AccountManagePage(
     navigator: DestinationsNavigator,
 ) {
     Scaffold(
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_account_manage),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -157,9 +157,9 @@ fun AccountManagePage(
                         .padding(16.dp)
                         .padding(start = 8.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(color = ExtendedTheme.colors.chip)
+                        .background(color = ExtendedTheme.colorScheme.chip)
                         .padding(12.dp),
-                    color = ExtendedTheme.colors.onChip,
+                    color = ExtendedTheme.colorScheme.onChip,
                     fontSize = 12.sp
                 )
             }
@@ -204,7 +204,7 @@ fun AccountManagePage(
                 TextPref(
                     title = stringResource(id = R.string.title_copy_bduss),
                     summary = stringResource(id = R.string.summary_copy_bduss),
-                    onClick = { TiebaUtil.copyText(context, account?.bduss, isSensitive = true) },
+                    onClick = { TiebaUtil.copyText(account?.bduss, isSensitive = true) },
                     leadingIcon = {
                         LeadingIcon {
                             AvatarIcon(

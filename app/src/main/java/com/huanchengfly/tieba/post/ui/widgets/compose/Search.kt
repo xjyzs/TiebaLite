@@ -18,16 +18,17 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.PhotoSizeSelectActual
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,7 +91,7 @@ fun QuotePostCard(
     ) {
         HighlightText(
             text = quoteContentString,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             highlightKeywords = (keyword?.split(" ") ?: emptyList()).toImmutableList()
@@ -100,7 +101,7 @@ fun QuotePostCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6.dp))
-                .background(ExtendedTheme.colors.card)
+                .background(ExtendedTheme.colorScheme.card)
                 .clickable {
                     onMainPostClick(mainPost)
                 },
@@ -131,7 +132,7 @@ fun MainPostCard(
     ) {
         HighlightText(
             text = titleString,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -140,7 +141,7 @@ fun MainPostCard(
         if (mainPost.content.isNotBlank()) {
             PbContentText(
                 text = mainPost.content,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -260,7 +261,7 @@ fun SearchThreadItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(6.dp))
-                            .background(ExtendedTheme.colors.floorCard)
+                            .background(ExtendedTheme.colorScheme.floorCard)
                             .clickable {
                                 onQuotePostClick(item.postInfo)
                             },
@@ -273,7 +274,7 @@ fun SearchThreadItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(6.dp))
-                            .background(ExtendedTheme.colors.floorCard)
+                            .background(ExtendedTheme.colorScheme.floorCard)
                             .clickable {
                                 onMainPostClick(item.mainPost)
                             },
@@ -403,9 +404,9 @@ fun SearchBox(
     appendIcon: @Composable () -> Unit = {},
     focusRequester: FocusRequester = remember { FocusRequester() },
     shape: Shape = RectangleShape,
-    color: Color = ExtendedTheme.colors.topBarSurface,
-    contentColor: Color = ExtendedTheme.colors.onTopBarSurface,
-    elevation: Dp = 0.dp,
+    color: Color = ExtendedTheme.colorScheme.topBarSurface,
+    contentColor: Color = ExtendedTheme.colorScheme.onTopBarSurface,
+    shadowElevation: Dp = 0.dp,
 ) {
     val isKeywordNotEmpty = remember(keyword) { keyword.isNotEmpty() }
     var isFocused by remember { mutableStateOf(false) }
@@ -414,7 +415,7 @@ fun SearchBox(
         shape = shape,
         color = color,
         contentColor = contentColor,
-        elevation = elevation
+        shadowElevation = shadowElevation
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),

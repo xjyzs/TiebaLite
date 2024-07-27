@@ -22,16 +22,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.NavigationRail
-import androidx.compose.material.NavigationRailItem
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.offset
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedColors
+import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedColorScheme
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.theme.compose.White
 import com.huanchengfly.tieba.post.ui.utils.MainNavigationContentPosition
@@ -82,7 +82,6 @@ fun PermanentNavigationDrawer(
 private val ActiveIndicatorHeight = 56.dp
 private val ActiveIndicatorWidth = 240.dp
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NavigationDrawerItem(
     label: @Composable () -> Unit,
@@ -93,9 +92,9 @@ fun NavigationDrawerItem(
     badge: (@Composable () -> Unit)? = null,
     shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color = Color.Transparent,
-    selectedBackgroundColor: Color = MaterialTheme.colors.primary.copy(0.25f),
-    itemColor: Color = MaterialTheme.colors.onSurface,
-    selectedItemColor: Color = MaterialTheme.colors.primary,
+    selectedBackgroundColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+    itemColor: Color = MaterialTheme.colorScheme.onSurface,
+    selectedItemColor: Color = MaterialTheme.colorScheme.primary,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     Surface(
@@ -142,7 +141,7 @@ fun NavigationDrawerContent(
     PositionLayout(
         modifier = Modifier
             .width(ActiveIndicatorWidth)
-            .background(ExtendedTheme.colors.bottomBar)
+            .background(ExtendedTheme.colorScheme.bottomBar)
             .padding(16.dp),
         content = {
             Column(
@@ -164,8 +163,8 @@ fun NavigationDrawerContent(
                         AccountNavIcon(spacer = false, size = Sizes.Large)
                         Text(
                             text = account.nameShow ?: account.name,
-                            style = MaterialTheme.typography.subtitle1,
-                            color = ExtendedTheme.colors.text
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ExtendedTheme.colorScheme.text
                         )
                     }
                 } else {
@@ -183,8 +182,8 @@ fun NavigationDrawerContent(
                         )
                         Text(
                             text = stringResource(id = R.string.app_name).uppercase(),
-                            style = MaterialTheme.typography.h6,
-                            color = ExtendedTheme.colors.primary
+                            style = MaterialTheme.typography.titleLarge,
+                            color = ExtendedTheme.colorScheme.primary
                         )
                     }
                 }
@@ -227,7 +226,7 @@ fun NavigationDrawerContent(
                                             .clip(CircleShape)
                                             .align(Alignment.TopEnd)
                                             .background(
-                                                color = MaterialTheme.colors.secondary,
+                                                color = MaterialTheme.colorScheme.secondary,
                                                 shape = CircleShape
                                             ),
                                     )
@@ -298,12 +297,11 @@ fun NavigationRail(
     navigationContentPosition: MainNavigationContentPosition
 ) {
     NavigationRail(
-        backgroundColor = ExtendedTheme.colors.bottomBar,
-        contentColor = ExtendedTheme.colors.unselected,
+        containerColor = ExtendedTheme.colorScheme.bottomBar,
+        contentColor = ExtendedTheme.colorScheme.unselected,
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        elevation = 0.dp,
         header = {
             AccountNavIcon(spacer = false)
         }
@@ -343,7 +341,7 @@ fun NavigationRail(
                                         .clip(CircleShape)
                                         .align(Alignment.TopEnd)
                                         .background(
-                                            color = MaterialTheme.colors.secondary,
+                                            color = MaterialTheme.colorScheme.secondary,
                                             shape = CircleShape
                                         ),
                                 )
@@ -358,7 +356,7 @@ fun NavigationRail(
 
 @Composable
 fun BottomNavigationDivider(
-    themeColors: ExtendedColors = ExtendedTheme.colors
+    themeColors: ExtendedColorScheme = ExtendedTheme.colorScheme
 ) {
     if (!themeColors.isNightMode) {
         Spacer(
@@ -377,16 +375,19 @@ fun BottomNavigation(
     onChangePosition: (position: Int) -> Unit,
     onReselected: (position: Int) -> Unit,
     navigationItems: ImmutableList<NavigationItem>,
-    themeColors: ExtendedColors = ExtendedTheme.colors
+    themeColors: ExtendedColorScheme = ExtendedTheme.colorScheme
 ) {
     Column(modifier = Modifier.navigationBarsPadding()) {
         BottomNavigationDivider(themeColors)
-        BottomNavigation(
-            backgroundColor = themeColors.bottomBar,
-            elevation = 0.dp,
+        NavigationBar(
+            containerColor = themeColors.bottomBar,
+            tonalElevation = 0.dp,
         ) {
+            val selectedColor = MaterialTheme.colorScheme.secondary
+            val unselectedColor = themeColors.unselected
+
             navigationItems.fastForEachIndexed { index, navigationItem ->
-                BottomNavigationItem(
+                NavigationBarItem(
                     selected = index == currentPosition,
                     onClick = {
                         if (index == currentPosition) {
@@ -417,15 +418,20 @@ fun BottomNavigation(
                                         .clip(CircleShape)
                                         .align(Alignment.TopEnd)
                                         .background(
-                                            color = MaterialTheme.colors.secondary,
+                                            color = MaterialTheme.colorScheme.secondary,
                                             shape = CircleShape
                                         ),
                                 )
                             }
                         }
                     },
-                    selectedContentColor = MaterialTheme.colors.secondary,
-                    unselectedContentColor = themeColors.unselected,
+                    colors = NavigationBarItemDefaults.colors().copy(
+                        selectedIconColor = selectedColor,
+                        selectedTextColor = selectedColor,
+                        selectedIndicatorColor = selectedColor,
+                        unselectedIconColor = unselectedColor,
+                        unselectedTextColor = unselectedColor
+                    ),
                     alwaysShowLabel = false
                 )
             }

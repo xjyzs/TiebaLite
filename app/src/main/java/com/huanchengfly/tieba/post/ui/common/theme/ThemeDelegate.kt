@@ -7,12 +7,12 @@ import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.ext.getColorCompat
 import com.huanchengfly.tieba.post.ui.common.theme.compose.dynamicTonalPalette
 import com.huanchengfly.tieba.post.ui.common.theme.interfaces.ThemeSwitcher
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.Util
 import com.huanchengfly.tieba.post.utils.appPreferences
+import com.kiral.himari.ext.android.content.getColorCompat
 
 object ThemeDelegate : ThemeSwitcher {
     private fun getDefaultColorResId(attrId: Int): Int {
@@ -66,12 +66,16 @@ object ThemeDelegate : ThemeSwitcher {
                     val customPrimaryColorStr = context.appPreferences.customPrimaryColor
                     return if (customPrimaryColorStr != null) {
                         Color.parseColor(customPrimaryColorStr)
-                    } else getColorByAttr(context, attrId, ThemeUtil.THEME_DEFAULT)
+                    } else {
+                        getColorByAttr(context, attrId, ThemeUtil.THEME_DEFAULT)
+                    }
                 } else if (ThemeUtil.isTranslucentTheme(theme)) {
                     val primaryColorStr = context.appPreferences.translucentPrimaryColor
                     return if (primaryColorStr != null) {
                         Color.parseColor(primaryColorStr)
-                    } else getColorByAttr(context, attrId, ThemeUtil.THEME_DEFAULT)
+                    } else {
+                        getColorByAttr(context, attrId, ThemeUtil.THEME_DEFAULT)
+                    }
                 }
                 return context.getColorCompat(
                     resources.getIdentifier(
@@ -131,7 +135,9 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_on_accent_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_on_accent_light)
+                }
             }
 
             R.attr.colorToolbar -> {
@@ -162,7 +168,11 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(if (ThemeUtil.isNightMode(theme)) R.color.color_text_night else R.color.color_text)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isNightMode(theme)) R.color.color_text_night else R.color.color_text
+                    )
+                }
             }
 
             R.attr.color_text_disabled -> {
@@ -174,7 +184,14 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(if (ThemeUtil.isNightMode(theme)) R.color.color_text_disabled_night else R.color.color_text_disabled)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isNightMode(
+                                theme
+                            )
+                        ) R.color.color_text_disabled_night else R.color.color_text_disabled
+                    )
+                }
             }
 
             R.attr.colorTextSecondary -> {
@@ -186,13 +203,22 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(if (ThemeUtil.isNightMode(theme)) R.color.color_text_secondary_night else R.color.color_text_secondary)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isNightMode(
+                                theme
+                            )
+                        ) R.color.color_text_secondary_night else R.color.color_text_secondary
+                    )
+                }
             }
 
             R.attr.colorTextOnPrimary -> {
                 return if (ThemeUtil.isTranslucentTheme(theme)) {
                     context.getColorCompat(R.color.white)
-                } else getColorByAttr(context, R.attr.colorBackground, theme)
+                } else {
+                    getColorByAttr(context, R.attr.colorBackground, theme)
+                }
             }
 
             R.attr.colorBackground -> {
@@ -207,7 +233,9 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_background_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_background_light)
+                }
             }
 
             R.attr.colorWindowBackground -> {
@@ -241,7 +269,9 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_chip_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_chip_light)
+                }
             }
 
             R.attr.colorOnChip -> {
@@ -253,46 +283,52 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_on_chip_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_on_chip_light)
+                }
             }
 
             R.attr.colorUnselected -> {
                 return context.getColorCompat(
-                    if (ThemeUtil.isNightMode(theme)) resources.getIdentifier(
-                        "theme_color_unselected_$theme",
-                        "color",
-                        App.INSTANCE.packageName
-                    ) else R.color.theme_color_unselected_day
+                    if (ThemeUtil.isNightMode(theme)) {
+                        resources.getIdentifier(
+                            "theme_color_unselected_$theme",
+                            "color",
+                            App.INSTANCE.packageName
+                        )
+                    } else {
+                        R.color.theme_color_unselected_day
+                    }
                 )
             }
 
             R.attr.colorNavBar -> {
-                if (ThemeUtil.isTranslucentTheme(theme)) {
-                    return context.getColorCompat(R.color.transparent)
-                }
-                return if (ThemeUtil.isNightMode(theme)) {
-                    context.getColorCompat(
-                        resources.getIdentifier(
-                            "theme_color_nav_$theme",
-                            "color",
-                            App.INSTANCE.packageName
-                        )
+                val color = if (ThemeUtil.isTranslucentTheme(theme)) {
+                    R.color.transparent
+                } else if (ThemeUtil.isNightMode(theme)) {
+                    resources.getIdentifier(
+                        "theme_color_nav_$theme",
+                        "color",
+                        App.INSTANCE.packageName
                     )
                 } else {
-                    context.getColorCompat(R.color.theme_color_nav_light)
+                    R.color.theme_color_nav_light
                 }
+                return context.getColorCompat(color)
             }
 
             R.attr.colorFloorCard -> {
-                return if (ThemeUtil.isNightMode(theme) || ThemeUtil.isTranslucentTheme(theme)) {
-                    context.getColorCompat(
+                val color =
+                    if (ThemeUtil.isNightMode(theme) || ThemeUtil.isTranslucentTheme(theme)) {
                         resources.getIdentifier(
                             "theme_color_floor_card_$theme",
                             "color",
                             App.INSTANCE.packageName
                         )
-                    )
-                } else context.getColorCompat(R.color.theme_color_floor_card_light)
+                    } else {
+                        R.color.theme_color_floor_card_light
+                    }
+                return context.getColorCompat(color)
             }
 
             R.attr.colorCard -> {
@@ -304,7 +340,9 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_card_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_card_light)
+                }
             }
 
             R.attr.colorDivider -> {
@@ -316,13 +354,22 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_divider_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_divider_light)
+                }
             }
 
             R.attr.shadow_color -> {
                 return if (ThemeUtil.isTranslucentTheme(theme)) {
                     context.getColorCompat(R.color.transparent)
-                } else context.getColorCompat(if (ThemeUtil.isNightMode(theme)) R.color.theme_color_shadow_night else R.color.theme_color_shadow_day)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isNightMode(
+                                theme
+                            )
+                        ) R.color.theme_color_shadow_night else R.color.theme_color_shadow_day
+                    )
+                }
             }
 
             R.attr.colorToolbarItem -> {
@@ -337,7 +384,11 @@ object ThemeDelegate : ThemeSwitcher {
                 }
                 return if (ThemeUtil.isNightMode(theme)) {
                     context.getColorCompat(R.color.theme_color_toolbar_item_night)
-                } else context.getColorCompat(if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_light else R.color.theme_color_toolbar_item_dark)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_light else R.color.theme_color_toolbar_item_dark
+                    )
+                }
             }
 
             R.attr.colorToolbarItemActive -> {
@@ -352,7 +403,9 @@ object ThemeDelegate : ThemeSwitcher {
                 } else if (ThemeUtil.isNightMode(theme)) {
                     return getColorByAttr(context, R.attr.colorAccent, theme)
                 }
-                return context.getColorCompat(if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_light else R.color.theme_color_toolbar_item_dark)
+                return context.getColorCompat(
+                    if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_light else R.color.theme_color_toolbar_item_dark
+                )
             }
 
             R.attr.colorToolbarItemSecondary -> {
@@ -367,7 +420,11 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_secondary_white else R.color.theme_color_toolbar_item_secondary_light)
+                } else {
+                    context.getColorCompat(
+                        if (ThemeUtil.isStatusBarFontDark()) R.color.theme_color_toolbar_item_secondary_white else R.color.theme_color_toolbar_item_secondary_light
+                    )
+                }
             }
 
             R.attr.colorIndicator -> {
@@ -379,7 +436,9 @@ object ThemeDelegate : ThemeSwitcher {
                             App.INSTANCE.packageName
                         )
                     )
-                } else context.getColorCompat(R.color.theme_color_indicator_light)
+                } else {
+                    context.getColorCompat(R.color.theme_color_indicator_light)
+                }
             }
 
             R.attr.colorToolbarSurface -> {

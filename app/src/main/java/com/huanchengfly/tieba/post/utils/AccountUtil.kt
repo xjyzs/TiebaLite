@@ -11,12 +11,14 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.core.content.edit
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.TiebaApi
 import com.huanchengfly.tieba.post.api.models.LoginBean
 import com.huanchengfly.tieba.post.arch.GlobalEvent
 import com.huanchengfly.tieba.post.arch.emitGlobalEvent
 import com.huanchengfly.tieba.post.models.database.Account
+import com.kiral.himari.ext.android.widget.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -115,15 +117,16 @@ object AccountUtil {
     }
 
     @JvmStatic
-    fun switchAccount(context: Context, id: Int): Boolean {
-        context.sendBroadcast(Intent().setAction(ACTION_SWITCH_ACCOUNT))
-        val account = runCatching { getAccountInfo(id) }.getOrNull() ?: return false
+    fun switchAccount(context: Context, id: Int) {
+        context.sendBroadcast(Intent(ACTION_SWITCH_ACCOUNT))
+        val account = runCatching { getAccountInfo(id) }.getOrNull() ?: return
         mutableCurrentAccountState.value = account
         GlobalScope.launch {
             emitGlobalEvent(GlobalEvent.AccountSwitched)
         }
-        return context.getSharedPreferences("accountData", Context.MODE_PRIVATE).edit()
-            .putInt("now", id).commit()
+        context.getSharedPreferences("accountData", Context.MODE_PRIVATE).edit(commit = true) {
+            putInt("now", id)
+        }
     }
 
     private fun updateAccount(
@@ -139,7 +142,7 @@ object AccountUtil {
         }
     }
 
-    fun fetchAccountFlow(account: Account = getLoginInfo()!!): Flow<Account> {
+    fun fetchAccountFlow(account: Account): Flow<Account> {
         return fetchAccountFlow(account.bduss, account.sToken, account.cookie)
     }
 
@@ -229,12 +232,14 @@ object AccountUtil {
             accounts = allAccounts
             account = accounts[0]
             switchAccount(context, account.id)
-            Toast.makeText(context, "退出登录成功，已切换至账号 " + account.nameShow, Toast.LENGTH_SHORT).show()
+            context.toast("退出登录成功，已切换至账号 ${account.nameShow}")
             return
         }
         mutableCurrentAccountState.value = null
-        context.getSharedPreferences("accountData", Context.MODE_PRIVATE).edit().clear().commit()
-        Toast.makeText(context, R.string.toast_exit_account_success, Toast.LENGTH_SHORT).show()
+        context.getSharedPreferences("accountData", Context.MODE_PRIVATE).edit(commit = true) {
+            clear()
+        }
+        context.toast(R.string.toast_exit_account_success)
     }
 
     fun getSToken(): String? {

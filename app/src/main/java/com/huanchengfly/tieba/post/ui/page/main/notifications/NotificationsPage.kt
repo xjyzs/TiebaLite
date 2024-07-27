@@ -3,11 +3,11 @@ package com.huanchengfly.tieba.post.ui.page.main.notifications
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -60,7 +60,7 @@ fun NotificationsPage(
     val coroutineScope = rememberCoroutineScope()
     ProvideNavigator(navigator = navigator) {
         MyScaffold(
-            backgroundColor = Color.Transparent,
+            modifier = Modifier.fillMaxSize(),
             topBar = {
                 TitleCentredToolbar(
                     title = { Text(text = stringResource(id = R.string.title_notifications)) },
@@ -80,7 +80,7 @@ fun NotificationsPage(
                         },
                         divider = {},
                         backgroundColor = Color.Transparent,
-                        contentColor = ExtendedTheme.colors.onTopBar,
+                        contentColor = ExtendedTheme.colorScheme.onTopBar,
                     ) {
                         pages.forEachIndexed { index, pair ->
                             Tab(
@@ -96,7 +96,7 @@ fun NotificationsPage(
                     }
                 }
             },
-            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
         ) { paddingValues ->
             LazyLoadHorizontalPager(
                 state = pagerState,
@@ -131,7 +131,7 @@ fun NotificationsPage(
     ) { pages.size }
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.title_notifications),
@@ -155,7 +155,7 @@ fun NotificationsPage(
                     },
                     divider = {},
                     backgroundColor = Color.Transparent,
-                    contentColor = ExtendedTheme.colors.onTopBar,
+                    contentColor = ExtendedTheme.colorScheme.onTopBar,
                 ) {
                     pages.forEachIndexed { index, pair -> 
                         Tab(

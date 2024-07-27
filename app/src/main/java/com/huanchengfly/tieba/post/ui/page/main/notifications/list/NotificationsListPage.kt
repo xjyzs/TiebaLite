@@ -11,16 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,6 +34,7 @@ import com.huanchengfly.tieba.post.ui.page.LocalNavigator
 import com.huanchengfly.tieba.post.ui.page.destinations.SubPostsPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Avatar
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockTip
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockableContent
@@ -48,7 +49,7 @@ import com.huanchengfly.tieba.post.utils.DateTimeUtils
 import com.huanchengfly.tieba.post.utils.StringUtil
 import kotlinx.collections.immutable.persistentListOf
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsListPage(
     type: NotificationsType,
@@ -61,7 +62,6 @@ fun NotificationsListPage(
         viewModel.send(NotificationsListUiIntent.Refresh)
         viewModel.initialized = true
     }
-    val context = LocalContext.current
     val navigator = LocalNavigator.current
     val isRefreshing by viewModel.uiState.collectPartialAsState(
         prop1 = NotificationsListUiState::isRefreshing,
@@ -83,13 +83,15 @@ fun NotificationsListPage(
         prop1 = NotificationsListUiState::currentPage,
         initial = 1
     )
-    val pullRefreshState = rememberPullRefreshState(
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
         onRefresh = { viewModel.send(NotificationsListUiIntent.Refresh) }
     )
+
     val lazyListState = rememberLazyListState()
     Box(
-        modifier = Modifier.pullRefresh(pullRefreshState)
+        modifier = Modifier
+            .nestedScroll(pullToRefreshState.nestedScrollConnection)
     ) {
         LoadMoreLayout(
             isLoading = isLoadingMore,
@@ -171,7 +173,7 @@ fun NotificationsListPage(
                                 }
                                 EmoticonText(text = info.content ?: "")
                                 val quoteText = if (type == NotificationsType.ReplyMe) {
-                                    if ("1" == info.isFloor) {
+                                    if (info.isFloor == "1") {
                                         info.quoteContent
                                     } else {
                                         stringResource(
@@ -206,11 +208,11 @@ fun NotificationsListPage(
                                                 }
                                             }
                                             .background(
-                                                ExtendedTheme.colors.chip,
+                                                ExtendedTheme.colorScheme.chip,
                                                 RoundedCornerShape(6.dp)
                                             )
                                             .padding(8.dp),
-                                        color = ExtendedTheme.colors.onChip,
+                                        color = ExtendedTheme.colorScheme.onChip,
                                         fontSize = 12.sp,
                                     )
                                 }
@@ -221,12 +223,11 @@ fun NotificationsListPage(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = isRefreshing,
-            state = pullRefreshState,
+        PullToRefreshContainer(
+            state = pullToRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-            contentColor = ExtendedTheme.colors.primary,
+            containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+            contentColor = ExtendedTheme.colorScheme.primary,
         )
     }
 }

@@ -22,21 +22,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -50,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -69,8 +67,9 @@ import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.SubPostsPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.ClickMenu
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
 import com.huanchengfly.tieba.post.ui.widgets.compose.HorizontalDivider
 import com.huanchengfly.tieba.post.ui.widgets.compose.LoadMoreLayout
@@ -119,13 +118,13 @@ private fun SearchHistoryList(
                 text = stringResource(id = R.string.title_search_history),
                 modifier = Modifier
                     .weight(1f),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.titleMedium
             )
             if (hasItem) {
                 Text(
                     text = stringResource(id = R.string.button_clear_all),
                     modifier = Modifier.clickable(onClick = onClear),
-                    style = MaterialTheme.typography.button
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }
@@ -144,7 +143,7 @@ private fun SearchHistoryList(
                             onClick = { onSearchHistoryClick(searchHistory) },
                             onLongClick = { onDelete(searchHistory) }
                         )
-                        .background(ExtendedTheme.colors.chip)
+                        .background(ExtendedTheme.colorScheme.chip)
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -154,12 +153,12 @@ private fun SearchHistoryList(
             }
         }
         if (hasMore) {
-            Button(
+            DefaultButton(
                 onClick = onToggleExpand,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = Color.Transparent,
-                    contentColor = ExtendedTheme.colors.text
+                    containerColor = Color.Transparent,
+                    contentColor = ExtendedTheme.colorScheme.text
                 )
             ) {
                 Row(
@@ -175,7 +174,7 @@ private fun SearchHistoryList(
                         text = stringResource(
                             id = if (expanded) R.string.button_expand_less_history else R.string.button_expand_more_history
                         ),
-                        style = MaterialTheme.typography.button,
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -190,7 +189,7 @@ private fun SearchHistoryList(
             ) {
                 Text(
                     text = stringResource(id = R.string.tip_empty),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     fontSize = 16.sp
                 )
             }
@@ -198,7 +197,7 @@ private fun SearchHistoryList(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun ForumSearchPostPage(
@@ -280,10 +279,11 @@ fun ForumSearchPostPage(
         )
     }
 
-    val pullRefreshState = rememberPullRefreshState(
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
-        onRefresh = ::refresh
+        onRefresh = { refresh() }
     )
+
     val lazyListState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -308,7 +308,7 @@ fun ForumSearchPostPage(
                     Box(
                         modifier = Modifier
                             .height(64.dp)
-                            .background(ExtendedTheme.colors.topBar)
+                            .background(ExtendedTheme.colorScheme.topBar)
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         SearchBox(
@@ -334,7 +334,7 @@ fun ForumSearchPostPage(
                                         id = R.string.hint_search_in_ba,
                                         forumName
                                     ),
-                                    color = ExtendedTheme.colors.onTopBarSurface.copy(alpha = ContentAlpha.medium)
+                                    color = ExtendedTheme.colorScheme.onTopBarSurface.copy(alpha = MaterialTheme.colorScheme.onSurfaceVariant.alpha)
                                 )
                             },
                             prependIcon = {
@@ -385,7 +385,7 @@ fun ForumSearchPostPage(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .pullRefresh(pullRefreshState)
+                                .nestedScroll(pullToRefreshState.nestedScrollConnection)
                         ) {
                             LoadMoreLayout(
                                 isLoading = isLoadingMore,
@@ -466,7 +466,7 @@ fun ForumSearchPostPage(
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
-                                                .background(ExtendedTheme.colors.background)
+                                                .background(ExtendedTheme.colorScheme.background)
                                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                                 .clickable(
                                                     interactionSource = remember { MutableInteractionSource() },
@@ -578,12 +578,11 @@ fun ForumSearchPostPage(
                                 }
                             }
 
-                            PullRefreshIndicator(
-                                refreshing = isRefreshing,
-                                state = pullRefreshState,
+                            PullToRefreshContainer(
+                                state = pullToRefreshState,
                                 modifier = Modifier.align(Alignment.TopCenter),
-                                backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                                contentColor = ExtendedTheme.colors.primary,
+                                containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                                contentColor = ExtendedTheme.colorScheme.primary,
                             )
                         }
                     }

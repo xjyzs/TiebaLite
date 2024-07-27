@@ -26,7 +26,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Lifecycle
 import butterknife.ButterKnife
 import com.gyf.immersionbar.ImmersionBar
-import com.huanchengfly.tieba.post.App
 import com.huanchengfly.tieba.post.App.Companion.INSTANCE
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.ScreenInfo
@@ -39,6 +38,8 @@ import com.huanchengfly.tieba.post.utils.DialogUtil
 import com.huanchengfly.tieba.post.utils.HandleBackUtil
 import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.calcStatusBarColorInt
+import com.kiral.himari.ext.android.app.appContext
+import com.kiral.himari.ext.android.app.isSystemNightMode
 
 abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable {
     private var mTintToolbar: TintToolbar? = null
@@ -140,9 +141,10 @@ abstract class BaseActivity : AppCompatActivity(), ExtraRefreshable {
     override fun onResume() {
         super.onResume()
         if (appPreferences.followSystemNight) {
-            if (App.isSystemNight && !ThemeUtil.isNightMode()) {
+            val isSystemNightMode = appContext.isSystemNightMode
+            if (isSystemNightMode && !ThemeUtil.isNightMode()) {
                 ThemeUtil.switchToNightMode(this, false)
-            } else if (!App.isSystemNight && ThemeUtil.isNightMode()) {
+            } else if (!isSystemNightMode && ThemeUtil.isNightMode()) {
                 ThemeUtil.switchFromNightMode(this, false)
             }
         }

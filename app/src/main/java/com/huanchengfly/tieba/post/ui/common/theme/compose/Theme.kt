@@ -2,11 +2,13 @@ package com.huanchengfly.tieba.post.ui.common.theme.compose
 
 import android.annotation.SuppressLint
 import android.os.Build
-import androidx.compose.material.Colors
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -25,7 +27,7 @@ import com.huanchengfly.tieba.post.utils.appPreferences
 import com.huanchengfly.tieba.post.utils.compose.darken
 
 @Stable
-data class ExtendedColors(
+data class ExtendedColorScheme(
     val theme: String,
     val isNightMode: Boolean,
     val primary: Color = Color.Unspecified,
@@ -57,8 +59,8 @@ data class ExtendedColors(
     val placeholder: Color = Color.Unspecified,
 )
 
-val LocalExtendedColors = staticCompositionLocalOf {
-    ExtendedColors(
+private val LocalExtendedColorScheme = staticCompositionLocalOf {
+    ExtendedColorScheme(
         ThemeUtil.THEME_DEFAULT,
         false,
     )
@@ -68,10 +70,10 @@ val LocalExtendedColors = staticCompositionLocalOf {
 @SuppressLint("ConflictingOnColor")
 fun getColorPalette(
     darkTheme: Boolean,
-    extendedColors: ExtendedColors
-): Colors {
-    val primaryColor = extendedColors.accent
-    val secondaryColor = extendedColors.primary
+    extendedColorScheme: ExtendedColorScheme
+): ColorScheme {
+    val primaryColor = extendedColorScheme.accent
+    val secondaryColor = extendedColorScheme.primary
     return if (darkTheme) {
         darkColors(
             primary = primaryColor,
@@ -79,10 +81,11 @@ fun getColorPalette(
             secondary = secondaryColor,
             secondaryVariant = Color(0xFF3F310A),
             onSecondary = Color(0xFFFFFFFF),
-            background = extendedColors.background,
-            onBackground = extendedColors.text,
-            surface = extendedColors.card,
+            background = extendedColorScheme.background,
+            onBackground = extendedColorScheme.text,
+            surface = extendedColorScheme.card,
         )
+        darkColorScheme()
     } else {
         lightColors(
             primary = primaryColor,
@@ -90,10 +93,11 @@ fun getColorPalette(
             secondary = secondaryColor,
             secondaryVariant = Color(0xFF000000),
             onSecondary = Color(0xFFFFFFFF),
-            background = extendedColors.background,
-            onBackground = extendedColors.text,
-            surface = extendedColors.card,
+            background = extendedColorScheme.background,
+            onBackground = extendedColorScheme.text,
+            surface = extendedColorScheme.card,
         )
+        lightColorScheme()
     }
 }
 
@@ -101,7 +105,7 @@ fun getColorPalette(
 private fun getDynamicColor(
     theme: String,
     tonalPalette: TonalPalette,
-): ExtendedColors {
+): ExtendedColorScheme {
     val isDarkColorPalette = ThemeUtil.isNightMode(theme)
     return if (isDarkColorPalette) {
         if (theme == ThemeUtil.THEME_AMOLED_DARK) {
@@ -119,8 +123,7 @@ private fun getDynamicTopBarColor(
     tonalPalette: TonalPalette,
     isNightMode: Boolean = false,
 ): Color {
-    val topBarUsePrimaryColor =
-        LocalContext.current.appPreferences.toolbarPrimaryColor
+    val topBarUsePrimaryColor = LocalContext.current.appPreferences.toolbarPrimaryColor
     val primaryColor = tonalPalette.primary40
     val backgroundColor = tonalPalette.neutralVariant99
     return if (topBarUsePrimaryColor) {
@@ -207,8 +210,8 @@ private fun getDynamicOnTopBarSurfaceColor(
 }
 
 @Composable
-private fun getLightDynamicColor(tonalPalette: TonalPalette): ExtendedColors {
-    return ExtendedColors(
+private fun getLightDynamicColor(tonalPalette: TonalPalette): ExtendedColorScheme {
+    return ExtendedColorScheme(
         theme = "dynamic",
         isNightMode = false,
         primary = tonalPalette.primary40,
@@ -242,8 +245,8 @@ private fun getLightDynamicColor(tonalPalette: TonalPalette): ExtendedColors {
 }
 
 @Composable
-private fun getDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColors {
-    return ExtendedColors(
+private fun getDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColorScheme {
+    return ExtendedColorScheme(
         theme = "dynamic",
         isNightMode = true,
         primary = tonalPalette.primary80,
@@ -277,8 +280,8 @@ private fun getDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColors {
 }
 
 @Composable
-private fun getBlackDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColors {
-    return ExtendedColors(
+private fun getBlackDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColorScheme {
+    return ExtendedColorScheme(
         theme = "dynamic",
         isNightMode = true,
         primary = tonalPalette.primary80,
@@ -312,14 +315,14 @@ private fun getBlackDarkDynamicColor(tonalPalette: TonalPalette): ExtendedColors
 }
 
 @Composable
-private fun getThemeColorForTheme(theme: String): ExtendedColors {
+private fun getThemeColorForTheme(theme: String): ExtendedColorScheme {
     val context = LocalContext.current
     val nowTheme = ThemeUtil.getCurrentTheme(theme)
     val textColor =
         Color(ThemeDelegate.getColorByAttr(context, R.attr.colorText, nowTheme))
     val bottomBarColor =
         Color(ThemeDelegate.getColorByAttr(context, R.attr.colorNavBar, nowTheme))
-    return ExtendedColors(
+    return ExtendedColorScheme(
         theme = nowTheme,
         isNightMode = ThemeUtil.isNightMode(nowTheme),
         primary = Color(
@@ -460,33 +463,32 @@ fun TiebaLiteTheme(
     )
     val isDarkColorPalette by remember {
         derivedStateOf {
-            ThemeUtil.isNightMode(theme)
-                    || (ThemeUtil.isTranslucentTheme(theme) && theme.contains("light"))
+            ThemeUtil.isNightMode(theme) || (ThemeUtil.isTranslucentTheme(theme) && theme.contains("light"))
         }
     }
 
-    val useDynamicTheme = isDynamicTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val useDynamicTheme = isDynamicTheme && Build.VERSION.SDK_INT >= 31
 
-    val extendedColors = if (!useDynamicTheme || ThemeUtil.isTranslucentTheme(theme)) {
+    val extendedColorScheme = if (!useDynamicTheme || ThemeUtil.isTranslucentTheme(theme)) {
         getThemeColorForTheme(theme)
     } else {
         getDynamicColor(theme, dynamicTonalPalette(context))
     }
 
-    val colors = getColorPalette(isDarkColorPalette, extendedColors)
+    val colors = getColorPalette(isDarkColorPalette, extendedColorScheme)
 
-    CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
+    CompositionLocalProvider(LocalExtendedColorScheme provides extendedColorScheme) {
         MaterialTheme(
-            colors = colors,
-            typography = Typography,
-            shapes = Shapes,
+            colorScheme = colors,
+            typography = TiebaTypography,
+            shapes = TiebaShapes,
             content = content
         )
     }
 }
 
 object ExtendedTheme {
-    val colors: ExtendedColors
+    val colorScheme: ExtendedColorScheme
         @Composable
-        get() = LocalExtendedColors.current
+        get() = LocalExtendedColorScheme.current
 }

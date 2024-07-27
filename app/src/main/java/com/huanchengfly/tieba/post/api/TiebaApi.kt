@@ -14,6 +14,5 @@ object TiebaApi {
 
     @Provides
     @Singleton
-    @JvmStatic
     fun getInstance(): ITiebaApi = MixedTiebaApiImpl
 }

@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -95,9 +95,9 @@ fun ClickMenu(
             DropdownMenu(
                 expanded = menuState.expanded,
                 onDismissRequest = { menuScope.dismiss() },
-                modifier = modifier.background(color = MaterialTheme.colors.surface)
+                modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
             ) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     menuScope.menuContent()
                 }
             }
@@ -154,9 +154,9 @@ fun LongClickMenu(
             DropdownMenu(
                 expanded = menuState.expanded,
                 onDismissRequest = { menuState.expanded = false },
-                modifier = Modifier.background(color = ExtendedTheme.colors.menuBackground)
+                modifier = Modifier.background(color = ExtendedTheme.colorScheme.menuBackground)
             ) {
-                ProvideContentColor(color = ExtendedTheme.colors.text) {
+                ProvideContentColor(color = ExtendedTheme.colorScheme.text) {
                     menuContent()
                 }
             }

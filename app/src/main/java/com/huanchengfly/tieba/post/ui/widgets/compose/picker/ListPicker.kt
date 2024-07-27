@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -69,11 +70,13 @@ fun <ItemValue> ListSinglePicker(
             ) {
                 itemIcons[itemValues[it]]?.invoke()
                 ProvideContentColor(
-                    color = if (selected) colors.selectedItemColor(enabled).value else colors.itemColor(
-                        enabled
-                    ).value
+                    color = if (selected) {
+                        colors.selectedItemColor(enabled).value
+                    } else {
+                        colors.itemColor(enabled).value
+                    }
                 ) {
-                    CompositionLocalProvider(LocalContentAlpha provides 1f) {
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
                         TextWithMinWidth(
                             text = itemTitles[it],
                             modifier = Modifier.weight(1f),
@@ -82,8 +85,12 @@ fun <ItemValue> ListSinglePicker(
                             minLength = itemTitleMaxWidth
                         )
                         if (selectedPosition == it) {
-                            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                ProvideContentColor(color = colors.selectedItemColor(enabled = enabled).value) {
+                            Box(
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                ProvideContentColor(
+                                    color = colors.selectedItemColor(enabled = enabled).value
+                                ) {
                                     selectedIndicator()
                                 }
                             }

@@ -236,7 +236,7 @@ fun NetworkImage(
     val enableClick = remember(photoViewData, shouldLoad) { photoViewData != null || !shouldLoad }
 
     val colorMask =
-        if (ExtendedTheme.colors.isNightMode && context.appPreferences.imageDarkenWhenNightMode) {
+        if (ExtendedTheme.colorScheme.isNightMode && context.appPreferences.imageDarkenWhenNightMode) {
             MaskTransformation(Color.parseColor("#99000000"))
         } else null
 
@@ -308,7 +308,7 @@ fun NetworkImage(
                 }
             }
             .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress { change, dragAmount ->
+                detectDragGesturesAfterLongPress { _, dragAmount ->
                     Log.i("NetworkImage", "dragAmount: $dragAmount")
                 }
             }

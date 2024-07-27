@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidthIn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,10 +20,11 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.TipScreen
 
-val DefaultLoadingScreen: @Composable StateScreenScope.() -> Unit = {
+@Composable
+fun DefaultLoadingScreen() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_loading_paperplane))
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -42,7 +43,8 @@ val DefaultLoadingScreen: @Composable StateScreenScope.() -> Unit = {
 //    CircularProgressIndicator(modifier = Modifier.size(48.dp), color = MaterialTheme.colors.primary)
 }
 
-val DefaultEmptyScreen: @Composable StateScreenScope.() -> Unit = {
+@Composable
+fun DefaultEmptyScreen(canReload: () -> Boolean, reload: () -> Unit) {
     TipScreen(
         title = { Text(text = stringResource(id = R.string.title_empty)) },
         image = {
@@ -56,8 +58,8 @@ val DefaultEmptyScreen: @Composable StateScreenScope.() -> Unit = {
             )
         },
         actions = {
-            if (canReload) {
-                Button(onClick = { reload() }) {
+            if (canReload()) {
+                DefaultButton(onClick = { reload() }) {
                     Text(text = stringResource(id = R.string.btn_refresh))
                 }
             }
@@ -66,11 +68,12 @@ val DefaultEmptyScreen: @Composable StateScreenScope.() -> Unit = {
     )
 }
 
-val DefaultErrorScreen: @Composable StateScreenScope.() -> Unit = {
+@Composable
+fun DefaultErrorScreen() {
     Text(
         text = stringResource(id = R.string.error_tip),
-        style = MaterialTheme.typography.body1,
-        color = ExtendedTheme.colors.textSecondary
+        style = MaterialTheme.typography.bodyLarge,
+        color = ExtendedTheme.colorScheme.textSecondary
     )
 }
 
@@ -82,9 +85,13 @@ fun StateScreen(
     modifier: Modifier = Modifier,
     onReload: (() -> Unit)? = null,
     clickToReload: Boolean = false,
-    emptyScreen: @Composable StateScreenScope.() -> Unit = DefaultEmptyScreen,
-    errorScreen: @Composable StateScreenScope.() -> Unit = DefaultErrorScreen,
-    loadingScreen: @Composable StateScreenScope.() -> Unit = DefaultLoadingScreen,
+    emptyScreen: @Composable StateScreenScope.() -> Unit = {
+        DefaultEmptyScreen(
+            canReload = { canReload },
+            reload = { reload() })
+    },
+    errorScreen: @Composable StateScreenScope.() -> Unit = { DefaultErrorScreen() },
+    loadingScreen: @Composable StateScreenScope.() -> Unit = { DefaultLoadingScreen() },
     content: @Composable StateScreenScope.() -> Unit,
 ) {
     val stateScreenScope = remember(key1 = onReload) { StateScreenScope(onReload) }

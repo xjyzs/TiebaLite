@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,11 +26,11 @@ fun BlockTip(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(6.dp))
-            .background(ExtendedTheme.colors.textSecondary.copy(alpha = 0.1f))
+            .background(ExtendedTheme.colorScheme.textSecondary.copy(alpha = 0.1f))
             .padding(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        ProvideTextStyle(value = MaterialTheme.typography.caption) {
-            ProvideContentColor(color = ExtendedTheme.colors.textSecondary) {
+        ProvideTextStyle(value = MaterialTheme.typography.bodySmall) {
+            ProvideContentColor(color = ExtendedTheme.colorScheme.textSecondary) {
                 text()
             }
         }

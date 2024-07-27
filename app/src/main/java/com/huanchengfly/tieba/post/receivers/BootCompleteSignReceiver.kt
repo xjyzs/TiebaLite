@@ -18,7 +18,7 @@ class BootCompleteSignReceiver : BroadcastReceiver() {
             if (autoSign) {
                 val autoSignTimeStr = context.appPreferences.autoSignTime
                 if (Util.getTimeInMillis(autoSignTimeStr) > System.currentTimeMillis()) {
-                    TiebaUtil.initAutoSign(context)
+                    TiebaUtil.initAutoSign()
                 } else {
                     val signDay = context.appPreferences.signDay
                     if (signDay != Calendar.getInstance()[Calendar.DAY_OF_MONTH]) {

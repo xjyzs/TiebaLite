@@ -85,17 +85,25 @@ android {
             isJniDebuggable = false
             multiDexEnabled = true
         }
+        debug {
+            isDefault = true
+            applicationIdSuffix = ".debug"
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
+    val javaVersion = JavaVersion.VERSION_17
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_17
-        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = javaVersion
+        sourceCompatibility = javaVersion
     }
     kotlinOptions {
+        jvmTarget = javaVersion.toString()
         val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
-        jvmTarget = "17"
+        val rootDir = project.rootDir.absolutePath
         freeCompilerArgs += listOf(
             "-P",
             "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$buildDir/compose_metrics"
@@ -105,8 +113,8 @@ android {
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$buildDir/compose_metrics"
         )
         freeCompilerArgs += listOf(
-            "-P", "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=" +
-                    project.rootDir.absolutePath + "/compose_stability_configuration.txt"
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=$rootDir/compose_stability_configuration.txt"
         )
     }
     packaging {
@@ -127,7 +135,7 @@ android {
 
 dependencies {
     // Local Files
-//    implementation fileTree(include: ["*.jar"], dir: "libs")
+    // implementation fileTree(include: ["*.jar"], dir: "libs")
 
     implementation(libs.swiftzer.semver)
     implementation(libs.godaddy.color.picker)
@@ -156,7 +164,7 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.accompanist.insets.ui)
     implementation(libs.accompanist.systemuicontroller)
-    implementation(libs.accompanist.placeholder.material)
+    // implementation(libs.accompanist.placeholder.material)
 
     implementation(libs.sketch.core)
     implementation(libs.sketch.compose)
@@ -254,4 +262,7 @@ dependencies {
     implementation(libs.appcenter.distribute)
 
     implementation(libs.himari)
+
+    implementation(libs.compose.webview)
+    implementation(libs.compose.placeholder)
 }

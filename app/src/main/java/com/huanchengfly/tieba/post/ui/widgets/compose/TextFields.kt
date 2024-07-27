@@ -268,11 +268,11 @@ private class DefaultCounterTextFieldColors(
 object TextFieldDefaults {
     @Composable
     fun textFieldColors(
-        textColor: Color = ExtendedTheme.colors.text,
+        textColor: Color = ExtendedTheme.colorScheme.text,
         disabledTextColor: Color = textColor.copy(alpha = ContentAlpha.disabled),
         backgroundColor: Color = Color.Transparent,
-        cursorColor: Color = ExtendedTheme.colors.accent,
-        placeholderColor: Color = ExtendedTheme.colors.textSecondary.copy(alpha = ContentAlpha.medium),
+        cursorColor: Color = ExtendedTheme.colorScheme.accent,
+        placeholderColor: Color = ExtendedTheme.colorScheme.textSecondary.copy(alpha = ContentAlpha.medium),
         disabledPlaceholderColor: Color = placeholderColor.copy(alpha = ContentAlpha.disabled),
     ): TextFieldColors =
         DefaultTextFieldColors(
@@ -286,13 +286,13 @@ object TextFieldDefaults {
 
     @Composable
     fun counterTextFieldColors(
-        textColor: Color = ExtendedTheme.colors.text,
+        textColor: Color = ExtendedTheme.colorScheme.text,
         disabledTextColor: Color = textColor.copy(alpha = ContentAlpha.disabled),
         backgroundColor: Color = Color.Transparent,
-        cursorColor: Color = ExtendedTheme.colors.accent,
-        placeholderColor: Color = ExtendedTheme.colors.text.copy(alpha = ContentAlpha.medium),
+        cursorColor: Color = ExtendedTheme.colorScheme.accent,
+        placeholderColor: Color = ExtendedTheme.colorScheme.text.copy(alpha = ContentAlpha.medium),
         disabledPlaceholderColor: Color = placeholderColor.copy(alpha = ContentAlpha.disabled),
-        counterColor: Color = ExtendedTheme.colors.text.copy(alpha = ContentAlpha.medium),
+        counterColor: Color = ExtendedTheme.colorScheme.text.copy(alpha = ContentAlpha.medium),
         disabledCounterColor: Color = counterColor.copy(alpha = ContentAlpha.disabled)
     ): CounterTextFieldColors =
         DefaultCounterTextFieldColors(

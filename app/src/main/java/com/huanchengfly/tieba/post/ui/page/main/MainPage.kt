@@ -133,7 +133,7 @@ fun MainPage(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val themeColors = ExtendedTheme.colors
+    val themeColors = ExtendedTheme.colorScheme
     val navigationItems by remember {
         derivedStateOf {
             listOfNotNull(
@@ -253,7 +253,6 @@ fun MainPage(
             navigationContentPosition = navigationContentPosition
         ) {
             MyScaffold(
-                backgroundColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
                     AnimatedVisibility(visible = navigationType == MainNavigationType.BOTTOM_NAVIGATION) {
@@ -267,7 +266,8 @@ fun MainPage(
                             themeColors = themeColors,
                         )
                     }
-                }
+                },
+                containerColor = Color.Transparent
             ) { paddingValues ->
                 LazyLoadHorizontalPager(
                     contentPadding = paddingValues,

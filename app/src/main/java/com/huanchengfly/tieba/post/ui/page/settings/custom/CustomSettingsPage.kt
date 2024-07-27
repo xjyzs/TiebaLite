@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Brightness2
 import androidx.compose.material.icons.outlined.BrightnessAuto
@@ -52,6 +52,7 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.TitleCentredToolbar
 import com.huanchengfly.tieba.post.utils.AppIconUtil
 import com.huanchengfly.tieba.post.utils.LauncherIcons
 import com.huanchengfly.tieba.post.utils.ThemeUtil
+import com.kiral.himari.ext.android.content.getDrawableCompat
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
@@ -64,13 +65,12 @@ fun CustomSettingsPage(
 ) {
     val context = LocalContext.current
     MyScaffold(
-        backgroundColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_settings_custom),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -78,6 +78,7 @@ fun CustomSettingsPage(
                 }
             )
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
         PrefsScreen(
             dataStore = context.dataStore,
@@ -150,9 +151,7 @@ fun CustomSettingsPage(
                         LauncherIcons.NEW_ICON to {
                             Image(
                                 painter = rememberDrawablePainter(
-                                    drawable = LocalContext.current.getDrawable(
-                                        R.drawable.ic_launcher_new_round
-                                    )
+                                    drawable = LocalContext.current.getDrawableCompat(R.drawable.ic_launcher_new_round)
                                 ),
                                 contentDescription = "新图标",
                                 modifier = Modifier.size(Sizes.Medium)
@@ -161,9 +160,7 @@ fun CustomSettingsPage(
                         LauncherIcons.NEW_ICON_INVERT to {
                             Image(
                                 painter = rememberDrawablePainter(
-                                    drawable = LocalContext.current.getDrawable(
-                                        R.drawable.ic_launcher_new_invert_round
-                                    )
+                                    drawable = LocalContext.current.getDrawableCompat(R.drawable.ic_launcher_new_invert_round)
                                 ),
                                 contentDescription = "新图标（反色）",
                                 modifier = Modifier.size(Sizes.Medium)
@@ -172,9 +169,7 @@ fun CustomSettingsPage(
                         LauncherIcons.OLD_ICON to {
                             Image(
                                 painter = rememberDrawablePainter(
-                                    drawable = LocalContext.current.getDrawable(
-                                        R.drawable.ic_launcher_round
-                                    )
+                                    drawable = LocalContext.current.getDrawableCompat(R.drawable.ic_launcher_round)
                                 ),
                                 contentDescription = "旧图标",
                                 modifier = Modifier.size(Sizes.Medium)

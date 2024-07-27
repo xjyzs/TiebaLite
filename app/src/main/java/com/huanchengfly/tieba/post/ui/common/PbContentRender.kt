@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +76,7 @@ data class TextContentRender(
         PbContentText(
             text = text,
             fontSize = 15.sp,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             lineSpacing = 0.8.sp
         )
     }

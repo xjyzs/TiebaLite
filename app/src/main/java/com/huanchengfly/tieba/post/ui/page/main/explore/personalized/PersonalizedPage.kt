@@ -24,14 +24,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -43,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.huanchengfly.tieba.post.R
@@ -63,6 +63,7 @@ import com.huanchengfly.tieba.post.ui.page.LocalNavigator
 import com.huanchengfly.tieba.post.ui.page.destinations.ForumPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockTip
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockableContent
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
@@ -78,7 +79,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalizedPage(
     viewModel: PersonalizedViewModel = pageViewModel()
@@ -116,10 +117,12 @@ fun PersonalizedPage(
         prop1 = PersonalizedUiState::hiddenThreadIds,
         initial = persistentListOf()
     )
-    val pullRefreshState = rememberPullRefreshState(
+
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
         onRefresh = { viewModel.send(PersonalizedUiIntent.Refresh) }
     )
+
     val lazyListState = rememberLazyListState()
     viewModel.BindScrollToTopEvent(lazyListState = lazyListState)
     val isEmpty by remember {
@@ -181,7 +184,7 @@ fun PersonalizedPage(
             }
         }
     ) {
-        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+        Box(modifier = Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
             LoadMoreLayout(
                 isLoading = isLoadingMore,
                 onLoadMore = { viewModel.send(PersonalizedUiIntent.LoadMore(currentPage + 1)) },
@@ -237,12 +240,11 @@ fun PersonalizedPage(
                 )
             }
 
-            PullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
+            PullToRefreshContainer(
+                state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
-                backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                contentColor = ExtendedTheme.colors.primary,
+                containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                contentColor = ExtendedTheme.colorScheme.primary,
             )
 
             AnimatedVisibility(
@@ -264,7 +266,7 @@ private fun BoxScope.RefreshTip(refreshCount: Int) {
             .padding(top = 72.dp)
             .clip(RoundedCornerShape(100))
             .background(
-                color = ExtendedTheme.colors.primary,
+                color = ExtendedTheme.colorScheme.primary,
                 shape = RoundedCornerShape(100)
             )
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -272,7 +274,7 @@ private fun BoxScope.RefreshTip(refreshCount: Int) {
     ) {
         Text(
             text = stringResource(id = R.string.toast_feed_refresh, refreshCount),
-            color = ExtendedTheme.colors.onAccent
+            color = ExtendedTheme.colorScheme.onAccent
         )
     }
 }
@@ -399,7 +401,7 @@ private fun RefreshTip(
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = stringResource(id = R.string.tip_refresh),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }

@@ -18,11 +18,11 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
@@ -306,7 +306,8 @@ internal fun SubPostsContent(
                                 id = R.string.title_sub_posts,
                                 it.get { floor })
                         } ?: stringResource(id = R.string.title_sub_posts_default),
-                            fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6)
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge)
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -339,7 +340,7 @@ internal fun SubPostsContent(
             bottomBar = {
                 if (account != null && !LocalContext.current.appPreferences.hideReply) {
                     Column(
-                        modifier = Modifier.background(ExtendedTheme.colors.threadBottomBar)
+                        modifier = Modifier.background(ExtendedTheme.colorScheme.threadBottomBar)
                     ) {
                         Row(
                             modifier = Modifier
@@ -358,7 +359,7 @@ internal fun SubPostsContent(
                                     .padding(vertical = 8.dp)
                                     .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(ExtendedTheme.colors.bottomBarSurface)
+                                    .background(ExtendedTheme.colorScheme.bottomBarSurface)
                                     .clickable {
                                         val fid = forum?.get { id } ?: forumId
                                         val forumName = forum?.get { name }
@@ -377,8 +378,8 @@ internal fun SubPostsContent(
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.tip_reply_thread),
-                                    style = MaterialTheme.typography.caption,
-                                    color = ExtendedTheme.colors.onBottomBarSurface,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = ExtendedTheme.colorScheme.onBottomBarSurface,
                                 )
                             }
                         }
@@ -468,7 +469,7 @@ internal fun SubPostsContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(ExtendedTheme.colors.background)
+                                .background(ExtendedTheme.colorScheme.background)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
@@ -476,14 +477,14 @@ internal fun SubPostsContent(
                                     id = R.string.title_sub_posts_header,
                                     totalCount
                                 ),
-                                style = MaterialTheme.typography.subtitle1
+                                style = MaterialTheme.typography.titleMedium
                             )
                         }
                     }
                     itemsIndexed(
                         items = subPosts,
                         key = { _, subPost -> subPost.id }
-                    ) { index, item ->
+                    ) { _, item ->
                         SubPostItem(
                             item = item,
                             canDelete = { it.author_id == account?.uid?.toLongOrNull() },
@@ -584,43 +585,47 @@ private fun SubPostItem(
             menuContent = {
                 if (!context.appPreferences.hideReply) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.btn_reply))
+                        },
                         onClick = {
                             onReplyClick(subPost.get())
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.btn_reply))
-                    }
+                    )
                 }
                 if (onMenuCopyClick != null) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.menu_copy))
+                        },
                         onClick = {
                             onMenuCopyClick(contentRenders.joinToString("\n") { it.toString() })
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.menu_copy))
-                    }
+                    )
                 }
                 DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.title_report))
+                    },
                     onClick = {
                         coroutineScope.launch {
                             TiebaUtil.reportPost(context, navigator, subPost.get { id }.toString())
                         }
                         menuState.expanded = false
                     }
-                ) {
-                    Text(text = stringResource(id = R.string.title_report))
-                }
+                )
                 if (canDelete(subPost.get()) && onMenuDeleteClick != null) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.title_delete))
+                        },
                         onClick = {
                             onMenuDeleteClick(subPost.get())
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.title_delete))
-                    }
+                    )
                 }
             },
             onClick = { onReplyClick(subPost.get()) }.takeUnless { context.appPreferences.hideReply }

@@ -14,19 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.insets.ui.Scaffold
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.models.protos.topicList.NewTopicList
 import com.huanchengfly.tieba.post.arch.collectPartialAsState
@@ -43,10 +41,11 @@ import com.huanchengfly.tieba.post.arch.pageViewModel
 import com.huanchengfly.tieba.post.ui.common.theme.compose.ExtendedTheme
 import com.huanchengfly.tieba.post.ui.common.theme.compose.OrangeA700
 import com.huanchengfly.tieba.post.ui.common.theme.compose.RedA700
-import com.huanchengfly.tieba.post.ui.common.theme.compose.Shapes
+import com.huanchengfly.tieba.post.ui.common.theme.compose.TiebaShapes
 import com.huanchengfly.tieba.post.ui.common.theme.compose.White
 import com.huanchengfly.tieba.post.ui.common.theme.compose.Yellow
 import com.huanchengfly.tieba.post.ui.common.theme.compose.pullRefreshIndicator
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyLazyColumn
 import com.huanchengfly.tieba.post.ui.widgets.compose.NetworkImage
@@ -65,12 +64,12 @@ private fun TopicImage(
         Modifier
             .fillMaxWidth()
             .aspectRatio(2.39f)
-            .clip(Shapes.medium)
+            .clip(TiebaShapes.medium)
     } else {
         Modifier
             .size(Sizes.Medium)
             .aspectRatio(1f)
-            .clip(Shapes.small)
+            .clip(TiebaShapes.small)
     }
     Box(
         modifier = boxModifier
@@ -86,7 +85,7 @@ private fun TopicImage(
             text = "${index + 1}",
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.background,
+            color = MaterialTheme.colorScheme.background,
             fontFamily = FontFamily(
                 Typeface.createFromAsset(
                     LocalContext.current.assets,
@@ -99,7 +98,7 @@ private fun TopicImage(
                         0 -> RedA700
                         1 -> OrangeA700
                         2 -> Yellow
-                        else -> MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
+                        else -> MaterialTheme.colorScheme.onBackground.copy(alpha = MaterialTheme.colorScheme.onSurfaceVariant.alpha)
                     }
                 )
                 .padding(4.dp)
@@ -117,7 +116,7 @@ private fun TopicBody(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = item.topic_name, style = MaterialTheme.typography.subtitle1)
+            Text(text = item.topic_name, style = MaterialTheme.typography.titleMedium)
             when (item.topic_tag) {
                 2 -> Text(
                     text = stringResource(id = R.string.topic_tag_hot),
@@ -144,17 +143,17 @@ private fun TopicBody(
             text = item.topic_desc,
             maxLines = if (index < 3) 3 else 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
             text = stringResource(id = R.string.hot_num, item.discuss_num.getShortNumString()),
-            style = MaterialTheme.typography.caption,
-            color = ExtendedTheme.colors.textSecondary
+            style = MaterialTheme.typography.bodySmall,
+            color = ExtendedTheme.colorScheme.textSecondary
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun HotTopicListPage(
@@ -172,13 +171,14 @@ fun HotTopicListPage(
         initial = emptyList()
     )
     Scaffold(
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_hot_message_list),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -187,7 +187,7 @@ fun HotTopicListPage(
             )
         },
     ) { contentPaddings ->
-        val pullRefreshState = rememberPullRefreshState(
+        val pullToRefreshState = rememberPullToRefreshState(
             refreshing = isRefreshing,
             onRefresh = { viewModel.send(HotTopicListUiIntent.Load) }
         )
@@ -195,7 +195,7 @@ fun HotTopicListPage(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPaddings)
-                .pullRefresh(pullRefreshState)
+                .nestedScroll(pullToRefreshState.nestedScrollConnection)
         ) {
             MyLazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -226,12 +226,11 @@ fun HotTopicListPage(
                 }
             }
 
-            PullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
+            PullToRefreshContainer(
+                state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
-                backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                contentColor = ExtendedTheme.colors.primary,
+                containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                contentColor = ExtendedTheme.colorScheme.primary,
             )
         }
     }

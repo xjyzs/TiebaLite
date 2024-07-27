@@ -38,7 +38,7 @@ public class TiebaLiteJavaScript {
 
     @JavascriptInterface
     public void copyText(String content) {
-        TiebaUtil.copyText(context, content);
+        TiebaUtil.copyText(content);
     }
 
     @JavascriptInterface

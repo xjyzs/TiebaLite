@@ -4,19 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-import com.google.accompanist.systemuicontroller.SystemUiController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.huanchengfly.tieba.post.activities.BaseActivity
 import com.huanchengfly.tieba.post.ui.common.theme.compose.TiebaLiteTheme
 import com.huanchengfly.tieba.post.ui.common.windowsizeclass.WindowSizeClass
@@ -61,27 +59,39 @@ abstract class BaseComposeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
         setContent {
             TiebaLiteTheme {
                 // TODO: replace to new api
-                val systemUiController = rememberSystemUiController()
-                SideEffect {
-                    systemUiController.apply {
-                        setStatusBarColor(
-                            Color.Transparent,
-                            darkIcons = ThemeUtil.isStatusBarFontDark()
-                        )
-                        setNavigationBarColor(
-                            Color.Transparent,
-                            darkIcons = ThemeUtil.isNavigationBarFontDark(),
-                            navigationBarContrastEnforced = false
-                        )
-                    }
+                // val systemUiController = rememberSystemUiController()
+                // SideEffect {
+                //     systemUiController.apply {
+                //         setStatusBarColor(
+                //             Color.Transparent,
+                //             darkIcons = ThemeUtil.isStatusBarFontDark()
+                //         )
+                //         setNavigationBarColor(
+                //             Color.Transparent,
+                //             darkIcons = ThemeUtil.isNavigationBarFontDark(),
+                //             navigationBarContrastEnforced = false
+                //         )
+                //     }
+                // }
+                val darkTheme = ThemeUtil.isNightMode()
+                DisposableEffect(darkTheme) {
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                            detectDarkMode = { darkTheme }
+                        ),
+                    )
+                    onDispose {}
                 }
 
                 LaunchedEffect(key1 = "onCreateContent") {
-                    onCreateContent(systemUiController)
+                    onCreateContent()
                 }
 
                 LocalAccountProvider {
@@ -98,12 +108,8 @@ abstract class BaseComposeActivity : BaseActivity() {
     /**
      * 在创建内容前执行
      *
-     * @param systemUiController SystemUiController
      */
-    open fun onCreateContent(
-        systemUiController: SystemUiController
-    ) {
-    }
+    open fun onCreateContent() {}
 
     @Composable
     abstract fun Content()

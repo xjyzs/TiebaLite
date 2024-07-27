@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,19 +53,19 @@ fun HistoryPage(
 ) {
     val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
 
     MyScaffold(
-        backgroundColor = Color.Transparent,
-        scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
+        containerColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_history),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -76,18 +77,14 @@ fun HistoryPage(
                             HistoryUtil.deleteAll()
                             emitGlobalEvent(HistoryListUiEvent.DeleteAll)
                             launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    context.getString(
-                                        R.string.toast_clear_success
-                                    )
-                                )
+                                snackbarHostState.showSnackbar(context.getString(R.string.toast_clear_success))
                             }
                         }
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = stringResource(id = R.string.title_history_delete),
-                            tint = ExtendedTheme.colors.onTopBar
+                            tint = ExtendedTheme.colorScheme.onTopBar
                         )
                     }
                 },
@@ -102,7 +99,7 @@ fun HistoryPage(
                         },
                         divider = {},
                         backgroundColor = Color.Transparent,
-                        contentColor = ExtendedTheme.colors.primary,
+                        contentColor = ExtendedTheme.colorScheme.primary,
                         modifier = Modifier
                             .width(100.dp * 2)
                             .align(Alignment.CenterHorizontally)
@@ -120,8 +117,8 @@ fun HistoryPage(
                                     pagerState.animateScrollToPage(0)
                                 }
                             },
-                            selectedContentColor = ExtendedTheme.colors.onTopBar,
-                            unselectedContentColor = ExtendedTheme.colors.onTopBarSecondary
+                            selectedContentColor = ExtendedTheme.colorScheme.onTopBar,
+                            unselectedContentColor = ExtendedTheme.colorScheme.onTopBarSecondary
                         )
                         Tab(
                             text = {
@@ -136,8 +133,8 @@ fun HistoryPage(
                                     pagerState.animateScrollToPage(1)
                                 }
                             },
-                            selectedContentColor = ExtendedTheme.colors.onTopBar,
-                            unselectedContentColor = ExtendedTheme.colors.onTopBarSecondary
+                            selectedContentColor = ExtendedTheme.colorScheme.onTopBar,
+                            unselectedContentColor = ExtendedTheme.colorScheme.onTopBarSecondary
                         )
                     }
                 }

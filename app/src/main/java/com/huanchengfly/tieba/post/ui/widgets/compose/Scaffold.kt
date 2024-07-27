@@ -1,35 +1,31 @@
 package com.huanchengfly.tieba.post.ui.widgets.compose
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.DismissValue
-import androidx.compose.material.DrawerDefaults
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FabPosition
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.rememberDismissState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Dp
 
-@OptIn(ExperimentalMaterialApi::class)
+// TODO: 抽屉大改
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissSnackbarHost(hostState: SnackbarHostState) {
-    val dismissState = rememberDismissState(
-        confirmStateChange = { value ->
-            if (value != DismissValue.Default) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value != SwipeToDismissBoxValue.StartToEnd) {
                 hostState.currentSnackbarData?.dismiss()
                 true
             } else {
@@ -38,11 +34,14 @@ private fun SwipeToDismissSnackbarHost(hostState: SnackbarHostState) {
         }
     )
     LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue != DismissValue.Default) {
+        if (dismissState.currentValue != SwipeToDismissBoxValue.StartToEnd) {
             dismissState.reset()
         }
     }
-    SwipeToDismiss(state = dismissState, background = {}) {
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {}
+    ) {
         SnackbarHost(hostState = hostState)
     }
 }
@@ -52,44 +51,77 @@ val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> { error("no s
 @Composable
 fun MyScaffold(
     modifier: Modifier = Modifier,
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SwipeToDismissSnackbarHost(it) },
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    isFloatingActionButtonDocked: Boolean = false,
-    drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
-    drawerGesturesEnabled: Boolean = true,
-    drawerShape: Shape = MaterialTheme.shapes.large,
-    drawerElevation: Dp = DrawerDefaults.Elevation,
-    drawerBackgroundColor: Color = MaterialTheme.colors.surface,
-    drawerContentColor: Color = contentColorFor(drawerBackgroundColor),
-    drawerScrimColor: Color = DrawerDefaults.scrimColor,
-    backgroundColor: Color = MaterialTheme.colors.background,
-    contentColor: Color = contentColorFor(backgroundColor),
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = contentColorFor(containerColor),
     content: @Composable (PaddingValues) -> Unit
 ) {
-    CompositionLocalProvider(LocalSnackbarHostState provides scaffoldState.snackbarHostState) {
+    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
         Scaffold(
-            modifier,
-            scaffoldState,
-            topBar,
-            bottomBar,
-            snackbarHost,
-            floatingActionButton,
-            floatingActionButtonPosition,
-            isFloatingActionButtonDocked,
-            drawerContent,
-            drawerGesturesEnabled,
-            drawerShape,
-            drawerElevation,
-            drawerBackgroundColor,
-            drawerContentColor,
-            drawerScrimColor,
-            backgroundColor,
-            contentColor,
-            content
+            modifier = modifier,
+            topBar = topBar,
+            bottomBar = bottomBar,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            content = content,
         )
     }
 }
+
+// Drawer
+// @Composable
+// fun NewScaffold(
+//     modifier: Modifier = Modifier,
+//     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+//     topBar: @Composable () -> Unit = {},
+//     bottomBar: @Composable () -> Unit = {},
+//     snackbarHost: @Composable () -> Unit = { SnackbarHost(hostState = snackbarHostState)},
+//     floatingActionButton: @Composable () -> Unit = {},
+//     floatingActionButtonPosition: FabPosition = FabPosition.End,
+//     drawerContent: @Composable (ColumnScope.() -> Unit) = {},
+//     drawerGesturesEnabled: Boolean = true,
+//     drawerShape: Shape = MaterialTheme.shapes.large,
+//     drawerElevation: Dp = DrawerDefaults.ModalDrawerElevation,
+//     drawerBackgroundColor: Color = MaterialTheme.colorScheme.surface,
+//     drawerContentColor: Color = contentColorFor(drawerBackgroundColor),
+//     drawerScrimColor: Color = DrawerDefaults.scrimColor,
+//     containerColor: Color = MaterialTheme.colorScheme.background,
+//     contentColor: Color = contentColorFor(containerColor),
+//     content: @Composable (PaddingValues) -> Unit
+// ) {
+//     CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+//         ModalNavigationDrawer(
+//             drawerContent = {
+//                 ModalDrawerSheet(
+//                     drawerShape = drawerShape,
+//                     drawerContainerColor = drawerBackgroundColor,
+//                     drawerContentColor = drawerContentColor,
+//                     drawerTonalElevation = drawerElevation,
+//                     content = drawerContent
+//                 )
+//             },
+//             gesturesEnabled = drawerGesturesEnabled,
+//             scrimColor = drawerScrimColor
+//         ) {
+//             Scaffold(
+//                 modifier = modifier,
+//                 topBar = topBar,
+//                 bottomBar = bottomBar,
+//                 snackbarHost = snackbarHost,
+//                 floatingActionButton = floatingActionButton,
+//                 floatingActionButtonPosition = floatingActionButtonPosition,
+//                 containerColor = containerColor,
+//                 contentColor = contentColor,
+//                 content = content,
+//             )
+//         }
+//
+//     }
+// }

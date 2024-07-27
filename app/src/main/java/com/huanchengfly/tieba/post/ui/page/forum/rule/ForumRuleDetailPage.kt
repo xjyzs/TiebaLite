@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -36,7 +36,6 @@ import com.huanchengfly.tieba.post.utils.StringUtil
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
-
 
 @Destination
 @Composable
@@ -109,7 +108,7 @@ fun ForumRuleDetailPage(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(text = title, style = MaterialTheme.typography.h5)
+                    Text(text = title, style = MaterialTheme.typography.headlineSmall)
                     author?.let {
                         UserHeader(
                             avatar = {
@@ -137,13 +136,13 @@ fun ForumRuleDetailPage(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        ProvideTextStyle(value = MaterialTheme.typography.body1) {
+                        ProvideTextStyle(value = MaterialTheme.typography.bodyLarge) {
                             Text(text = preface)
                             data.fastForEach {
                                 if (it.title.isNotEmpty()) {
                                     Text(
                                         text = it.title,
-                                        style = MaterialTheme.typography.subtitle1
+                                        style = MaterialTheme.typography.titleMedium
                                     )
                                 }
                                 Column(

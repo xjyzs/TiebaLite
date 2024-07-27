@@ -47,7 +47,7 @@ fun <T> Flow<T>.collectIn(
 }
 
 @Composable
-inline fun <reified T : UiState, A> Flow<T>.collectPartialAsState(
+fun <T : UiState, A> Flow<T>.collectPartialAsState(
     prop1: KProperty1<T, A>,
     initial: A,
 ): State<A> {

@@ -17,11 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Share
@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import com.github.panpf.sketch.compose.rememberAsyncImageState
 import com.github.panpf.sketch.request.LoadState
 import com.github.panpf.zoomimage.SketchZoomAsyncImage
-import com.google.accompanist.systemuicontroller.SystemUiController
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.arch.BaseComposeActivityWithParcelable
 import com.huanchengfly.tieba.post.ext.toastShort
@@ -52,6 +51,7 @@ import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
 import com.huanchengfly.tieba.post.ui.widgets.compose.ProvideContentColor
 import com.huanchengfly.tieba.post.utils.ImageUtil
 import com.huanchengfly.tieba.post.utils.download
+import com.kiral.himari.ext.android.view.hideSystemBars
 import kotlin.math.roundToInt
 
 @Composable
@@ -88,14 +88,14 @@ private fun ViewPhoto(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    progress = progress,
-                    color = ExtendedTheme.colors.accent,
+                    progress = { progress },
+                    modifier = Modifier.size(48.dp),
+                    color = ExtendedTheme.colorScheme.accent,
                     strokeWidth = 2.dp,
-                    modifier = Modifier.size(48.dp)
                 )
                 Text(
                     text = "${(progress * 100).roundToInt()}%",
-                    color = ExtendedTheme.colors.accent,
+                    color = ExtendedTheme.colorScheme.accent,
                     fontSize = 12.sp
                 )
             }
@@ -252,8 +252,8 @@ class PhotoViewActivity : BaseComposeActivityWithParcelable<PhotoViewData>() {
         }
     }
 
-    override fun onCreateContent(systemUiController: SystemUiController) {
-        systemUiController.isSystemBarsVisible = false
+    override fun onCreateContent() {
+        window.hideSystemBars()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {

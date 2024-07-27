@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -64,8 +64,8 @@ fun TipScreen(
                 image()
             }
             ProvideTextStyle(
-                value = MaterialTheme.typography.h6.copy(
-                    color = ExtendedTheme.colors.text,
+                value = MaterialTheme.typography.titleLarge.copy(
+                    color = ExtendedTheme.colorScheme.text,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -73,8 +73,8 @@ fun TipScreen(
                 title()
             }
             ProvideTextStyle(
-                value = MaterialTheme.typography.body1.copy(
-                    color = ExtendedTheme.colors.textSecondary,
+                value = MaterialTheme.typography.bodyLarge.copy(
+                    color = ExtendedTheme.colorScheme.textSecondary,
                     textAlign = TextAlign.Center
                 )
             ) {
@@ -105,7 +105,7 @@ fun StateScreenScope.ErrorScreen(
             modifier = modifier,
             actions = {
                 if (showReload && canReload) {
-                    Button(onClick = { reload() }) {
+                    DefaultButton(onClick = { reload() }) {
                         Text(text = stringResource(id = R.string.btn_reload))
                     }
                 }

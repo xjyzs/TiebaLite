@@ -32,19 +32,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ChromeReaderMode
 import androidx.compose.material.icons.automirrored.rounded.ChromeReaderMode
@@ -62,11 +52,20 @@ import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -80,6 +79,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -94,7 +94,8 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.huanchengfly.tieba.post.App
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.api.TiebaApi
 import com.huanchengfly.tieba.post.api.booleanToString
@@ -133,15 +134,16 @@ import com.huanchengfly.tieba.post.ui.page.destinations.ReplyPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.SubPostsSheetPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.ThreadPageDestination
 import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestination
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Avatar
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockTip
 import com.huanchengfly.tieba.post.ui.widgets.compose.BlockableContent
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
 import com.huanchengfly.tieba.post.ui.widgets.compose.Card
 import com.huanchengfly.tieba.post.ui.widgets.compose.Chip
 import com.huanchengfly.tieba.post.ui.widgets.compose.ConfirmDialog
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
 import com.huanchengfly.tieba.post.ui.widgets.compose.HorizontalDivider
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoad
@@ -171,15 +173,16 @@ import com.huanchengfly.tieba.post.utils.StringUtil.getShortNumString
 import com.huanchengfly.tieba.post.utils.TiebaUtil
 import com.huanchengfly.tieba.post.utils.Util.getIconColorByLevel
 import com.huanchengfly.tieba.post.utils.appPreferences
+import com.kiral.himari.ext.android.app.appContext
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
-import kotlin.concurrent.thread
 import kotlin.math.max
 
 private fun getDescText(
@@ -188,12 +191,17 @@ private fun getDescText(
     ipAddress: String?
 ): String {
     val texts = listOfNotNull(
-        time?.let { getRelativeTimeString(App.INSTANCE, it) },
-        if (floor > 1) App.INSTANCE.getString(R.string.tip_post_floor, floor) else null,
-        if (ipAddress.isNullOrEmpty()) null else App.INSTANCE.getString(
-            R.string.text_ip_location,
-            ipAddress
-        )
+        time?.let { getRelativeTimeString(appContext, it) },
+        if (floor > 1) {
+            appContext.getString(R.string.tip_post_floor, floor)
+        } else {
+            null
+        },
+        if (ipAddress.isNullOrEmpty()) {
+            null
+        } else {
+            appContext.getString(R.string.text_ip_location, ipAddress)
+        }
     )
     if (texts.isEmpty()) {
         return ""
@@ -209,15 +217,19 @@ fun PostAgreeBtn(
     modifier: Modifier = Modifier
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = if (hasAgreed) ExtendedTheme.colors.accent else ExtendedTheme.colors.textSecondary,
+        targetValue = if (hasAgreed) {
+            ExtendedTheme.colorScheme.accent
+        } else {
+            ExtendedTheme.colorScheme.textSecondary
+        },
         label = "postAgreeBtnColor"
     )
-    Button(
+    DefaultButton(
         onClick = onClick,
         shape = RoundedCornerShape(4.dp),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ExtendedTheme.colors.background,
+            containerColor = ExtendedTheme.colorScheme.background,
             contentColor = animatedColor
         ),
         modifier = modifier
@@ -236,7 +248,7 @@ fun PostAgreeBtn(
                 Text(
                     text = agreeNum.getShortNumString(),
                     color = animatedColor,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
             }
@@ -251,15 +263,16 @@ private fun BottomBarAgreeBtn(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val color = if (hasAgreed) ExtendedTheme.colors.accent else ExtendedTheme.colors.textSecondary
+    val color =
+        if (hasAgreed) ExtendedTheme.colorScheme.accent else ExtendedTheme.colorScheme.textSecondary
     val animatedColor by animateColorAsState(color, label = "agreeBtnColor")
 
-    Button(
+    DefaultButton(
         onClick = onClick,
         shape = RoundedCornerShape(0),
         contentPadding = PaddingValues(horizontal = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ExtendedTheme.colors.bottomBar,
+            containerColor = ExtendedTheme.colorScheme.bottomBar,
             contentColor = animatedColor
         ),
         modifier = modifier
@@ -276,7 +289,7 @@ private fun BottomBarAgreeBtn(
             if (agreeNum > 0) {
                 Text(
                     text = agreeNum.getShortNumString(),
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.bodySmall,
                     color = animatedColor,
                     fontSize = 12.sp
                 )
@@ -290,7 +303,7 @@ private fun BottomBarPlaceholder() {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
-            .background(ExtendedTheme.colors.bottomBar)
+            .background(ExtendedTheme.colorScheme.bottomBar)
             // 拦截点击事件
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -306,13 +319,13 @@ private fun BottomBarPlaceholder() {
                 .padding(vertical = 8.dp)
                 .weight(1f)
                 .clip(RoundedCornerShape(6.dp))
-                .background(ExtendedTheme.colors.bottomBarSurface)
+                .background(ExtendedTheme.colorScheme.bottomBarSurface)
                 .padding(8.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.tip_reply_thread),
-                style = MaterialTheme.typography.caption,
-                color = ExtendedTheme.colors.onBottomBarSurface,
+                style = MaterialTheme.typography.bodySmall,
+                color = ExtendedTheme.colorScheme.onBottomBarSurface,
             )
         }
 
@@ -330,13 +343,12 @@ private fun BottomBarPlaceholder() {
             Icon(
                 imageVector = Icons.Rounded.MoreVert,
                 contentDescription = stringResource(id = R.string.btn_more),
-                tint = ExtendedTheme.colors.textSecondary,
+                tint = ExtendedTheme.colorScheme.textSecondary,
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ToggleButton(
     text: @Composable (() -> Unit),
@@ -344,10 +356,10 @@ private fun ToggleButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null,
-    backgroundColor: Color = ExtendedTheme.colors.chip,
-    contentColor: Color = ExtendedTheme.colors.text,
-    selectedBackgroundColor: Color = ExtendedTheme.colors.invertChipBackground,
-    selectedContentColor: Color = ExtendedTheme.colors.invertChipContent,
+    backgroundColor: Color = ExtendedTheme.colorScheme.chip,
+    contentColor: Color = ExtendedTheme.colorScheme.text,
+    selectedBackgroundColor: Color = ExtendedTheme.colorScheme.invertChipBackground,
+    selectedContentColor: Color = ExtendedTheme.colorScheme.invertChipContent,
 ) {
     val animatedColor by animateColorAsState(
         if (checked) selectedContentColor else contentColor,
@@ -375,7 +387,7 @@ private fun ToggleButton(
                     icon()
                 }
                 ProvideTextStyle(
-                    value = MaterialTheme.typography.subtitle1.copy(
+                    value = MaterialTheme.typography.titleMedium.copy(
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
                     )
@@ -387,27 +399,6 @@ private fun ToggleButton(
     }
 }
 
-object ThreadPageFrom {
-    const val FROM_FORUM = "forum"
-
-    // 收藏
-    const val FROM_STORE = "store_thread"
-    const val FROM_PERSONALIZED = "personalized"
-    const val FROM_HISTORY = "history"
-}
-
-@Serializable
-sealed interface ThreadPageExtra
-
-@Serializable
-data object ThreadPageNoExtra : ThreadPageExtra
-
-@Serializable
-data class ThreadPageFromStoreExtra(
-    val maxPid: Long,
-    val maxFloor: Int,
-) : ThreadPageExtra
-
 @Composable
 private fun ThreadLoadMoreIndicator(
     isLoading: Boolean,
@@ -416,10 +407,10 @@ private fun ThreadLoadMoreIndicator(
     hasMore: Boolean,
 ) {
     Surface(
-        elevation = 8.dp,
         shape = RoundedCornerShape(100),
-        color = ExtendedTheme.colors.loadMoreIndicator,
-        contentColor = ExtendedTheme.colors.text
+        color = ExtendedTheme.colorScheme.loadMoreIndicator,
+        contentColor = ExtendedTheme.colorScheme.text,
+        shadowElevation = 8.dp,
     ) {
         Row(
             modifier = Modifier
@@ -428,13 +419,13 @@ private fun ThreadLoadMoreIndicator(
                 .animateContentSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ProvideTextStyle(value = MaterialTheme.typography.body2.copy(fontSize = 13.sp)) {
+            ProvideTextStyle(value = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp)) {
                 when {
                     isLoading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 3.dp,
-                            color = ExtendedTheme.colors.primary
+                            color = ExtendedTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -452,18 +443,22 @@ private fun ThreadLoadMoreIndicator(
 
                     hasMore -> {
                         Text(
-                            text = if (willLoad) stringResource(id = R.string.release_to_load) else stringResource(
-                                id = R.string.pull_to_load
-                            ),
+                            text = if (willLoad) {
+                                stringResource(R.string.release_to_load)
+                            } else {
+                                stringResource(R.string.pull_to_load)
+                            },
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                     }
 
                     else -> {
                         Text(
-                            text = if (willLoad) stringResource(id = R.string.release_to_load_latest_posts) else stringResource(
-                                id = R.string.pull_to_load_latest_posts
-                            ),
+                            text = if (willLoad) {
+                                stringResource(R.string.release_to_load_latest_posts)
+                            } else {
+                                stringResource(R.string.pull_to_load_latest_posts)
+                            },
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                     }
@@ -473,7 +468,12 @@ private fun ThreadLoadMoreIndicator(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialNavigationApi::class,
+    ExperimentalMaterialApi::class
+)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "tblite://thread/{threadId}"),
@@ -494,16 +494,7 @@ fun ThreadPage(
     viewModel: ThreadViewModel = pageViewModel(),
 ) {
     LazyLoad(loaded = viewModel.initialized) {
-        viewModel.send(
-            ThreadUiIntent.Init(
-                threadId,
-                forumId,
-                postId,
-                threadInfo,
-                seeLz,
-                sortType
-            )
-        )
+        viewModel.send(ThreadUiIntent.Init(threadId, forumId, postId, threadInfo, seeLz, sortType))
         viewModel.send(
             ThreadUiIntent.Load(
                 threadId,
@@ -517,90 +508,39 @@ fun ThreadPage(
         )
         viewModel.initialized = true
     }
-    val scaffoldState = rememberScaffoldState()
-    val data by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::data,
-        initial = persistentListOf()
-    )
-    val author by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::author,
-        initial = null
-    )
-    val thread by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::threadInfo,
-        initial = null
-    )
-    val firstPost by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::firstPost,
-        initial = null
-    )
-    val forum by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::forum,
-        initial = null
-    )
-    val user by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::user,
-        initial = wrapImmutable(User())
-    )
-    val anti by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::anti,
-        initial = null
-    )
+    val snackbarHostState = remember { SnackbarHostState() }
+    val data by viewModel.uiState.collectPartialAsState(ThreadUiState::data, persistentListOf())
+    val author by viewModel.uiState.collectPartialAsState(ThreadUiState::author, null)
+    val thread by viewModel.uiState.collectPartialAsState(ThreadUiState::threadInfo, null)
+    val firstPost by viewModel.uiState.collectPartialAsState(ThreadUiState::firstPost, null)
+    val forum by viewModel.uiState.collectPartialAsState(ThreadUiState::forum, null)
+    val user by viewModel.uiState.collectPartialAsState(ThreadUiState::user, wrapImmutable(User()))
+    val anti by viewModel.uiState.collectPartialAsState(ThreadUiState::anti, null)
     val firstPostContentRenders by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::firstPostContentRenders,
-        initial = persistentListOf()
+        ThreadUiState::firstPostContentRenders,
+        persistentListOf()
     )
-    val isRefreshing by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::isRefreshing,
-        initial = false
-    )
+    val isRefreshing by viewModel.uiState.collectPartialAsState(ThreadUiState::isRefreshing, false)
     val isLoadingMore by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::isLoadingMore,
-        initial = false
+        ThreadUiState::isLoadingMore,
+        false
     )
-    val isError by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::isError,
-        initial = false
-    )
-    val error by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::error,
-        initial = null
-    )
-    val hasMore by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::hasMore,
-        initial = true
-    )
-    val nextPagePostId by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::nextPagePostId,
-        initial = 0L
-    )
-    val hasPrevious by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::hasPrevious,
-        initial = true
-    )
-    val currentPageMax by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::currentPageMax,
-        initial = 0
-    )
-    val totalPage by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::totalPage,
-        initial = 0
-    )
-    val isSeeLz by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::seeLz,
-        initial = seeLz
-    )
-    val curSortType by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::sortType,
-        initial = sortType
-    )
+    val isError by viewModel.uiState.collectPartialAsState(ThreadUiState::isError, false)
+    val error by viewModel.uiState.collectPartialAsState(ThreadUiState::error, null)
+    val hasMore by viewModel.uiState.collectPartialAsState(ThreadUiState::hasMore, true)
+    val nextPagePostId by viewModel.uiState.collectPartialAsState(ThreadUiState::nextPagePostId, 0L)
+    val hasPrevious by viewModel.uiState.collectPartialAsState(ThreadUiState::hasPrevious, true)
+    val currentPageMax by viewModel.uiState.collectPartialAsState(ThreadUiState::currentPageMax, 0)
+    val totalPage by viewModel.uiState.collectPartialAsState(ThreadUiState::totalPage, 0)
+    val isSeeLz by viewModel.uiState.collectPartialAsState(ThreadUiState::seeLz, seeLz)
+    val curSortType by viewModel.uiState.collectPartialAsState(ThreadUiState::sortType, sortType)
     val isImmersiveMode by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::isImmersiveMode,
-        initial = false
+        ThreadUiState::isImmersiveMode,
+        false
     )
     val latestPosts by viewModel.uiState.collectPartialAsState(
-        prop1 = ThreadUiState::latestPosts,
-        initial = persistentListOf()
+        ThreadUiState::latestPosts,
+        persistentListOf()
     )
 
     val isEmpty by remember {
@@ -651,6 +591,7 @@ fun ThreadPage(
     )
     val lastVisibilityPost by remember {
         derivedStateOf {
+            // TODO: 这一坨是什么？
             data.firstOrNull { (post) ->
                 val lastPostKey = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull { info ->
                     info.key is String && (info.key as String).startsWith("Post_")
@@ -686,11 +627,12 @@ fun ThreadPage(
         lazyListState.animateScrollToItem(1)
     }
     viewModel.onEvent<ThreadUiEvent.ScrollToLatestReply> {
-        if (curSortType != ThreadSortType.SORT_TYPE_DESC) {
-            lazyListState.animateScrollToItem(2 + data.size)
+        val index = if (curSortType != ThreadSortType.SORT_TYPE_DESC) {
+            2 + data.size
         } else {
-            lazyListState.animateScrollToItem(1)
+            1
         }
+        lazyListState.animateScrollToItem(index)
     }
     viewModel.onEvent<ThreadUiEvent.LoadSuccess> {
         if (it.page > 1 || waitLoadSuccessAndScrollToFirstReply) {
@@ -699,14 +641,15 @@ fun ThreadPage(
         }
     }
     viewModel.onEvent<ThreadUiEvent.AddFavoriteSuccess> {
-        scaffoldState.snackbarHostState.showSnackbar(
-            context.getString(R.string.message_add_favorite_success, it.floor)
+        snackbarHostState.showSnackbar(
+            context.getString(
+                R.string.message_add_favorite_success,
+                it.floor
+            )
         )
     }
     viewModel.onEvent<ThreadUiEvent.RemoveFavoriteSuccess> {
-        scaffoldState.snackbarHostState.showSnackbar(
-            context.getString(R.string.message_remove_favorite_success)
-        )
+        snackbarHostState.showSnackbar(context.getString(R.string.message_remove_favorite_success))
     }
 
     onGlobalEvent<GlobalEvent.ReplySuccess>(
@@ -735,21 +678,20 @@ fun ThreadPage(
     ConfirmDialog(
         dialogState = updateCollectMarkDialogState,
         onConfirm = {
-            coroutineScope.launch {
-                navigator.navigateUp()
-                if (lastVisibilityPostId != 0L) {
-                    TiebaApi.getInstance()
-                        .addStoreFlow(threadId, lastVisibilityPostId)
-                        .catch {
-                            context.toastShort(
-                                R.string.message_update_collect_mark_failed,
-                                it.getErrorMessage()
-                            )
-                        }
-                        .collect {
-                            context.toastShort(R.string.message_update_collect_mark_success)
-                        }
-                }
+            navigator.navigateUp()
+            if (lastVisibilityPostId != 0L) {
+                TiebaApi.getInstance()
+                    .addStoreFlow(threadId, lastVisibilityPostId)
+                    .catch {
+                        context.toastShort(
+                            R.string.message_update_collect_mark_failed,
+                            it.getErrorMessage()
+                        )
+                    }
+                    .onEach {
+                        context.toastShort(R.string.message_update_collect_mark_success)
+                    }
+                    .launchIn(coroutineScope)
             }
         },
         onCancel = {
@@ -802,13 +744,13 @@ fun ThreadPage(
             }
         }
     ) {
-        Text(
-            text = stringResource(
-                id = R.string.message_confirm_delete,
-                if (deletePost == null) stringResource(id = R.string.this_thread)
-                else stringResource(id = R.string.tip_post_floor, deletePost!!.get { floor })
-            )
-        )
+        val textRes = if (deletePost == null) {
+            stringResource(R.string.this_thread)
+        } else {
+            stringResource(R.string.tip_post_floor, deletePost!!.get { floor })
+        }
+
+        Text(text = stringResource(R.string.message_confirm_delete, textRes))
     }
 
     val jumpToPageDialogState = rememberDialogState()
@@ -826,29 +768,25 @@ fun ThreadPage(
         },
         dialogState = jumpToPageDialogState,
         onValueChange = { newVal, _ -> "^[0-9]*$".toRegex().matches(newVal) },
-        title = { Text(text = stringResource(id = R.string.title_jump_page)) },
+        title = { Text(text = stringResource(R.string.title_jump_page)) },
         content = {
             Text(
-                text = stringResource(
-                    id = R.string.tip_jump_page,
-                    currentPageMax,
-                    totalPage
-                )
+                text = stringResource(R.string.tip_jump_page, currentPageMax, totalPage)
             )
         }
     )
 
     LaunchedEffect(Unit) {
         if (from == ThreadPageFrom.FROM_STORE && extra is ThreadPageFromStoreExtra && extra.maxPid != postId) {
-            val result = scaffoldState.snackbarHostState.showSnackbar(
-                context.getString(R.string.message_store_thread_update, extra.maxFloor),
-                context.getString(R.string.button_load_new),
-                SnackbarDuration.Long
+            val result = snackbarHostState.showSnackbar(
+                message = context.getString(R.string.message_store_thread_update, extra.maxFloor),
+                actionLabel = context.getString(R.string.button_load_new),
+                duration = SnackbarDuration.Long
             )
             if (result == SnackbarResult.ActionPerformed) {
                 viewModel.send(
                     ThreadUiIntent.Load(
-                        threadId,
+                        threadId = threadId,
                         page = 0,
                         postId = extra.maxPid,
                         forumId = forumId,
@@ -862,39 +800,31 @@ fun ThreadPage(
 
     var savedHistory by remember { mutableStateOf(false) }
     LaunchedEffect(threadId, threadTitle, author, lastVisibilityPostId) {
-        val saveHistory = {
-            thread {
-                runCatching {
-                    if (threadTitle.isNotBlank()) {
-                        HistoryUtil.saveHistory(
-                            History(
-                                title = threadTitle,
-                                data = threadId.toString(),
-                                type = HistoryUtil.TYPE_THREAD,
-                                extras = ThreadHistoryInfoBean(
-                                    isSeeLz = isSeeLz,
-                                    pid = lastVisibilityPostId.toString(),
-                                    forumName = forum?.get { name },
-                                    floor = lastVisibilityPost?.get { floor }?.toString()
-                                ).toJson(),
-                                avatar = StringUtil.getAvatarUrl(author?.get { portrait }),
-                                username = author?.get { nameShow }
-                            ),
-                            async = true
-                        )
-                        savedHistory = true
-                        Log.i("ThreadPage", "saveHistory $lastVisibilityPostId")
-                    }
-                }
-            }
-        }
-
         if (!savedHistory || lastVisibilityPostId != 0L) {
-            saveHistory()
+            if (threadTitle.isNotBlank()) {
+                HistoryUtil.saveHistory(
+                    History(
+                        title = threadTitle,
+                        data = threadId.toString(),
+                        type = HistoryUtil.TYPE_THREAD,
+                        extras = ThreadHistoryInfoBean(
+                            isSeeLz = isSeeLz,
+                            pid = lastVisibilityPostId.toString(),
+                            forumName = forum?.get { name },
+                            floor = lastVisibilityPost?.get { floor }?.toString()
+                        ).toJson(),
+                        avatar = StringUtil.getAvatarUrl(author?.get { portrait }),
+                        username = author?.get { nameShow }
+                    ),
+                    async = true
+                )
+                savedHistory = true
+                Log.i("ThreadPage", "saveHistory $lastVisibilityPostId")
+            }
         }
     }
 
-    val pullRefreshState = rememberPullRefreshState(
+    val pullToRefreshState = rememberPullToRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
             viewModel.send(
@@ -924,19 +854,10 @@ fun ThreadPage(
             canDelete = { it.author_id == user.get { id } },
             immersiveMode = isImmersiveMode,
             isCollected = { it.id == thread?.get { collectMarkPid.toLongOrNull() } },
-            onUserClick = {
-                navigator.navigate(UserProfilePageDestination(it.id))
-            },
+            onUserClick = { navigator.navigate(UserProfilePageDestination(it.id)) },
             onAgree = {
-                val postHasAgreed =
-                    item.get { agree?.hasAgree == 1 }
-                viewModel.send(
-                    ThreadUiIntent.AgreePost(
-                        threadId = threadId,
-                        postId = item.get { id },
-                        agree = !postHasAgreed
-                    )
-                )
+                val postHasAgreed = item.get { agree?.hasAgree == 1 }
+                viewModel.send(ThreadUiIntent.AgreePost(threadId, item.get { id }, !postHasAgreed))
             },
             onReplyClick = {
                 navigator.navigate(
@@ -967,47 +888,33 @@ fun ThreadPage(
                     )
                 )
             },
-            onOpenSubPosts = {
+            onOpenSubPosts = { subPostId ->
                 if (curForumId != null) {
                     navigator.navigate(
                         SubPostsSheetPageDestination(
-                            forumId = curForumId,
-                            threadId = threadId,
-                            postId = item.get { id },
-                            subPostId = it,
-                            loadFromSubPost = false
+                            curForumId,
+                            threadId,
+                            item.get { id },
+                            subPostId,
+                            false
                         )
                     )
                 }
             },
             onMenuCopyClick = {
-                navigator.navigate(
-                    CopyTextDialogPageDestination(it)
-                )
+                navigator.navigate(CopyTextDialogPageDestination(it))
             },
-            onMenuFavoriteClick = {
-                val isPostCollected =
-                    it.id == thread?.get { collectMarkPid.toLongOrNull() }
+            onMenuFavoriteClick = { post ->
+                val isPostCollected = post.id == thread?.get { collectMarkPid.toLongOrNull() }
                 val fid = forum?.get { id } ?: forumId
                 val tbs = anti?.get { tbs }
                 if (fid != null) {
-                    if (isPostCollected) {
-                        viewModel.send(
-                            ThreadUiIntent.RemoveFavorite(
-                                threadId = threadId,
-                                forumId = fid,
-                                tbs = tbs
-                            )
-                        )
+                    val threadUiEvent = if (isPostCollected) {
+                        ThreadUiIntent.RemoveFavorite(threadId, fid, tbs)
                     } else {
-                        viewModel.send(
-                            ThreadUiIntent.AddFavorite(
-                                threadId = threadId,
-                                postId = it.id,
-                                floor = it.floor
-                            )
-                        )
+                        ThreadUiIntent.AddFavorite(threadId, post.id, post.floor)
                     }
+                    viewModel.send(threadUiEvent)
                 }
             },
             onMenuDeleteClick = {
@@ -1032,8 +939,8 @@ fun ThreadPage(
                             VerticalDivider(modifier = Modifier.weight(1f))
                             Text(
                                 text = stringResource(id = R.string.below_is_latest_post),
-                                color = ExtendedTheme.colors.textSecondary,
-                                style = MaterialTheme.typography.caption,
+                                color = ExtendedTheme.colorScheme.textSecondary,
+                                style = MaterialTheme.typography.bodySmall,
                             )
                             VerticalDivider(modifier = Modifier.weight(1f))
                         }
@@ -1045,12 +952,7 @@ fun ThreadPage(
                 key = { (item) -> "LatestPost_${item.get { id }}" }
             ) { (item, blocked, renders, subPosts) ->
                 Container {
-                    PostCard(
-                        item,
-                        renders,
-                        subPosts,
-                        blocked
-                    )
+                    PostCard(item, renders, subPosts, blocked)
                 }
             }
             if (desc) {
@@ -1066,8 +968,8 @@ fun ThreadPage(
                             VerticalDivider(modifier = Modifier.weight(1f))
                             Text(
                                 text = stringResource(id = R.string.above_is_latest_post),
-                                color = ExtendedTheme.colors.textSecondary,
-                                style = MaterialTheme.typography.caption,
+                                color = ExtendedTheme.colorScheme.textSecondary,
+                                style = MaterialTheme.typography.bodySmall,
                             )
                             VerticalDivider(modifier = Modifier.weight(1f))
                         }
@@ -1092,7 +994,7 @@ fun ThreadPage(
             onReload = {
                 viewModel.send(
                     ThreadUiIntent.Load(
-                        threadId,
+                        threadId = threadId,
                         page = 0,
                         postId = postId,
                         forumId = forumId,
@@ -1103,18 +1005,16 @@ fun ThreadPage(
             }
         ) {
             MyScaffold(
-                scaffoldState = scaffoldState,
+                snackbarHostState = snackbarHostState,
                 topBar = {
                     TopBar(
                         forum = forum,
                         onBack = { navigator.navigateUp() },
                         onForumClick = {
                             val forumName = forum?.get { name }
-                            if (forumName != null) navigator.navigate(
-                                ForumPageDestination(
-                                    forumName
-                                )
-                            )
+                            if (forumName != null) {
+                                navigator.navigate(ForumPageDestination(forumName))
+                            }
                         }
                     )
                 },
@@ -1131,17 +1031,17 @@ fun ThreadPage(
                             )
                         },
                         onAgree = {
-                            val firstPostId =
-                                thread?.get { firstPostId }.takeIf { it != 0L }
-                                    ?: firstPost?.get { id }
-                                    ?: 0L
-                            if (firstPostId != 0L) viewModel.send(
-                                ThreadUiIntent.AgreeThread(
-                                    threadId,
-                                    firstPostId,
-                                    !hasThreadAgreed
+                            val firstPostId = thread?.get { firstPostId }.takeIf { it != 0L }
+                                ?: firstPost?.get { id } ?: 0L
+                            if (firstPostId != 0L) {
+                                viewModel.send(
+                                    ThreadUiIntent.AgreeThread(
+                                        threadId,
+                                        firstPostId,
+                                        !hasThreadAgreed
+                                    )
                                 )
-                            )
+                            }
                         },
                         onClickMore = {
                             if (bottomSheetState.isVisible) {
@@ -1164,7 +1064,7 @@ fun ThreadPage(
                 ModalBottomSheetLayout(
                     sheetState = bottomSheetState,
                     sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-                    sheetBackgroundColor = ExtendedTheme.colors.windowBackground,
+                    sheetBackgroundColor = ExtendedTheme.colorScheme.windowBackground,
                     sheetContent = {
                         ThreadMenu(
                             isSeeLz = isSeeLz,
@@ -1203,8 +1103,7 @@ fun ThreadPage(
                                             ThreadUiIntent.AddFavorite(
                                                 threadId,
                                                 readItem.get { id },
-                                                readItem.get { floor }
-                                            )
+                                                readItem.get { floor })
                                         )
                                     }
                                 }
@@ -1225,13 +1124,13 @@ fun ThreadPage(
                                 closeBottomSheet()
                             },
                             onDescClick = {
+                                val type = if (curSortType != ThreadSortType.SORT_TYPE_DESC) {
+                                    ThreadSortType.SORT_TYPE_DESC
+                                } else {
+                                    ThreadSortType.SORT_TYPE_DEFAULT
+                                }
                                 viewModel.send(
-                                    ThreadUiIntent.LoadFirstPage(
-                                        threadId,
-                                        forumId,
-                                        isSeeLz,
-                                        if (curSortType != ThreadSortType.SORT_TYPE_DESC) ThreadSortType.SORT_TYPE_DESC else ThreadSortType.SORT_TYPE_DEFAULT
-                                    )
+                                    ThreadUiIntent.LoadFirstPage(threadId, forumId, isSeeLz, type)
                                 )
                                 closeBottomSheet()
                             },
@@ -1247,22 +1146,13 @@ fun ThreadPage(
                                 )
                             },
                             onCopyLinkClick = {
-                                TiebaUtil.copyText(
-                                    context,
-                                    "https://tieba.baidu.com/p/$threadId?see_lz=${isSeeLz.booleanToString()}"
-                                )
+                                TiebaUtil.copyText("https://tieba.baidu.com/p/$threadId?see_lz=${isSeeLz.booleanToString()}")
                             },
                             onReportClick = {
-                                val firstPostId =
-                                    thread?.get { firstPostId }.takeIf { it != 0L }
-                                        ?: firstPost?.get { id }
-                                        ?: 0L
+                                val firstPostId = thread?.get { firstPostId }.takeIf { it != 0L }
+                                    ?: firstPost?.get { id } ?: 0L
                                 coroutineScope.launch {
-                                    TiebaUtil.reportPost(
-                                        context,
-                                        navigator,
-                                        firstPostId.toString()
-                                    )
+                                    TiebaUtil.reportPost(context, navigator, firstPostId.toString())
                                 }
                             },
                             onDeleteClick = {
@@ -1280,9 +1170,14 @@ fun ThreadPage(
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
+                    val modifier = if (enablePullRefresh) {
+                        Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)
+                    } else {
+                        Modifier
+                    }
+
                     Box(
-                        modifier = Modifier
-                            .pullRefresh(state = pullRefreshState, enabled = enablePullRefresh)
+                        modifier = modifier
                     ) {
                         LoadMoreLayout(
                             isLoading = isLoadingMore,
@@ -1291,8 +1186,11 @@ fun ThreadPage(
                                     viewModel.send(
                                         ThreadUiIntent.LoadMore(
                                             threadId = threadId,
-                                            page = if (curSortType == ThreadSortType.SORT_TYPE_DESC) totalPage - currentPageMax
-                                            else currentPageMax + 1,
+                                            page = if (curSortType == ThreadSortType.SORT_TYPE_DESC) {
+                                                totalPage - currentPageMax
+                                            } else {
+                                                currentPageMax + 1
+                                            },
                                             forumId = forumId,
                                             postId = nextPagePostId,
                                             seeLz = isSeeLz,
@@ -1314,12 +1212,7 @@ fun ThreadPage(
                             },
                             loadEnd = loadMoreEnd,
                             indicator = { isLoading, loadMoreEnd, willLoad ->
-                                ThreadLoadMoreIndicator(
-                                    isLoading,
-                                    loadMoreEnd,
-                                    willLoad,
-                                    hasMore
-                                )
+                                ThreadLoadMoreIndicator(isLoading, loadMoreEnd, willLoad, hasMore)
                             },
                             lazyListState = lazyListState,
                             isEmpty = data.isEmpty(),
@@ -1345,9 +1238,7 @@ fun ThreadPage(
                                                     showSubPosts = false,
                                                     onUserClick = {
                                                         navigator.navigate(
-                                                            UserProfilePageDestination(
-                                                                it.id
-                                                            )
+                                                            UserProfilePageDestination(it.id)
                                                         )
                                                     },
                                                     onReplyClick = {
@@ -1379,27 +1270,27 @@ fun ThreadPage(
                                                     confirmDeleteDialogState.show()
                                                 }
 
-                                                thread?.getNullableImmutable { origin_thread_info }
+                                                val originThreadInfo =
+                                                    thread?.getNullableImmutable { origin_thread_info }
                                                     .takeIf { thread?.get { is_share_thread } == 1 }
-                                                    ?.let {
-                                                        OriginThreadCard(
-                                                            originThreadInfo = it,
-                                                            modifier = Modifier
-                                                                .padding(horizontal = 16.dp)
-                                                                .padding(bottom = 16.dp)
-                                                                .clip(RoundedCornerShape(6.dp))
-                                                                .background(ExtendedTheme.colors.floorCard)
-                                                                .clickable {
-                                                                    navigator.navigate(
-                                                                        ThreadPageDestination(
-                                                                            threadId = it.get { tid.toLong() },
-                                                                            forumId = it.get { fid },
-                                                                        )
-                                                                    )
-                                                                }
-                                                                .padding(16.dp)
-                                                        )
-                                                    }
+
+                                                originThreadInfo?.let {
+                                                    OriginThreadCard(
+                                                        originThreadInfo = it,
+                                                        modifier = Modifier
+                                                            .padding(horizontal = 16.dp)
+                                                            .padding(bottom = 16.dp)
+                                                            .clip(RoundedCornerShape(6.dp))
+                                                            .background(ExtendedTheme.colorScheme.floorCard)
+                                                            .clickable {
+                                                                navigator.navigate(
+                                                                    ThreadPageDestination(it.get { tid.toLong() },
+                                                                        it.get { fid })
+                                                                )
+                                                            }
+                                                            .padding(16.dp)
+                                                    )
+                                                }
 
                                                 VerticalDivider(
                                                     modifier = Modifier
@@ -1415,7 +1306,7 @@ fun ThreadPage(
                                     Container {
                                         Row(
                                             modifier = Modifier
-                                                .background(MaterialTheme.colors.background)
+                                                .background(MaterialTheme.colorScheme.background)
                                                 .padding(8.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
@@ -1425,7 +1316,7 @@ fun ThreadPage(
                                                     "${thread?.get { replyNum - 1 } ?: 0}"),
                                                 fontSize = 13.sp,
                                                 fontWeight = FontWeight.Bold,
-                                                color = ExtendedTheme.colors.text,
+                                                color = ExtendedTheme.colorScheme.text,
                                                 modifier = Modifier.padding(horizontal = 8.dp),
                                             )
                                             Spacer(modifier = Modifier.weight(1f))
@@ -1454,8 +1345,16 @@ fun ThreadPage(
                                                             }
                                                         },
                                                     fontSize = 13.sp,
-                                                    fontWeight = if (!isSeeLz) FontWeight.SemiBold else FontWeight.Normal,
-                                                    color = if (!isSeeLz) ExtendedTheme.colors.text else ExtendedTheme.colors.textSecondary,
+                                                    fontWeight = if (!isSeeLz) {
+                                                        FontWeight.SemiBold
+                                                    } else {
+                                                        FontWeight.Normal
+                                                    },
+                                                    color = if (!isSeeLz) {
+                                                        ExtendedTheme.colorScheme.text
+                                                    } else {
+                                                        ExtendedTheme.colorScheme.textSecondary
+                                                    },
                                                 )
                                                 HorizontalDivider()
                                                 Text(
@@ -1479,8 +1378,16 @@ fun ThreadPage(
                                                             }
                                                         },
                                                     fontSize = 13.sp,
-                                                    fontWeight = if (isSeeLz) FontWeight.SemiBold else FontWeight.Normal,
-                                                    color = if (isSeeLz) ExtendedTheme.colors.text else ExtendedTheme.colors.textSecondary,
+                                                    fontWeight = if (isSeeLz) {
+                                                        FontWeight.SemiBold
+                                                    } else {
+                                                        FontWeight.Normal
+                                                    },
+                                                    color = if (isSeeLz) {
+                                                        ExtendedTheme.colorScheme.text
+                                                    } else {
+                                                        ExtendedTheme.colorScheme.textSecondary
+                                                    },
                                                 )
                                             }
                                         }
@@ -1523,7 +1430,7 @@ fun ThreadPage(
                                                 Spacer(modifier = Modifier.width(16.dp))
                                                 Text(
                                                     text = stringResource(id = R.string.btn_load_previous),
-                                                    color = ExtendedTheme.colors.text,
+                                                    color = ExtendedTheme.colorScheme.text,
                                                     fontSize = 14.sp
                                                 )
                                             }
@@ -1549,7 +1456,7 @@ fun ThreadPage(
                                                 },
                                                 actions = {
                                                     if (canReload) {
-                                                        Button(onClick = { reload() }) {
+                                                        DefaultButton(onClick = { reload() }) {
                                                             Text(text = stringResource(id = R.string.btn_refresh))
                                                         }
                                                     }
@@ -1565,12 +1472,7 @@ fun ThreadPage(
                                         key = { (item) -> "Post_${item.get { id }}" }
                                     ) { (item, blocked, renders, subPosts) ->
                                         Container {
-                                            PostCard(
-                                                item,
-                                                renders,
-                                                subPosts,
-                                                blocked
-                                            )
+                                            PostCard(item, renders, subPosts, blocked)
                                         }
                                     }
                                 }
@@ -1580,12 +1482,11 @@ fun ThreadPage(
                             }
                         }
 
-                        PullRefreshIndicator(
-                            refreshing = isRefreshing,
-                            state = pullRefreshState,
+                        PullToRefreshContainer(
+                            state = pullToRefreshState,
                             modifier = Modifier.align(Alignment.TopCenter),
-                            backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                            contentColor = ExtendedTheme.colors.primary,
+                            containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                            contentColor = ExtendedTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -1610,7 +1511,7 @@ private fun TopBar(
                             .padding(horizontal = 48.dp)
                             .height(IntrinsicSize.Min)
                             .clip(RoundedCornerShape(100))
-                            .background(ExtendedTheme.colors.chip)
+                            .background(ExtendedTheme.colorScheme.chip)
                             .clickable(onClick = onForumClick)
                             .padding(4.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -1626,7 +1527,7 @@ private fun TopBar(
                         Text(
                             text = stringResource(id = R.string.title_forum, it.get { name }),
                             fontSize = 14.sp,
-                            color = ExtendedTheme.colors.text,
+                            color = ExtendedTheme.colorScheme.text,
                             modifier = Modifier.padding(horizontal = 8.dp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -1653,7 +1554,7 @@ private fun BottomBar(
     agreeNum: Long = 0,
 ) {
     Column(
-        modifier = Modifier.background(ExtendedTheme.colors.threadBottomBar)
+        modifier = Modifier.background(ExtendedTheme.colorScheme.threadBottomBar)
     ) {
         Row(
             modifier = Modifier
@@ -1677,20 +1578,22 @@ private fun BottomBar(
                         .padding(vertical = 8.dp)
                         .weight(1f)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(ExtendedTheme.colors.bottomBarSurface)
+                        .background(ExtendedTheme.colorScheme.bottomBarSurface)
                         .clickable(onClick = onClickReply)
                         .padding(8.dp),
                 ) {
                     Text(
                         text = stringResource(id = R.string.tip_reply_thread),
-                        style = MaterialTheme.typography.caption,
-                        color = ExtendedTheme.colors.onBottomBarSurface,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = ExtendedTheme.colorScheme.onBottomBarSurface,
                     )
                 }
             } else {
-                Spacer(modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp))
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                )
             }
 
             BottomBarAgreeBtn(
@@ -1710,7 +1613,7 @@ private fun BottomBar(
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
                     contentDescription = stringResource(id = R.string.btn_more),
-                    tint = ExtendedTheme.colors.textSecondary,
+                    tint = ExtendedTheme.colorScheme.textSecondary,
                 )
             }
         }
@@ -1789,57 +1692,62 @@ fun PostCard(
             menuContent = {
                 if (!context.appPreferences.hideReply) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.btn_reply))
+                        },
                         onClick = {
                             onReplyClick(post)
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.btn_reply))
-                    }
+                    )
                 }
                 if (onMenuCopyClick != null) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.menu_copy))
+                        },
                         onClick = {
                             onMenuCopyClick(post.content.plainText)
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.menu_copy))
-                    }
+                    )
                 }
                 DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.title_report))
+                    },
                     onClick = {
                         coroutineScope.launch {
                             TiebaUtil.reportPost(context, navigator, post.id.toString())
                         }
                         menuState.expanded = false
                     }
-                ) {
-                    Text(text = stringResource(id = R.string.title_report))
-                }
+                )
                 if (onMenuFavoriteClick != null) {
                     DropdownMenuItem(
+                        text = {
+                            if (isCollected(post)) {
+                                Text(text = stringResource(id = R.string.title_collect_on))
+                            } else {
+                                Text(text = stringResource(id = R.string.title_collect_floor))
+                            }
+                        },
                         onClick = {
                             onMenuFavoriteClick(post)
                             menuState.expanded = false
                         }
-                    ) {
-                        if (isCollected(post)) {
-                            Text(text = stringResource(id = R.string.title_collect_on))
-                        } else {
-                            Text(text = stringResource(id = R.string.title_collect_floor))
-                        }
-                    }
+                    )
                 }
                 if (canDelete(post) && onMenuDeleteClick != null) {
                     DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.title_delete))
+                        },
                         onClick = {
                             onMenuDeleteClick(post)
                             menuState.expanded = false
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.title_delete))
-                    }
+                    )
                 }
             }
         ) {
@@ -1898,7 +1806,7 @@ fun PostCard(
                         if (showTitle) {
                             Text(
                                 text = post.title,
-                                style = MaterialTheme.typography.subtitle1,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontSize = 15.sp
                             )
                         }
@@ -1926,7 +1834,7 @@ fun PostCard(
                                 .fillMaxWidth()
                                 .then(paddingModifier)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(ExtendedTheme.colors.floorCard)
+                                .background(ExtendedTheme.colorScheme.floorCard)
                                 .padding(vertical = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
@@ -1936,8 +1844,8 @@ fun PostCard(
                                     blockedTip = {
                                         Text(
                                             text = stringResource(id = R.string.tip_blocked_sub_post),
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = ExtendedTheme.colors.textDisabled,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                color = ExtendedTheme.colorScheme.textDisabled,
                                                 fontSize = 13.sp
                                             ),
                                             modifier = Modifier.padding(horizontal = 12.dp)
@@ -1967,9 +1875,9 @@ fun PostCard(
                                         id = R.string.open_all_sub_posts,
                                         post.sub_post_number
                                     ),
-                                    style = MaterialTheme.typography.caption,
+                                    style = MaterialTheme.typography.bodySmall,
                                     fontSize = 13.sp,
-                                    color = ExtendedTheme.colors.accent,
+                                    color = ExtendedTheme.colorScheme.accent,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 2.dp)
@@ -2005,41 +1913,44 @@ private fun SubPostItem(
         menuContent = {
             if (!context.appPreferences.hideReply) {
                 DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.title_reply))
+                    },
                     onClick = {
                         onReplyClick?.invoke(subPostList.get())
                         menuState.expanded = false
                     }
-                ) {
-                    Text(text = stringResource(id = R.string.title_reply))
-                }
+                )
             }
             if (onMenuCopyClick != null) {
                 DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.menu_copy))
+                    },
                     onClick = {
                         onMenuCopyClick(subPostList.get())
                         menuState.expanded = false
                     }
-                ) {
-                    Text(text = stringResource(id = R.string.menu_copy))
-                }
+                )
             }
             DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.title_report))
+                },
                 onClick = {
                     coroutineScope.launch {
                         TiebaUtil.reportPost(context, navigator, subPostList.get { id }.toString())
                     }
                     menuState.expanded = false
                 }
-            ) {
-                Text(text = stringResource(id = R.string.title_report))
-            }
+            )
         },
         shape = RoundedCornerShape(0),
         onClick = {
             onOpenSubPosts(subPostList.get { id })
         }
     ) {
-        ProvideTextStyle(value = MaterialTheme.typography.body2.copy(color = ExtendedTheme.colors.text)) {
+        ProvideTextStyle(value = MaterialTheme.typography.bodyMedium.copy(color = ExtendedTheme.colorScheme.text)) {
             PbContentText(
                 text = subPostContent,
                 modifier = modifier,
@@ -2051,8 +1962,8 @@ private fun SubPostItem(
                 inlineContent = mapOf(
                     "Lz" to buildChipInlineContent(
                         stringResource(id = R.string.tip_lz),
-                        backgroundColor = ExtendedTheme.colors.textSecondary.copy(alpha = 0.1f),
-                        color = ExtendedTheme.colors.textSecondary
+                        backgroundColor = ExtendedTheme.colorScheme.textSecondary.copy(alpha = 0.1f),
+                        color = ExtendedTheme.colorScheme.textSecondary
                     ),
                 )
             )
@@ -2091,8 +2002,8 @@ fun UserNameText(
             ),
             "Bawu" to buildChipInlineContent(
                 bawuType ?: "",
-                color = ExtendedTheme.colors.primary,
-                backgroundColor = ExtendedTheme.colors.primary.copy(alpha = 0.1f)
+                color = ExtendedTheme.colorScheme.primary,
+                backgroundColor = ExtendedTheme.colorScheme.primary.copy(alpha = 0.1f)
             ),
             "Lz" to buildChipInlineContent(stringResource(id = R.string.tip_lz)),
         ),
@@ -2129,7 +2040,7 @@ private fun ThreadMenu(
                 .height(4.dp)
                 .fillMaxWidth(0.25f)
                 .clip(RoundedCornerShape(100))
-                .background(ExtendedTheme.colors.chip)
+                .background(ExtendedTheme.colorScheme.chip)
         )
         VerticalGrid(
             column = 2,
@@ -2150,7 +2061,11 @@ private fun ThreadMenu(
                     onClick = onSeeLzClick,
                     icon = {
                         Icon(
-                            imageVector = if (isSeeLz) Icons.Rounded.Face6 else Icons.Rounded.FaceRetouchingOff,
+                            imageVector = if (isSeeLz) {
+                                Icons.Rounded.Face6
+                            } else {
+                                Icons.Rounded.FaceRetouchingOff
+                            },
                             contentDescription = null
                         )
                     },
@@ -2162,7 +2077,11 @@ private fun ThreadMenu(
                     text = {
                         TextWithMinWidth(
                             text = stringResource(
-                                id = if (isCollected) R.string.title_collected else R.string.title_uncollected
+                                id = if (isCollected) {
+                                    R.string.title_collected
+                                } else {
+                                    R.string.title_uncollected
+                                }
                             ),
                             minLength = 4
                         )
@@ -2171,7 +2090,11 @@ private fun ThreadMenu(
                     onClick = onCollectClick,
                     icon = {
                         Icon(
-                            imageVector = if (isCollected) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                            imageVector = if (isCollected) {
+                                Icons.Rounded.Star
+                            } else {
+                                Icons.Rounded.StarBorder
+                            },
                             contentDescription = null
                         )
                     },
@@ -2182,9 +2105,7 @@ private fun ThreadMenu(
                 ToggleButton(
                     text = {
                         TextWithMinWidth(
-                            text = stringResource(
-                                id = R.string.title_pure_read
-                            ),
+                            text = stringResource(R.string.title_pure_read),
                             minLength = 4
                         )
                     },
@@ -2192,7 +2113,11 @@ private fun ThreadMenu(
                     onClick = onImmersiveModeClick,
                     icon = {
                         Icon(
-                            imageVector = if (isImmersiveMode) Icons.AutoMirrored.Rounded.ChromeReaderMode else Icons.AutoMirrored.Outlined.ChromeReaderMode,
+                            imageVector = if (isImmersiveMode) {
+                                Icons.AutoMirrored.Rounded.ChromeReaderMode
+                            } else {
+                                Icons.AutoMirrored.Outlined.ChromeReaderMode
+                            },
                             contentDescription = null
                         )
                     },
@@ -2225,28 +2150,28 @@ private fun ThreadMenu(
             ListMenuItem(
                 icon = Icons.Rounded.RocketLaunch,
                 text = stringResource(id = R.string.title_jump_page),
-                iconColor = ExtendedTheme.colors.text,
+                iconColor = ExtendedTheme.colorScheme.text,
                 onClick = onJumpPageClick,
                 modifier = Modifier.fillMaxWidth(),
             )
             ListMenuItem(
                 icon = Icons.Rounded.Share,
                 text = stringResource(id = R.string.title_share),
-                iconColor = ExtendedTheme.colors.text,
+                iconColor = ExtendedTheme.colorScheme.text,
                 onClick = onShareClick,
                 modifier = Modifier.fillMaxWidth(),
             )
             ListMenuItem(
                 icon = Icons.Rounded.ContentCopy,
                 text = stringResource(id = R.string.title_copy_link),
-                iconColor = ExtendedTheme.colors.text,
+                iconColor = ExtendedTheme.colorScheme.text,
                 onClick = onCopyLinkClick,
                 modifier = Modifier.fillMaxWidth(),
             )
             ListMenuItem(
                 icon = Icons.Rounded.Report,
                 text = stringResource(id = R.string.title_report),
-                iconColor = ExtendedTheme.colors.text,
+                iconColor = ExtendedTheme.colorScheme.text,
                 onClick = onReportClick,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -2254,7 +2179,7 @@ private fun ThreadMenu(
                 ListMenuItem(
                     icon = Icons.Rounded.Delete,
                     text = stringResource(id = R.string.title_delete),
-                    iconColor = ExtendedTheme.colors.text,
+                    iconColor = ExtendedTheme.colorScheme.text,
                     onClick = onDeleteClick,
                     modifier = Modifier.fillMaxWidth(),
                 )

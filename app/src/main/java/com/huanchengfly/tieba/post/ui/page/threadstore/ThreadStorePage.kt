@@ -11,15 +11,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -27,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -53,6 +52,7 @@ import com.huanchengfly.tieba.post.ui.page.destinations.UserProfilePageDestinati
 import com.huanchengfly.tieba.post.ui.page.thread.ThreadPageFrom
 import com.huanchengfly.tieba.post.ui.page.thread.ThreadPageFromStoreExtra
 import com.huanchengfly.tieba.post.ui.page.thread.ThreadSortType
+import com.huanchengfly.tieba.post.ui.utils.rememberPullToRefreshState
 import com.huanchengfly.tieba.post.ui.widgets.compose.Avatar
 import com.huanchengfly.tieba.post.ui.widgets.compose.BackNavigationIcon
 import com.huanchengfly.tieba.post.ui.widgets.compose.ErrorScreen
@@ -74,7 +74,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 private val UpdateTipTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 10.sp)
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalTextApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "tblite://favorite")
@@ -116,9 +116,9 @@ fun ThreadStorePage(
     val isError by remember { derivedStateOf { error != null } }
 
     val context = LocalContext.current
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     viewModel.onEvent<ThreadStoreUiEvent.Delete.Failure> {
-        scaffoldState.snackbarHostState.showSnackbar(
+        snackbarHostState.showSnackbar(
             context.getString(
                 R.string.delete_store_failure,
                 it.errorMsg
@@ -126,17 +126,17 @@ fun ThreadStorePage(
         )
     }
     viewModel.onEvent<ThreadStoreUiEvent.Delete.Success> {
-        scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.delete_store_success))
+        snackbarHostState.showSnackbar(context.getString(R.string.delete_store_success))
     }
     MyScaffold(
-        backgroundColor = Color.Transparent,
-        scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
+        containerColor = Color.Transparent,
         topBar = {
             TitleCentredToolbar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.title_my_collect),
-                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                        fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -162,14 +162,17 @@ fun ThreadStorePage(
                 }
             }
         ) {
-            val pullRefreshState = rememberPullRefreshState(
+            val pullToRefreshState = rememberPullToRefreshState(
                 refreshing = isRefreshing,
                 onRefresh = { viewModel.send(ThreadStoreUiIntent.Refresh) }
             )
 
             val lazyListState = rememberLazyListState()
 
-            Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+            Box(
+                modifier = Modifier
+                    .nestedScroll(pullToRefreshState.nestedScrollConnection)
+            ) {
                 LoadMoreLayout(
                     isLoading = isLoadingMore,
                     onLoadMore = { viewModel.send(ThreadStoreUiIntent.LoadMore(currentPage + 1)) },
@@ -194,7 +197,7 @@ fun ThreadStorePage(
                                             threadId = info.threadId.toLong(),
                                             postId = info.markPid.toLong(),
                                             seeLz = context.appPreferences.collectThreadSeeLz,
-                                            sortType = if(context.appPreferences.collectThreadDescSort) ThreadSortType.SORT_TYPE_DESC else ThreadSortType.SORT_TYPE_DEFAULT,
+                                            sortType = if (context.appPreferences.collectThreadDescSort) ThreadSortType.SORT_TYPE_DESC else ThreadSortType.SORT_TYPE_DEFAULT,
                                             from = ThreadPageFrom.FROM_STORE,
                                             extra = ThreadPageFromStoreExtra(
                                                 maxPid = info.maxPid.toLong(),
@@ -215,12 +218,11 @@ fun ThreadStorePage(
                     }
                 }
 
-                PullRefreshIndicator(
-                    refreshing = isRefreshing,
-                    state = pullRefreshState,
+                PullToRefreshContainer(
+                    state = pullToRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter),
-                    backgroundColor = ExtendedTheme.colors.pullRefreshIndicator,
-                    contentColor = ExtendedTheme.colors.primary,
+                    containerColor = ExtendedTheme.colorScheme.pullRefreshIndicator,
+                    contentColor = ExtendedTheme.colorScheme.primary,
                 )
             }
         }
@@ -241,9 +243,12 @@ private fun StoreItem(
     val textMeasurer = rememberTextMeasurer()
     LongClickMenu(
         menuContent = {
-            DropdownMenuItem(onClick = onDelete) {
-                Text(text = stringResource(id = R.string.title_collect_on))
-            }
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.title_collect_on))
+                },
+                onClick = onDelete
+            )
         },
         onClick = onClick
     ) {
@@ -296,7 +301,7 @@ private fun StoreItem(
             Text(
                 text = title,
                 fontSize = 15.sp,
-                color = if (isDeleted) ExtendedTheme.colors.textDisabled else ExtendedTheme.colors.text,
+                color = if (isDeleted) ExtendedTheme.colorScheme.textDisabled else ExtendedTheme.colorScheme.text,
                 inlineContent = mapOf(
                     "Update" to InlineTextContent(
                         placeholder = Placeholder(
@@ -309,7 +314,7 @@ private fun StoreItem(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(
-                                        color = ExtendedTheme.colors.chip,
+                                        color = ExtendedTheme.colorScheme.chip,
                                         shape = RoundedCornerShape(3.dp)
                                     )
                                     .padding(vertical = 4.dp, horizontal = 12.dp)
@@ -317,7 +322,7 @@ private fun StoreItem(
                                 Text(
                                     text = updateTip,
                                     style = UpdateTipTextStyle,
-                                    color = ExtendedTheme.colors.onChip,
+                                    color = ExtendedTheme.colorScheme.onChip,
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
@@ -329,7 +334,7 @@ private fun StoreItem(
                 Text(
                     text = stringResource(id = R.string.tip_thread_store_deleted),
                     fontSize = 12.sp,
-                    color = ExtendedTheme.colors.textDisabled
+                    color = ExtendedTheme.colorScheme.textDisabled
                 )
             }
         }

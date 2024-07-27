@@ -79,7 +79,7 @@ class BlockListViewModel :
 }
 
 sealed interface BlockListUiIntent : UiIntent {
-    object Load : BlockListUiIntent
+    data object Load : BlockListUiIntent
 
     data class Add(
         val category: Int,
@@ -105,7 +105,7 @@ sealed interface BlockListPartialChange : PartialChange<BlockListUiState> {
                 is Failure -> oldState.copy(isLoading = false)
             }
 
-        object Start : Load()
+        data object Start : Load()
 
         data class Success(val blackList: List<Block>, val whiteList: List<Block>) : Load()
 

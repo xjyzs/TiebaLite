@@ -11,17 +11,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,7 +50,7 @@ fun Dislike(
     personalized: ImmutableHolder<ThreadPersonalized>,
     onDislike: (clickTime: Long, reasons: ImmutableList<ImmutableHolder<DislikeReason>>) -> Unit,
 ) {
-    var clickTime by remember { mutableStateOf(0L) }
+    var clickTime by remember { mutableLongStateOf(0L) }
     val selectedReasons = remember { mutableStateListOf<ImmutableHolder<DislikeReason>>() }
     val menuState = rememberMenuState()
     val dislikeResource = personalized.getImmutableList { dislikeResource }
@@ -78,7 +78,7 @@ fun Dislike(
                 ) {
                     Text(
                         text = stringResource(id = R.string.title_dislike),
-                        style = MaterialTheme.typography.subtitle1,
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                     )
                     Spacer(modifier = Modifier.width(32.dp))
@@ -86,16 +86,16 @@ fun Dislike(
                         text = stringResource(id = R.string.button_submit_dislike),
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(color = ExtendedTheme.colors.primary)
+                            .background(color = ExtendedTheme.colorScheme.primary)
                             .clickable {
                                 dismiss()
                                 onDislike(clickTime, selectedReasons.toImmutableList())
                             }
                             .padding(vertical = 4.dp, horizontal = 8.dp),
-                        color = ExtendedTheme.colors.onAccent,
+                        color = ExtendedTheme.colorScheme.onAccent,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.subtitle2,
+                        style = MaterialTheme.typography.titleSmall,
                     )
                 }
                 VerticalGrid(
@@ -115,11 +115,23 @@ fun Dislike(
                         items = dislikeResource,
                         span = { if (it.get { dislikeId } == 7) 2 else 1 }
                     ) {
+                        val isInSelected = it in selectedReasons
+
                         val backgroundColor by animateColorAsState(
-                            targetValue = if (selectedReasons.contains(it)) ExtendedTheme.colors.primary else ExtendedTheme.colors.chip
+                            targetValue = if (isInSelected) {
+                                ExtendedTheme.colorScheme.primary
+                            } else {
+                                ExtendedTheme.colorScheme.chip
+                            },
+                            label = "BackgroundColor"
                         )
                         val contentColor by animateColorAsState(
-                            targetValue = if (selectedReasons.contains(it)) ExtendedTheme.colors.onAccent else ExtendedTheme.colors.onChip
+                            targetValue = if (isInSelected) {
+                                ExtendedTheme.colorScheme.onAccent
+                            } else {
+                                ExtendedTheme.colorScheme.onChip
+                            },
+                            label = "ContentColor"
                         )
                         Text(
                             text = it.get { dislikeReason },
@@ -128,17 +140,17 @@ fun Dislike(
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(color = backgroundColor)
                                 .clickable {
-                                    if (selectedReasons.contains(it)) {
-                                        selectedReasons.remove(it)
+                                    if (isInSelected) {
+                                        selectedReasons -= it
                                     } else {
-                                        selectedReasons.add(it)
+                                        selectedReasons += it
                                     }
                                 }
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
                             color = contentColor,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.subtitle2,
+                            style = MaterialTheme.typography.titleSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -155,7 +167,7 @@ fun Dislike(
             Icon(
                 imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = null,
-                tint = ExtendedTheme.colors.textSecondary
+                tint = ExtendedTheme.colorScheme.textSecondary
             )
         }
     }

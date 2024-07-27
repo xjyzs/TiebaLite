@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.runtime.Composable
@@ -50,7 +50,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 internal fun LeadingIcon(
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LocalContentColor provides ExtendedTheme.colors.primary) {
+    CompositionLocalProvider(LocalContentColor provides ExtendedTheme.colorScheme.primary) {
         content()
         Spacer(modifier = Modifier.width(56.dp))
     }
@@ -92,8 +92,8 @@ fun NowAccountItem(
                         icon = Icons.Rounded.AccountCircle,
                         size = Sizes.Small,
                         contentDescription = stringResource(id = R.string.title_new_account),
-                        color = ExtendedTheme.colors.onChip,
-                        backgroundColor = ExtendedTheme.colors.chip,
+                        color = ExtendedTheme.colorScheme.onChip,
+                        backgroundColor = ExtendedTheme.colorScheme.chip,
                     )
                 }
             },
@@ -110,13 +110,14 @@ fun SettingsPage(
 ) {
     ProvideNavigator(navigator = navigator) {
         Scaffold(
-            backgroundColor = Color.Transparent,
+            containerColor = Color.Transparent,
             topBar = {
                 TitleCentredToolbar(
                     title = {
                         Text(
                             text = stringResource(id = R.string.title_settings),
-                            fontWeight = FontWeight.Bold, style = MaterialTheme.typography.h6
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge
                         )
                     },
                     navigationIcon = {

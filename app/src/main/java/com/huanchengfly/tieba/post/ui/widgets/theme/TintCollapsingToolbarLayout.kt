@@ -2,50 +2,46 @@ package com.huanchengfly.tieba.post.ui.widgets.theme
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.huanchengfly.tieba.post.R
-import com.huanchengfly.tieba.post.ext.getColorStateListCompat
 import com.huanchengfly.tieba.post.ui.common.theme.interfaces.Tintable
 import com.huanchengfly.tieba.post.ui.common.theme.utils.ColorStateListUtils
+import com.kiral.himari.ext.android.content.getColorStateListCompat
 
 class TintCollapsingToolbarLayout @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : CollapsingToolbarLayout(context, attrs, defStyleAttr), Tintable {
-    private var textColorResId: Int
+    private var textColorResId: Int = ResourcesCompat.ID_NULL
 
     init {
-        val array = getContext().obtainStyledAttributes(
+        context.withStyledAttributes(
             attrs,
             R.styleable.TintCollapsingToolbarLayout,
             defStyleAttr,
             0
-        )
-        textColorResId = array.getResourceId(R.styleable.TintCollapsingToolbarLayout_textColor, 0)
-        array.recycle()
+        ) {
+            textColorResId = getResourceId(
+                R.styleable.TintCollapsingToolbarLayout_textColor,
+                ResourcesCompat.ID_NULL
+            )
+        }
         tint()
     }
 
     override fun tint() {
-        if (textColorResId != 0) {
-            if (isInEditMode) {
-                setCollapsedTitleTextColor(context.getColorStateListCompat(textColorResId))
-                setExpandedTitleTextColor(context.getColorStateListCompat(textColorResId))
-            } else {
-                setCollapsedTitleTextColor(
-                    ColorStateListUtils.createColorStateList(
-                        context,
-                        textColorResId
-                    )
-                )
-                setExpandedTitleTextColor(
-                    ColorStateListUtils.createColorStateList(
-                        context,
-                        textColorResId
-                    )
-                )
-            }
-        }
-    }
+        if (textColorResId == ResourcesCompat.ID_NULL) return
 
+        val colorStateList = if (isInEditMode) {
+            context.getColorStateListCompat(textColorResId)
+        } else {
+            ColorStateListUtils.createColorStateList(context, textColorResId)
+        }
+        setCollapsedTitleTextColor(colorStateList)
+        setExpandedTitleTextColor(colorStateList)
+    }
 
 }

@@ -27,13 +27,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PhotoCamera
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -63,7 +63,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.github.panpf.sketch.compose.AsyncImage
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.huanchengfly.tieba.post.R
 import com.huanchengfly.tieba.post.activities.BaseActivity
@@ -91,8 +90,11 @@ import com.huanchengfly.tieba.post.utils.ThemeUtil
 import com.huanchengfly.tieba.post.utils.registerPickMediasLauncher
 import com.huanchengfly.tieba.post.utils.requestPermission
 import com.huanchengfly.tieba.post.utils.shouldUsePhotoPicker
+import com.kiral.himari.ext.android.view.setDecorFitsSystemWindowsCompat
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.fornewid.placeholder.material3.placeholder
+import io.github.fornewid.placeholder.material3.placeholder
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOf
@@ -116,7 +118,7 @@ class EditProfileActivity : BaseActivity() {
     private val pickMediasLauncher =
         registerPickMediasLauncher { (_, uris) ->
             if (uris.isNotEmpty()) {
-                val sourceUri = uris[0]
+                val sourceUri = uris.first()
                 Glide.with(this)
                     .asFile()
                     .load(sourceUri)
@@ -174,7 +176,7 @@ class EditProfileActivity : BaseActivity() {
                         }
                     })
             }
-            }
+        }
 
     private val viewModel: EditProfileViewModel by viewModels()
 
@@ -189,9 +191,10 @@ class EditProfileActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setDecorFitsSystemWindowsCompat(false)
         setContent {
             TiebaLiteTheme {
+                // TODO: replace
                 val systemUiController = rememberSystemUiController()
                 SideEffect {
                     systemUiController.apply {
@@ -272,17 +275,24 @@ fun EditProfileCard(
     nickName: String,
     sex: Int,
     intro: String,
-    //birthdayShowStatus: Boolean,
-    //birthdayTime: Long,
+    // birthdayShowStatus: Boolean,
+    // birthdayTime: Long,
     loading: Boolean,
     onNickNameChange: ((String) -> Unit)? = null,
     onIntroChange: ((String) -> Unit)? = null,
     onUploadPortrait: (() -> Unit)? = null,
     onModifySex: (() -> Unit)? = null,
-    color: Color = ExtendedTheme.colors.background,
+    color: Color = ExtendedTheme.colorScheme.background,
 ) {
     val context = LocalContext.current
-    Card(elevation = 0.dp, backgroundColor = color) {
+    Card(
+        colors = CardDefaults.cardColors().copy(
+            containerColor = color,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp,
+        ),
+    ) {
         Column(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.card_margin))
@@ -343,7 +353,7 @@ fun EditProfileCard(
 
                 Text(
                     text = stringResource(id = R.string.title_username),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     modifier = Modifier.constrainAs(nameTitle) {
                         top.linkTo(parent.top)
                         bottom.linkTo(nameContent.bottom)
@@ -352,7 +362,7 @@ fun EditProfileCard(
                 )
                 Text(
                     text = name,
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     modifier = Modifier
                         .constrainAs(nameContent) {
                             top.linkTo(nameTitle.top)
@@ -366,7 +376,7 @@ fun EditProfileCard(
 
                 Text(
                     text = stringResource(id = R.string.title_nickname),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     modifier = Modifier.constrainAs(nickNameTitle) {
                         top.linkTo(nameTitle.bottom, margin = 16.dp)
                         start.linkTo(parent.start)
@@ -394,7 +404,7 @@ fun EditProfileCard(
 
                 Text(
                     text = stringResource(id = R.string.profile_sex),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     modifier = Modifier.constrainAs(sexTitle) {
                         top.linkTo(nickNameTitle.bottom, margin = 16.dp)
                         start.linkTo(parent.start)
@@ -423,13 +433,13 @@ fun EditProfileCard(
                                 else -> R.string.profile_sex_unset
                             }
                         ),
-                        color = ExtendedTheme.colors.text,
+                        color = ExtendedTheme.colorScheme.text,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_chevron_right),
                         contentDescription = null,
-                        tint = ExtendedTheme.colors.textSecondary,
+                        tint = ExtendedTheme.colorScheme.textSecondary,
                         modifier = Modifier
                             .size(16.dp)
                             .align(Alignment.CenterVertically)
@@ -438,7 +448,7 @@ fun EditProfileCard(
 
                 Text(
                     text = stringResource(id = R.string.title_intro),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     modifier = Modifier.constrainAs(introTitle) {
                         top.linkTo(sexTitle.bottom, margin = 16.dp)
                         start.linkTo(parent.start)
@@ -465,7 +475,6 @@ fun EditProfileCard(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PageEditProfile(
     viewModel: EditProfileViewModel,

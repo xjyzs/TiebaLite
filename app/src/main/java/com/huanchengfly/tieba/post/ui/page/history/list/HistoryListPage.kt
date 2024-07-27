@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -115,7 +115,7 @@ fun HistoryListPage(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(ExtendedTheme.colors.background)
+                                .background(ExtendedTheme.colorScheme.background)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Chip(
@@ -161,7 +161,7 @@ fun HistoryListPage(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(ExtendedTheme.colors.background)
+                                .background(ExtendedTheme.colorScheme.background)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Chip(text = stringResource(id = R.string.title_history_before))
@@ -214,15 +214,18 @@ private fun HistoryItem(
     val menuState = rememberMenuState()
     LongClickMenu(
         menuContent = {
-            DropdownMenuItem(onClick = {
-                onDelete(info)
-                menuState.expanded = false
-            }) {
-                Text(text = stringResource(id = R.string.title_delete))
-            }
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.title_delete))
+                },
+                onClick = {
+                    onDelete(info)
+                    menuState.expanded = false
+                },
+            )
         },
         menuState = menuState,
-        onClick = { onClick(info) }
+        onClick = { onClick(info) },
     ) {
         Column(
             modifier = modifier
@@ -250,14 +253,14 @@ private fun HistoryItem(
                         info.timestamp
                     ),
                     fontSize = 15.sp,
-                    color = ExtendedTheme.colors.text,
+                    color = ExtendedTheme.colorScheme.text,
                 )
             }
             if (info.type == HistoryUtil.TYPE_THREAD) {
                 Text(
                     text = info.title,
                     fontSize = 15.sp,
-                    color = ExtendedTheme.colors.text,
+                    color = ExtendedTheme.colorScheme.text,
                 )
             }
         }

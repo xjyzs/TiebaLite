@@ -26,19 +26,18 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,8 +78,8 @@ import com.huanchengfly.tieba.post.ui.page.search.thread.SearchThreadPage
 import com.huanchengfly.tieba.post.ui.page.search.thread.SearchThreadSortType
 import com.huanchengfly.tieba.post.ui.page.search.thread.SearchThreadUiEvent
 import com.huanchengfly.tieba.post.ui.page.search.user.SearchUserPage
-import com.huanchengfly.tieba.post.ui.widgets.compose.Button
 import com.huanchengfly.tieba.post.ui.widgets.compose.Container
+import com.huanchengfly.tieba.post.ui.widgets.compose.DefaultButton
 import com.huanchengfly.tieba.post.ui.widgets.compose.LazyLoadHorizontalPager
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyBackHandler
 import com.huanchengfly.tieba.post.ui.widgets.compose.MyScaffold
@@ -241,7 +240,7 @@ fun SearchPage(
                     Box(
                         modifier = Modifier
                             .height(64.dp)
-                            .background(ExtendedTheme.colors.topBar)
+                            .background(ExtendedTheme.colorScheme.topBar)
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         SearchTopBar(
@@ -343,14 +342,14 @@ private fun SearchSuggestionList(
                     Icon(
                         imageVector = Icons.Rounded.Search,
                         contentDescription = stringResource(id = R.string.desc_search_sug, it),
-                        tint = ExtendedTheme.colors.text
+                        tint = ExtendedTheme.colorScheme.text
                     )
 
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.subtitle2,
+                        style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.weight(1f),
-                        color = ExtendedTheme.colors.text
+                        color = ExtendedTheme.colorScheme.text
                     )
                 }
             }
@@ -363,7 +362,7 @@ private fun SearchSuggestionList(
 private fun SearchSuggestionListPreview() {
     TiebaLiteTheme {
         Box(
-            modifier = Modifier.background(ExtendedTheme.colors.topBar)
+            modifier = Modifier.background(ExtendedTheme.colorScheme.topBar)
         ) {
             SearchSuggestionList(
                 suggestions = persistentListOf("1", "2", "3"),
@@ -390,14 +389,14 @@ private fun ColumnScope.SearchTabRow(
         },
         divider = {},
         backgroundColor = Color.Transparent,
-        contentColor = ExtendedTheme.colors.onTopBar,
+        contentColor = ExtendedTheme.colorScheme.onTopBar,
         modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .width(76.dp * pages.size),
     ) {
         pages.fastForEachIndexed { index, item ->
             val tabTextStyle =
-                MaterialTheme.typography.button.copy(fontSize = 13.sp, letterSpacing = 0.sp)
+                MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp, letterSpacing = 0.sp)
 
             if (item.supportSort) {
                 TabClickMenu(
@@ -475,13 +474,13 @@ private fun SearchHistoryList(
                 text = stringResource(id = R.string.title_search_history),
                 modifier = Modifier
                     .weight(1f),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.titleMedium
             )
             if (hasItem) {
                 Text(
                     text = stringResource(id = R.string.button_clear_all),
                     modifier = Modifier.clickable(onClick = onClear),
-                    style = MaterialTheme.typography.button
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }
@@ -500,7 +499,7 @@ private fun SearchHistoryList(
                             onClick = { onSearchHistoryClick(searchHistory) },
                             onLongClick = { onDelete(searchHistory) }
                         )
-                        .background(ExtendedTheme.colors.chip)
+                        .background(ExtendedTheme.colorScheme.chip)
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -510,12 +509,12 @@ private fun SearchHistoryList(
             }
         }
         if (hasMore) {
-            Button(
+            DefaultButton(
                 onClick = onToggleExpand,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = Color.Transparent,
-                    contentColor = ExtendedTheme.colors.text
+                    containerColor = Color.Transparent,
+                    contentColor = ExtendedTheme.colorScheme.text
                 )
             ) {
                 Row(
@@ -531,7 +530,7 @@ private fun SearchHistoryList(
                         text = stringResource(
                             id = if (expanded) R.string.button_expand_less_history else R.string.button_expand_more_history
                         ),
-                        style = MaterialTheme.typography.button,
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -546,7 +545,7 @@ private fun SearchHistoryList(
             ) {
                 Text(
                     text = stringResource(id = R.string.tip_empty),
-                    color = ExtendedTheme.colors.textDisabled,
+                    color = ExtendedTheme.colorScheme.textDisabled,
                     fontSize = 16.sp
                 )
             }
@@ -569,7 +568,7 @@ private fun SearchTopBar(
         placeholder = {
             Text(
                 text = stringResource(id = R.string.hint_search),
-                color = ExtendedTheme.colors.onTopBarSurface.copy(alpha = ContentAlpha.medium)
+                color = ExtendedTheme.colorScheme.onTopBarSurface.copy(alpha = MaterialTheme.colorScheme.onSurfaceVariant.alpha)
             )
         },
         prependIcon = {
@@ -602,7 +601,7 @@ fun PreviewSearchBox() {
         Box(
             modifier = Modifier
                 .height(64.dp)
-                .background(ExtendedTheme.colors.topBar)
+                .background(ExtendedTheme.colorScheme.topBar)
                 .padding(vertical = 8.dp, horizontal = 16.dp)
         ) {
             SearchTopBar(
@@ -618,7 +617,7 @@ fun PreviewSearchBox() {
 fun PreviewSearchHistoryList() {
     TiebaLiteTheme {
         var expanded by remember { mutableStateOf(false) }
-        Box(modifier = Modifier.background(ExtendedTheme.colors.background)) {
+        Box(modifier = Modifier.background(ExtendedTheme.colorScheme.background)) {
             SearchHistoryList(
                 searchHistories = (0..20).map {
                     SearchHistory(content = if (it % 2 == 0) "记录$it" else "搜索记录$it")

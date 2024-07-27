@@ -1,6 +1,6 @@
 package com.huanchengfly.tieba.post.ui.widgets.compose.picker
 
-import androidx.compose.material.ContentAlpha
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
@@ -36,9 +36,13 @@ interface PickerColors {
 object PickerDefaults {
     @Composable
     fun pickerColors(
-        itemColor: Color = ExtendedTheme.colors.text,
-        disabledItemColor: Color = itemColor.copy(alpha = ContentAlpha.disabled),
-        selectedItemColor: Color = ExtendedTheme.colors.accent,
+        itemColor: Color = ExtendedTheme.colorScheme.text,
+        disabledItemColor: Color = itemColor.copy(
+            alpha = MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.38f
+            ).alpha
+        ),
+        selectedItemColor: Color = ExtendedTheme.colorScheme.accent,
         disabledSelectedItemColor: Color = disabledItemColor
     ): PickerColors =
         DefaultPickerColors(

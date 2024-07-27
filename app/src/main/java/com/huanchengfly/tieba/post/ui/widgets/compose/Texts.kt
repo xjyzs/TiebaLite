@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Link
@@ -231,7 +231,7 @@ fun IconText(
                             Icons.Rounded.Link,
                             contentDescription = stringResource(id = R.string.link),
                             modifier = Modifier.size(sizeDp),
-                            tint = ExtendedTheme.colors.accent,
+                            tint = ExtendedTheme.colorScheme.accent,
                         )
                     }
                 ),
@@ -246,7 +246,7 @@ fun IconText(
                             Icons.Rounded.SlowMotionVideo,
                             contentDescription = stringResource(id = R.string.desc_video),
                             modifier = Modifier.size(sizeDp),
-                            tint = ExtendedTheme.colors.accent,
+                            tint = ExtendedTheme.colorScheme.accent,
                         )
                     }
                 ),
@@ -261,7 +261,7 @@ fun IconText(
                             Icons.Rounded.AccountCircle,
                             contentDescription = stringResource(id = R.string.user),
                             modifier = Modifier.size(sizeDp),
-                            tint = ExtendedTheme.colors.accent,
+                            tint = ExtendedTheme.colorScheme.accent,
                         )
                     }
                 ),
@@ -351,8 +351,8 @@ fun buildChipInlineContent(
     padding: PaddingValues = PaddingValues(vertical = 2.dp, horizontal = 4.dp),
     textStyle: TextStyle = LocalTextStyle.current,
     chipTextStyle: TextStyle = LocalTextStyle.current,
-    backgroundColor: Color = ExtendedTheme.colors.chip,
-    color: Color = ExtendedTheme.colors.onChip
+    backgroundColor: Color = ExtendedTheme.colorScheme.chip,
+    color: Color = ExtendedTheme.colorScheme.onChip
 ): InlineTextContent {
     val textMeasurer = rememberTextMeasurer()
     val textSize = remember(text, textStyle) { textMeasurer.measure(text, textStyle).size }
@@ -424,7 +424,7 @@ fun HighlightText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
     highlightKeywords: List<String> = emptyList(),
-    highlightColor: Color = ExtendedTheme.colors.primary,
+    highlightColor: Color = ExtendedTheme.colorScheme.primary,
     highlightStyle: TextStyle = style,
 ) {
     HighlightText(
@@ -476,7 +476,7 @@ fun HighlightText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
     highlightKeywords: List<String> = emptyList(),
-    highlightColor: Color = ExtendedTheme.colors.primary,
+    highlightColor: Color = ExtendedTheme.colorScheme.primary,
     highlightStyle: TextStyle = style,
 ) {
     val mergedHighlightStyle = remember(highlightStyle, highlightColor) {
