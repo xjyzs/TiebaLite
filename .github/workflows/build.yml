@@ -16,25 +16,7 @@ jobs:
           java-version: "17"
           distribution: "zulu"
           cache: gradle
-
-      - name: Decode Keystore
-        id: decode_keystore
-        if: ${{ github.event_name != 'pull_request' || github.ref_type == 'tag' }}
-        uses: timheuer/base64-to-file@v1.2
-        with:
-          fileName: ${{ vars.RELEASE_KEYSTORE }}
-          fileDir: ${{ github.workspace }}
-          encodedString: ${{ secrets.KEYSTORE }}
-
-      - name: Generate keystore.properties
-        run: |
-          if [ -n "${{ secrets.RELEASEKEYPASSWORD }}" ]; then
-            echo keystore.file="${{ vars.RELEASE_KEYSTORE }}" >> keystore.properties
-            echo keystore.password="${{ secrets.RELEASESTOREPASSWORD }}" >> keystore.properties
-            echo keystore.key.alias="${{ vars.RELEASE_KEY_ALIAS }}" >> keystore.properties
-            echo keystore.key.password="${{ secrets.RELEASEKEYPASSWORD }}" >> keystore.properties
-          fi
-
+          
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -42,7 +24,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/4.0-dev' }}
 
       - name: Build with Gradle
-        run: ./gradlew assembleRelease
+        run: ./gradlew assemble
 
       - name: Read Output Metadata
         id: read_output_metadata
